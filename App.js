@@ -2,6 +2,7 @@ import * as Font from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import Navigation from "./src/navigations";
 import SocialLoginButton from "./src/components/SocialLoginButton";
 import SquareButton from "./src/components/SquareButton";
 import RoundButton from "./src/components/RoundButton";
@@ -25,11 +26,9 @@ export default function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <View style={styles.container}>
-      <Text style={{ fontFamily: "FontM" }}>
-        Open up App.js to start working on your app!
-      </Text>
+    <View style={{ flex: 1 }}>
       <StatusBar style="auto" />
+      <Navigation />
       <SocialLoginButton type="naver" clicked={false} />
       <SquareButton text="완료" width={69} height={23} clicked={false} />
       <SquareButton
@@ -43,12 +42,3 @@ export default function App() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
