@@ -1,8 +1,10 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { COLORS } from '../theme/color';
-import { GoodFeedActiveIcon, GoodFeedInActiveIcon, GoodNewsActiveIcon, GoodNewsInActiveIcon, HomeActiveIcon, HomeInActiveIcon, MyActiveIcon, MyInActiveIcon } from '../utils/icons';
-import { GoodFeed, GoodNews, Home, My } from '../screens';
+import { AlarmActiveIcon, AlarmInActiveIcon, GoodFeedActiveIcon, GoodFeedInActiveIcon, GoodNewsActiveIcon, GoodNewsInActiveIcon, HomeActiveIcon, HomeInActiveIcon, MyActiveIcon, MyInActiveIcon, SearchActiveIcon, SearchInActiveIcon } from '../utils/icons';
+import { GoodFeed, GoodNews, My } from '../screens';
+import HomeStack from './HomeStack/HomeStack';
+import { Image, TouchableOpacity } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 
@@ -12,11 +14,34 @@ const TabBarIcon = ({ focused, ActiveIcon, InactiveIcon }) => {
     )
 }
 
+const HeaderRight = ({focused}) => {
+    // const navigation = useNavigation();
+
+    return (
+        <React.Fragment>
+            {/* 검색 버튼 */}
+            <TouchableOpacity
+                // onPress={() => navigation.navigate('SearchScreen')}
+                style={{ marginRight: 7 }}
+            >
+                {focused ? <SearchActiveIcon /> : <SearchInActiveIcon />}
+            </TouchableOpacity>
+
+            {/* 알림 버튼 */}
+            <TouchableOpacity
+                // onPress={() => navigation.navigate('NotificationScreen')}
+                // style={{ marginRight: 27 }}
+            >
+                {focused ? <AlarmActiveIcon /> : <AlarmInActiveIcon />}
+            </TouchableOpacity>
+        </React.Fragment>
+    );
+};
+
 const MainTab = () => {
     return (
         <Tab.Navigator
             screenOptions={{
-                headerShown: false,
                 headerTitleAlign: 'center',
                 tabBarActiveTintColor: COLORS.MainYellow,
                 tabBarInactiveTintColor: COLORS.Gray,
@@ -34,16 +59,35 @@ const MainTab = () => {
                     shadowRadius: 4,
                     elevation: 10,
                     position: 'absolute',
-                }
+                },
+                headerTintColor: COLORS.Black,
+                cardStyle: { backgroundColor: COLORS.White },
+                headerBackTitle: "",
+                headerTitle: () => (
+                    <Image
+                        source={require('../../assets/images/logo/logo_top.png')}
+                        style={{ width: 98, height: 34, resizeMode: 'contain' }}
+                    />
+                ),
+                headerRight: ({ focused }) => (
+                    <HeaderRight focused={focused} />
+                ),
+                headerLeftContainerStyle: {
+                    paddingLeft: 10,
+                },
+                headerRightContainerStyle: {
+                    paddingRight: 26,
+                },
             }}
         >
             <Tab.Screen
                 name='홈'
-                component={Home}
+                component={HomeStack}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabBarIcon focused={focused} ActiveIcon={HomeActiveIcon} InactiveIcon={HomeInActiveIcon} />
-                    )
+                    ),
+                    headerShown: false,
                 }}
             />
             <Tab.Screen
