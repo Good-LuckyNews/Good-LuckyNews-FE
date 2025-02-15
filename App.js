@@ -29,16 +29,6 @@ export default function App() {
     <View style={{ flex: 1 }}>
       <StatusBar style="auto" />
       <Navigation />
-      <SocialLoginButton type="naver" clicked={false} />
-      <SquareButton text="완료" width={69} height={23} clicked={false} />
-      <SquareButton
-        text="플레이스 만들기"
-        width={117}
-        height={28}
-        clicked={true}
-      />
-      <RoundButton text="버튼명" width={81} clicked={true} />
-      <NextStepButton width={339} clicked={true} />
     </View>
   );
 }

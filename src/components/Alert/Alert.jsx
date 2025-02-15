@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { COLORS } from '../../theme/color';
 import { Animated, Dimensions } from 'react-native';
 import styled from 'styled-components/native';
+import PropTypes from 'prop-types';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -58,5 +59,13 @@ const Alert = ({ message, visible, duration = 2000, onHide, backgroundColor }) =
         </ToastContainer>
     )
 }
+
+Alert.propTypes = {
+    message: PropTypes.string.isRequired,
+    visible: PropTypes.bool.isRequired,
+    duration: PropTypes.number,
+    backgroundColor: PropTypes.string.isRequired,
+    onHide: PropTypes.func.isRequired,
+};
 
 export default Alert

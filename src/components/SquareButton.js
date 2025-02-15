@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Color from "../theme/color";
 import PropTypes from "prop-types";
+import { COLORS } from "../theme/color";
 
 const SquareButton = ({ text, width, height, clicked }) => {
   return (
@@ -32,20 +32,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 5,
     borderWidth: 0.7,
-    borderColor: Color.Gray,
-    backgroundColor: Color.White,
+    borderColor: COLORS.Gray,
+    backgroundColor: COLORS.White,
   },
   clickedContainer: {
-    borderColor: Color.MainYellow,
-    backgroundColor: Color.MainYellow,
+    borderColor: COLORS.MainYellow,
+    backgroundColor: COLORS.MainYellow,
   },
   text: {
-    color: Color.Gray,
+    color: COLORS.Gray,
     textAlign: "center",
     fontFamily: "FontB",
     fontSize: 15,
   },
   clickedText: {
-    color: Color.White,
+    color: COLORS.White,
   },
 });
