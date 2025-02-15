@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Color from "../theme/color";
+import { COLORS } from "../theme/color";
 
 const RoundButton = ({ text, width, clicked }) => {
   return (
@@ -31,17 +31,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 15,
-    backgroundColor: Color.White,
+    backgroundColor: COLORS.White,
   },
   clickedContainer: {
-    backgroundColor: Color.MainYellow,
+    backgroundColor: COLORS.MainYellow,
   },
   text: {
     fontFamily: "FontM",
     fontSize: 15,
-    color: Color.Gray,
+    color: COLORS.Gray,
   },
   clickedText: {
-    color: Color.Black,
+    color: COLORS.Black,
   },
 });

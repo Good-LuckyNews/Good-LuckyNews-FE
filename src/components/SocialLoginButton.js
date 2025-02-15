@@ -1,7 +1,7 @@
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
-import Color from "../theme/color";
 import PropTypes from "prop-types";
+import { COLORS } from "../theme/color";
 
 const SocialLoginButton = ({ type, clicked = false }) => {
   const logoImages = {
@@ -41,11 +41,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: Color.MainYellow,
-    backgroundColor: Color.White,
+    borderColor: COLORS.MainYellow,
+    backgroundColor: COLORS.White,
   },
   clickedContainer: {
-    backgroundColor: Color.MainYellow,
+    backgroundColor: COLORS.MainYellow,
   },
   logo: {
     width: 17,
@@ -56,11 +56,11 @@ const styles = StyleSheet.create({
     left: 20,
   },
   text: {
-    color: Color.Gray,
+    color: COLORS.Gray,
     fontSize: 17,
     fontFamily: "FontB",
   },
   clickedText: {
-    color: Color.White,
+    color: COLORS.White,
   },
 });

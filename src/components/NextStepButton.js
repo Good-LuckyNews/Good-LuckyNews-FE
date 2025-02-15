@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Color from "../theme/color";
+import { COLORS } from "../theme/color";
 
 const NextStepButton = ({ text = "완료", width, clicked }) => {
   return (
@@ -32,18 +32,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 5,
     borderWidth: 1.3,
-    borderColor: Color.MainYellow,
-    backgroundColor: Color.White,
+    borderColor: COLORS.MainYellow,
+    backgroundColor: COLORS.White,
   },
   clickedContainer: {
-    backgroundColor: Color.MainYellow,
+    backgroundColor: COLORS.MainYellow,
   },
   text: {
     fontFamily: "FontB",
     fontSize: 20,
-    color: Color.MainYellow,
+    color: COLORS.MainYellow,
   },
   clickedText: {
-    color: Color.White,
+    color: COLORS.White,
   },
 });

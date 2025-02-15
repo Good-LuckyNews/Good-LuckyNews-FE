@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import { RemoveIcon } from '../../utils/icons';
-import { TouchableOpacity } from 'react-native';
 import { COLORS } from '../../theme/color';
+import PropTypes from 'prop-types';
 
 const TagContainer = styled.View`
     flex-direction: row;
@@ -28,5 +28,10 @@ const SearchWord = ({ word, onRemove }) => {
         </TagContainer>
     )
 }
+
+SearchWord.propTypes = {
+    word: PropTypes.string.isRequired,
+    onRemove: PropTypes.func.isRequired,
+};
 
 export default SearchWord
