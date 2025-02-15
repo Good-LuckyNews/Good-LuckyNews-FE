@@ -36,12 +36,12 @@ const MyCustomTopTabs = () => {
     const [selectedTab, setSelectedTab] = useState(0);
 
     const renderComponent = () => {
-        switch (selectedTab) {
-            case 0: return <Scrap />;
-            case 1: return <MyNews />;
-            case 2: return <MyCommentedNews />;
-            default: return null;
-        }
+        // switch (selectedTab) {
+        //     case 0: return <Scrap />;
+        //     case 1: return <MyNews />;
+        //     case 2: return <MyCommentedNews />;
+        //     default: return null;
+        // }
     }
 
     return (
