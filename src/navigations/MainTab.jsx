@@ -4,7 +4,7 @@ import { COLORS } from '../theme/color';
 import { AlarmActiveIcon, AlarmInActiveIcon, GoodFeedActiveIcon, GoodFeedInActiveIcon, GoodNewsActiveIcon, GoodNewsInActiveIcon, HomeActiveIcon, HomeInActiveIcon, MyActiveIcon, MyInActiveIcon, SearchActiveIcon, SearchInActiveIcon } from '../utils/icons';
 import { GoodFeed, GoodNews, My } from '../screens';
 import HomeStack from './HomeStack/HomeStack';
-import { Image, TouchableOpacity } from 'react-native';
+import { Image, Pressable } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 
@@ -20,20 +20,20 @@ const HeaderRight = ({focused}) => {
     return (
         <React.Fragment>
             {/* 검색 버튼 */}
-            <TouchableOpacity
+            <Pressable
                 // onPress={() => navigation.navigate('SearchScreen')}
                 style={{ marginRight: 7 }}
             >
                 {focused ? <SearchActiveIcon /> : <SearchInActiveIcon />}
-            </TouchableOpacity>
+            </Pressable>
 
             {/* 알림 버튼 */}
-            <TouchableOpacity
+            <Pressable
                 // onPress={() => navigation.navigate('NotificationScreen')}
                 // style={{ marginRight: 27 }}
             >
                 {focused ? <AlarmActiveIcon /> : <AlarmInActiveIcon />}
-            </TouchableOpacity>
+            </Pressable>
         </React.Fragment>
     );
 };
@@ -55,9 +55,9 @@ const MainTab = () => {
                     borderColor: 'rgba(200, 200, 200, 0.38)',
                     shadowColor: 'rgba(0, 0, 0)',
                     shadowOpacity: 1,
-                    shadowOffset: { width: 0, height: -10 },
+                    shadowOffset: { width: 0, height: 2 },
                     shadowRadius: 4,
-                    elevation: 10,
+                    elevation: 4,
                     position: 'absolute',
                 },
                 headerTintColor: COLORS.Black,

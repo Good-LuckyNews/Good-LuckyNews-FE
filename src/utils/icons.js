@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TouchableOpacity } from "react-native";
+import { Pressable } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
 export const HomeInActiveIcon = () => (
@@ -80,7 +80,7 @@ export const RemoveIcon = ({ onPress }) => {
     const [iconColor, setIconColor] = useState("#8A8888"); // 초기 색상
 
     return (
-        <TouchableOpacity
+        <Pressable
             onPress={onPress}
             onPressIn={() => setIconColor("#FFD367")} // 터치 시 색 변경
             onPressOut={() => setIconColor("#8A8888")} // 터치 해제 시 원래 색상
@@ -91,6 +91,6 @@ export const RemoveIcon = ({ onPress }) => {
                     fill={iconColor} // ✅ 색상 변경
                 />
             </Svg>
-        </TouchableOpacity>
+        </Pressable>
     );
 }

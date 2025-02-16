@@ -9,10 +9,10 @@ import MyCommentedNews from './MyCommentedNews';
 const shadowStyle = StyleSheet.create({
     shadow: {
         shadowColor: 'rgba(0, 0, 0)',
-        shadowOffset: { width: 0, height: 5 },
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 1,
         shadowRadius: 4,
-        elevation: 7, // 그림자를 넣긴했지만 잘 보이진 않는 것 같음
+        elevation: 4, // 그림자를 넣긴했지만 잘 보이진 않는 것 같음
     },
 });
 
@@ -21,7 +21,7 @@ const Container = styled.View`
     background-color: ${COLORS.White};
 `;
 
-const CustomTabButton = styled.TouchableOpacity`
+const CustomTabButton = styled.Pressable`
     flex: 1;
     height: 60px;
     justify-content: center;

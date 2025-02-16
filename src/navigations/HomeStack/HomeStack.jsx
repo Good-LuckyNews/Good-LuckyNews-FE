@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import { Home, Home2 } from '../../screens';
-import { Image, TouchableOpacity } from 'react-native';
+import { Image, Pressable } from 'react-native';
 import { AlarmActiveIcon, AlarmInActiveIcon, SearchActiveIcon, SearchInActiveIcon } from '../../utils/icons';
 import { COLORS } from '../../theme/color';
 
@@ -13,20 +13,20 @@ const HeaderRight = ({ focused }) => {
     return (
         <React.Fragment>
             {/* 검색 버튼 */}
-            <TouchableOpacity
+            <Pressable
                 // onPress={() => navigation.navigate('SearchScreen')}
                 style={{ marginRight: 7 }}
             >
                 {focused ? <SearchActiveIcon /> : <SearchInActiveIcon />}
-            </TouchableOpacity>
+            </Pressable>
 
             {/* 알림 버튼 */}
-            <TouchableOpacity
+            <Pressable
             // onPress={() => navigation.navigate('NotificationScreen')}
             // style={{ marginRight: 27 }}
             >
                 {focused ? <AlarmActiveIcon /> : <AlarmInActiveIcon />}
-            </TouchableOpacity>
+            </Pressable>
         </React.Fragment>
     );
 };
