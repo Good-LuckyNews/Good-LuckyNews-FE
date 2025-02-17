@@ -5,6 +5,7 @@ import { AlarmActiveIcon, AlarmInActiveIcon, GoodFeedActiveIcon, GoodFeedInActiv
 import { GoodFeed, GoodNews, My } from '../screens';
 import HomeStack from './HomeStack/HomeStack';
 import { Image, Pressable } from 'react-native';
+import { theme } from '../theme/theme';
 
 const Tab = createBottomTabNavigator();
 
@@ -47,8 +48,8 @@ const MainTab = () => {
                 tabBarInactiveTintColor: COLORS.Gray,
                 tabBarStyle: {
                     height: 80,
-                    paddingBottom: 15,
-                    paddingTop: 15,
+                    paddingBottom: 10,
+                    paddingTop: 10,
                     borderTopLeftRadius: 25,
                     borderTopRightRadius: 25,
                     borderWidth: 1,
@@ -59,6 +60,11 @@ const MainTab = () => {
                     shadowRadius: 4,
                     elevation: 4,
                     position: 'absolute',
+                },
+                tabBarLabelStyle: {
+                    marginTop: 5,
+                    fontSize: 15,
+                    fontFamily: theme.fonts.medium,
                 },
                 headerTintColor: COLORS.Black,
                 cardStyle: { backgroundColor: COLORS.White },
