@@ -22,9 +22,11 @@ const ToastContainer = styled(Animated.View)`
 const ToastText = styled.Text`
   color: ${COLORS.Black};
   font-weight: 400;
+  font-size: 13px;
+  font-family: ${(props) => props.theme.fonts.medium};
 `;
 
-const Alert = ({ message, visible, duration = 2000, onHide, backgroundColor }) => {
+const Alert = ({ message, visible, duration = 1500, onHide, backgroundColor }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
