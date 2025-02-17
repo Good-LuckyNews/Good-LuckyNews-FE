@@ -10,7 +10,7 @@ const shadowStyle = StyleSheet.create({
     shadow: {
         shadowColor: 'rgba(0, 0, 0)',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 1,
+        shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 4, // 그림자를 넣긴했지만 잘 보이진 않는 것 같음
     },
