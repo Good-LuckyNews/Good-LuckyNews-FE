@@ -1,12 +1,10 @@
 import * as Font from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { View } from "react-native";
 import Navigation from "./src/navigations";
-import SocialLoginButton from "./src/components/SocialLoginButton";
-import SquareButton from "./src/components/SquareButton";
-import RoundButton from "./src/components/RoundButton";
-import NextStepButton from "./src/components/NextStepButton";
+import { ThemeProvider } from "styled-components/native";
+import { theme } from "./src/theme/theme";
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -26,9 +24,11 @@ export default function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <View style={{ flex: 1 }}>
-      <StatusBar style="auto" />
-      <Navigation />
-    </View>
+    <ThemeProvider theme={theme}>
+      <View style={{ flex: 1 }}>
+        <StatusBar style="auto" />
+        <Navigation />
+      </View>
+    </ThemeProvider>
   );
 }
