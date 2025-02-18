@@ -26,7 +26,7 @@ const ToastText = styled.Text`
   font-family: ${(props) => props.theme.fonts.medium};
 `;
 
-const Alert = ({ message, visible, duration = 1500, onHide, backgroundColor }) => {
+const Alert = ({ message, visible, duration =1500, onHide, backgroundColor }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
@@ -35,7 +35,6 @@ const Alert = ({ message, visible, duration = 1500, onHide, backgroundColor }) =
                 toValue: 1,
                 duration: 300,
                 useNativeDriver: true,
-
             }).start();
 
             setTimeout(() => {

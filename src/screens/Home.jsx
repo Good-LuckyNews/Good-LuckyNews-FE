@@ -1,14 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Image, PanResponder, Pressable, ScrollView, Text, View } from 'react-native';
-import Slider from "@react-native-community/slider";
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Animated, Dimensions, Image, PanResponder } from 'react-native';
 import styled from 'styled-components/native';
 import { COLORS } from '../theme/color';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Alert from '../components/Alert/Alert';
-import RoundButton from '../components/RoundButton';
-import ScrapButton from '../components/ScrapButton/ScrapButton';
-import { LinkIcon } from '../utils/icons';
-import { theme } from '../theme/theme';
+import { Feed } from '../components';
 
 const { width } = Dimensions.get("window");
 const SLIDER_WIDTH = width - 40;
@@ -19,16 +15,9 @@ const Home = () => {
     const navigation = useNavigation();
     const [toastVisible, setToastVisible] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
-    const [isScrapped, setIsScrapped] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
-    const [tags, setTags] = useState(["긍정", "테스트", "검색"]);
     const [text, setText] = useState('');
-    const [score, setScore] = useState(50);
-    const [savedScore, setSavedScore] = useState(null);
-    const [currentScore, setCurrentScore] = useState(score);
-    const [showIndicator, setShowIndicator] = useState(false);
-    const [isEditing, setIsEditing] = useState(true);
-    const thumbPosition = useRef(new Animated.Value((score / MAX_VALUE) * SLIDER_WIDTH)).current;
+    const [isOverlayVisible, setIsOverlayVisible] = useState(true);
 
     useEffect(() => {
         setText(`펫푸드 전문회사 우리와는 지난 7일 유기동물 보호 단체 동물학대방지연합(동학방)과 협력해 유기동물 복지 향상을 위한 사료 600㎏을 지원했다고 10일 밝혔다.
@@ -39,28 +28,29 @@ const Home = () => {
 
 우리와 관계자는 “유기동물들이 어디서든 건강하고 행복한 삶을 살아가길 바라는 마음으로 올해도 꾸준히 유기동물 보호 단체 지원 활동을 이어 나갈 예정”이라며
 
-“신선하고 안전함은 물론 맛과 영양면에서도 우수한 먹거리를 제공할 수 있도록 더 고민하고 연구하겠다”라고 전했다.`)
+“신선하고 안전함은 물론 맛과 영양면에서도 우수한 먹거리를 제공할 수 있도록 더 고민하고 연구하겠다”라고 전했다.`);
+        heightAnim.setValue(0);
+        setIsExpanded(false);
     }, []);
 
-    const handleScrap = () => {
-        setIsScrapped(prevState => {
-            const newState = !prevState;
-            setToastMessage(newState ? "긍정 피드를 스크랩했어요!" : "긍정 피드 스크랩을 취소했어요!");
-            setToastVisible(true);
-            return newState;
-        });
-    };
-
-    const handleComplete = () => {
-        setToastMessage("긍정 평가를 저장했어요!");
+    const handleShowToast = (message) => {
+        setToastMessage(message);
         setToastVisible(true);
-        setSavedScore(score);
-        setIsEditing(false);
     };
 
-    const handleEdit = () => {
-        setIsEditing(true);
-    };
+    useFocusEffect(
+        useCallback(() => {
+            setIsOverlayVisible(true);
+
+            heightAnim.setValue(0);
+            setIsExpanded(false);
+        }, [])
+    );
+
+    useEffect(() => {
+        heightAnim.setValue(0);
+        setIsExpanded(false);
+    }, [text]);
 
     const [containerHeight, setContainerHeight] = useState(0);
 
@@ -116,135 +106,29 @@ const Home = () => {
                     <YellowHeader {...panResponder.panHandlers}>
                         <YellowBar />
                     </YellowHeader>
-                    <YellowContent keyboardShouldPersistTaps="handled">
-                        <YellowInnerContainer>
-                            <RoundButton text={'기부'} width={55} clicked={false} />
-                            <YellowInnerContent>
-                                <BoldText>펫푸드 기업 ‘우리와’, 유기동물 보호단체에 사료 기부</BoldText>
-                                <ScrapButton isScrapped={isScrapped} onPress={handleScrap} />
-                            </YellowInnerContent>
-                        </YellowInnerContainer>
-                        <YellowContentContainer>
-                            <ImageContainer>
-                                <Image
-                                    source={{ uri: 'https://s3-alpha-sig.figma.com/img/6e43/9c59/e39a2184abfeffa39e270dc8c99c36ab?Expires=1740960000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=EaxLXgW0jwDgLHR2njlZDEL7~wUi5PxA3t9PSwIf1jKBmt2uL3IAHzkhvMrFHcxuwDoP7Sw8cD-rZlS2ax3y~O3dcfZcRhGu-YIcsRFLbtp4y7cqr0fKUD0DGiwIXCj5CuVGk8BWVU1dycDXOmowIDws6no8u8FjraUnpDZ62VP6z3CZDjQZjOPq9jJ8TKmrK7Wze3StLTgC8xmn6AlpZWS5i5LGhPBMjI6KOjpskQDwIUCdXVGS0~qDBtiKJnLkPZrLvYU9SA9dltCCx~yPCTFxcC9z-A1AZA46lLoK4NfV7NuSHoIGJjVBySbAyJH3ef-LAxjGtDYM2gGG3ayhxg__' }}
-                                    resizeMode='contain' // cover는 이미지가 많이 잘리지 않을까..
-                                    style={{ width: '100%', height: '100%' }}
-                                />
-                            </ImageContainer>
-                            <YellowTextContainer>
-                                {text.split("\n").map((line, index) => (
-                                    <StyledText key={index}>
-                                        {line}
-                                    </StyledText>
-                                ))}
-                                <TextFooter>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                        <LinkIcon />
-                                        <FooterText>출처: 이데일리</FooterText>
-                                    </View>
-                                    <FooterText>2025.02.17</FooterText>
-                                </TextFooter>
-                            </YellowTextContainer>
-                            <YellowEvalContainer>
-                                <MediumFootText>해당 소식이 얼마나 긍정적으로 느껴지셨나요?</MediumFootText>
-                                <LightFootText>* 드래그 하여 선택해 주세요.</LightFootText>
-                                <View style={{ width: "100%", alignItems: "center", position: "relative", paddingTop: 10 }}>
-                                    {showIndicator && (
-                                        <Animated.View
-                                            style={{
-                                                position: "absolute",
-                                                left: thumbPosition,
-                                                top: -30,
-                                                width: 40,
-                                                height: 40,
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                elevation: 0,
-                                                shadowOpacity: 0,
-                                            }}
-                                        >
-                                            <Text style={{ color: "black", fontWeight: "bold", fontSize: 14 }}>
-                                                {currentScore}
-                                            </Text>
-                                        </Animated.View>
-                                    )}
-                                    <SliderTrack>
-                                        <Animated.View
-                                            style={{
-                                                position: "absolute",
-                                                left: thumbPosition,
-                                                elevation: 0,
-                                                shadowOpacity: 0,
-                                            }}
-                                            pointerEvents="none"
-                                        >
-                                            <ThumbContainer>
-                                                <Image
-                                                    source={require("../../assets/images/home/customThumb.png")}
-                                                    style={{ width: 28, height: 28, resizeMode: "contain" }}
-                                                />
-                                                <Text style={{
-                                                    position: "absolute",
-                                                    top: "50%",
-                                                    left: "50%",
-                                                    transform: [{ translateX: -6 }, { translateY: -8 }],
-                                                    color: "white",
-                                                    fontWeight: "bold",
-                                                    fontSize: 11,
-                                                }}>{score}</Text>
-                                            </ThumbContainer>
-                                        </Animated.View>
-                                    </SliderTrack>
-                                    <Slider
-                                        style={{ width: "100%", height: 10, opacity: 0, paddingTop: 5 }}
-                                        minimumValue={0}
-                                        maximumValue={100}
-                                        step={1}
-                                        minimumTrackTintColor="transparent"
-                                        maximumTrackTintColor="transparent"
-                                        thumbTintColor="transparent"
-                                        value={score}
-                                        disabled={!isEditing}
-                                        onSlidingStart={() => setShowIndicator(true)}
-                                        onValueChange={(value) => {
-                                            setCurrentScore(value);
-                                            thumbPosition.setValue((value / MAX_VALUE) * SLIDER_WIDTH);
-                                        }}
-                                        onSlidingComplete={(value) => {
-                                            setScore(value);
-                                            setShowIndicator(false);
-                                        }}
-                                    />
-                                    <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", paddingTop: 20 }}>
-                                        <SlideText>🙁</SlideText>
-                                        <SlideText>25</SlideText>
-                                        <SlideText>50</SlideText>
-                                        <SlideText>75</SlideText>
-                                        <SlideText>🙂</SlideText>
-                                    </View>
-                                </View>
-                                <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingTop: 10, paddingBottom: 10 }}>
-                                    {!isEditing ? (
-                                        <CompleteButton
-                                            style={{ backgroundColor: COLORS.White, alignItems: 'center', justifyContent: 'center', marginRight: 10 }}
-                                            onPress={handleEdit}
-                                        >
-                                            <Text style={{ color: "#8A8888", fontFamily: theme.fonts.bold, fontSize: 15 }}>수정</Text>
-                                        </CompleteButton>
-                                    ) : null}
-                                    <CompleteButton
-                                        style={{ backgroundColor: isEditing ? COLORS.White : COLORS.MainYellow, alignItems: 'center', justifyContent: 'center' }}
-                                        onPress={handleComplete}
-                                        disabled={!isEditing}
-                                    >
-                                        <Text style={{ color: isEditing ? '#8A8888' : COLORS.White, fontFamily: theme.fonts.bold, fontSize: 15 }}>{isEditing ? "완료" : "저장됨"}</Text>
-                                    </CompleteButton>
-                                </View>
-                            </YellowEvalContainer>
-                        </YellowContentContainer>
-                    </YellowContent>
+                    <Feed
+                        text={text}
+                        showToast={handleShowToast}
+                    />
                 </YellowContainer>
+            )}
+
+            {isOverlayVisible && (
+                <OverlayContainer style={{ height: containerHeight * 0.81 }}>
+                    <Image
+                        source={require('../../assets/images/home/blurEffect.png')}
+                        style={{ position: 'absolute', width: '100%', height: '100%', resizeMode: 'cover', opacity: 0.95, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
+                        blurRadius={100}
+                    />
+                    <OverlayBackground />
+                    <PopupBox>
+                        <PopupText>오늘의 긍정 뉴스를</PopupText>
+                        <PopupText>준비했어요 :)</PopupText>
+                        <ConfirmButton onPress={() => setIsOverlayVisible(false)}>
+                            <ConfirmText>확인하기</ConfirmText>
+                        </ConfirmButton>
+                    </PopupBox>
+                </OverlayContainer>
             )}
         </Container>
     )
@@ -282,12 +166,6 @@ const LightText = styled.Text`
     font-family: ${(props) => props.theme.fonts.light};
 `;
 
-const BoldText = styled.Text`
-    font-size: 19px;
-    font-weight: 400;
-    font-family: ${(props) => props.theme.fonts.bold};
-`;
-
 const YellowContainer = styled(Animated.View)`
     position: absolute;
     bottom: 0;
@@ -314,116 +192,57 @@ const YellowBar = styled.View`
     background-color: ${COLORS.White};
 `;
 
-const YellowContent = styled(ScrollView)`
+const OverlayContainer = styled.View`
+    position: absolute;
     width: 100%;
-    flex: 1;
-    padding: 10px 20px;
-`;
-
-const YellowInnerContainer = styled.View`
-    width: 100%;
-    height: 110px;
-    border-bottom-width: 1px;
-    border-bottom-color: rgba(138, 136, 136, 0.38);
-`;
-
-const YellowInnerContent = styled.View`
-    width: 100%;
-    padding-top: 10px;
-    padding-bottom: 5px;
-`;
-
-const YellowContentContainer = styled.View`
-    width: 100%;
-    padding: 20px 0;
-`;
-
-const ImageContainer = styled.View`
-    width: 100%;
-    height: 190px;
-    border-radius: 10px;
-    overflow: hidden;
-    background-color: ${COLORS.White};
-`;
-
-const YellowTextContainer = styled.View`
-    width: 100%;
-    padding: 20px 0;
-    border-bottom-width: 1px;
-    border-bottom-color: rgba(138, 136, 136, 0.38);
-`;
-
-const StyledText = styled.Text`
-    font-size: 18px;
-    font-weight: 400;
-    font-family: ${(props) => props.theme.fonts.light};
-    color: ${COLORS.Black};
-    line-height: 24px;
-`;
-
-const TextFooter = styled.View`
-    flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    padding-top: 10px;
+    bottom: 0;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
 `;
 
-const FooterText = styled.Text`
-  font-size: 13px;
-  font-weight: 400;
-  font-family: ${(props) => props.theme.fonts.light};
-  color: #5B5B5B;
-  line-height: 24px;
-  padding-left: 5px;
-`;
-
-const YellowEvalContainer = styled.View`
+const OverlayBackground = styled.View`
+    position: absolute;
     width: 100%;
-    padding-top: 20px;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    overflow: hidden;
 `;
 
-const MediumFootText = styled.Text`
-    font-size: 16px;
-    font-weight: 400;
-    font-family: ${(props) => props.theme.fonts.medium};
-`;
-
-const LightFootText = styled.Text`
-    font-size: 11px;
-    font-weight: 400;
-    font-family: ${(props) => props.theme.fonts.light};
-    color: #5B5B5B;
-    padding-top: 8px;
-    padding-bottom: 20px;
-`;
-
-const SliderTrack = styled.View`
-    width: 100%;
-    height: 32px;
+const PopupBox = styled.View`
+    width: 80%;
+    height: 200px;
     background-color: ${COLORS.White};
-    border-radius: 20px;
-    position: absolute;
-    border: 1px solid #C3C2C2;
-`;
-
-const ThumbContainer = styled.View`
-    position: absolute;
-    left: -13px;
+    padding-top: 20px;
+    border-radius: 25px;
     align-items: center;
     justify-content: center;
 `;
 
-const CompleteButton = styled.Pressable`
-    width: 70px;
-    height: 23px;
-    border-radius: 5px;
-    border: 0.7px solid #8A8888;
+const PopupText = styled.Text`
+    font-size: 22px;
+    font-weight: bold;
+    font-family: ${(props) => props.theme.fonts.medium};
+    margin-bottom: 3px;
 `;
 
-const SlideText = styled.Text`
-    font-family: ${(props) => props.theme.fonts.medium};
-    font-size: 11px;
-    color: #9B9898;
+const ConfirmButton = styled.Pressable`
+    width: 80%;
+    background-color: ${COLORS.MainYellow};
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    align-items: center;
+    justify-content: center;
+`;
+
+const ConfirmText = styled.Text`
+    color: ${COLORS.White};
+    font-family: ${(props) => props.theme.fonts.bold};
+    font-size: 20px;
 `;
 
 export default Home
