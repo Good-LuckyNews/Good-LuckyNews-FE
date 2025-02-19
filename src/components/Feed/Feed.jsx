@@ -8,13 +8,14 @@ import Slider from '@react-native-community/slider';
 import { COLORS } from '../../theme/color';
 import { useFocusEffect } from '@react-navigation/native';
 import { theme } from '../../theme/theme';
+import CategoryButton from '../CategoryButton/CategoryButton';
 
 const { width } = Dimensions.get("window");
 const SLIDER_WIDTH = width - 40;
 const MAX_VALUE = 100;
 const MIN_VALUE = 0;
 
-const Feed = ({ text, showToast }) => {
+const Feed = ({ text, showToast, paddingTop }) => {
     const [isScrapped, setIsScrapped] = useState(false);
     const [score, setScore] = useState(50);
     const [savedScore, setSavedScore] = useState(null);
@@ -63,9 +64,9 @@ const Feed = ({ text, showToast }) => {
     }, [])
 
     return (
-        <YellowContent keyboardShouldPersistTaps="handled" ref={scrollRef}>
+        <YellowContent keyboardShouldPersistTaps="handled" ref={scrollRef} paddingTop={paddingTop}>
             <YellowInnerContainer>
-                <RoundButton text={'기부'} width={55} clicked={false} />
+                <CategoryButton clicked={true} disabled={true} category="기부" />
                 <YellowInnerContent>
                     <BoldText>펫푸드 기업 ‘우리와’, 유기동물 보호단체에 사료 기부</BoldText>
                     <ScrapButton isScrapped={isScrapped} onPress={handleScrap} />
@@ -197,7 +198,7 @@ const Feed = ({ text, showToast }) => {
 const YellowContent = styled(ScrollView)`
     width: 100%;
     flex: 1;
-    padding: 10px 20px;
+    padding: ${({ paddingTop }) => (paddingTop ? "25px 20px 10px 20px" : "10px 20px")};
 `;
 
 const YellowInnerContainer = styled.View`
