@@ -29,7 +29,7 @@ const Scrap = () => {
 
 const Container = styled.View`
     flex: 1;
-    padding: 0 20px;
+    padding: 10px 20px;
 `;
 
 export default Scrap
