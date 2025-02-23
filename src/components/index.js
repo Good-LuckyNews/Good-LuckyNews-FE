@@ -1,4 +1,4 @@
-import Alert from './Alert/Alert';
+import CustomAlert from './Alert/CustomAlert';
 import Feed from './Feed/Feed';
 import FeedList from './Feed/FeedList';
 import MyCustomTopTabs from './My/MyCustomTopTabs';
@@ -8,4 +8,4 @@ import CategoryButton from './CategoryButton/CategoryButton';
 import Graph from './Graph/Graph';
 import TimeButton from './My/TimeButton';
 
-export { Alert, Feed, FeedList, MyCustomTopTabs, SearchWord, ScrapButton, CategoryButton, Graph, TimeButton }
+export { CustomAlert, Feed, FeedList, MyCustomTopTabs, SearchWord, ScrapButton, CategoryButton, Graph, TimeButton }

@@ -5,7 +5,7 @@ import { Alert, Image, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { ProfileIcon } from '../../utils/icons';
 import * as ImagePicker from "expo-image-picker";
 import { theme } from '../../theme/theme';
-import { CategoryButton, TimeButton } from '../../components';
+import { CategoryButton, CustomAlert, TimeButton } from '../../components';
 import RoundButton from '../../components/RoundButton';
 import { useNavigation } from '@react-navigation/native';
 
@@ -18,6 +18,14 @@ const ProfileEdit = () => {
         email: 'example@example.com',
         imageUri: 'https://s3-alpha-sig.figma.com/img/343e/3803/87084a97e1c341102db218412fd35710?Expires=1740960000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=WMhVKf6AXTRsFfO2mWh5qWkzEaFgtIJ9I8RzH8mSLq6lN2ljMow0k9LI6gjYK7SMgZccrCRCCaG4y7e0wTbbMTloU9yBbEn9HqcxoK61HDwB3xfs~XvJ~sCz~XqaT4i0Xwg1EjYC09b4enmGZhgpsh5QmNxARqm8cRl-NvxQ~PFOW3NoP5LrGKF7ArautSxu6KLC7IxxMtDwoWqYiQw8eOSm73tr9dRCoSUeDnGkP9UHAOlzf0lhi80IORUJSx~-v~uVuVNPZCPDjb5StKtuLzpBhfaMSdJdG55WATF9S-fxK0ebDZ~Mmjm5TvucVkKOLvCHLAHoZoVoDNEZ2vUSZw__',
     });
+
+    const [toastVisible, setToastVisible] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+
+    const handleShowToast = (message) => {
+        setToastMessage(message);
+        setToastVisible(true);
+    };
 
     const timeText = ["오전", "오후"];
     const [selectedTime, setSelectedTime] = useState("오후");
@@ -65,101 +73,128 @@ const ProfileEdit = () => {
         }
     };
 
+    const handleComplete = () => {
+        if (!profile.name || selectedKeywords.length < 2 || selectedKeywords.length > 4 ||
+            !selectedTime || !selectedHour || !selectedMinute) {
+            handleShowToast("필수 입력 항목을 모두 작성해주세요!");
+            return;
+        }
+        navigation.navigate("MyPage");
+    };
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <Container contentContainerStyle={{ flexGrow: 1, paddingBottom: 150 }}>
-                <ImageEditContainer>
-                    <ImageEditInnerArea>
-                        {imageUri ? <ProfileImage source={{ uri: imageUri }} /> : <ProfileIcon size={75} />}
-                        <EditButton onPress={pickImage}>
-                            <Image
-                                source={require("../../../assets/images/my/EditButton.png")}
-                                style={{
-                                    width: 20,
-                                    height: 20,
-                                }}
-                            />
-                        </EditButton>
-                    </ImageEditInnerArea>
-                </ImageEditContainer>
-                <NameEditContainer>
-                    <NameArea>
-                        <TitleText>닉네임</TitleText>
-                        <TitleDesc>* 필수 입력 항목입니다.</TitleDesc>
-                    </NameArea>
-                    <NameInput value={profile.name} onChange={(value) => setProfile({ name: value })} />
-                </NameEditContainer>
-                <BoxEditContainer>
-                    <TitleText style={{ paddingBottom: 10 }}>긍정적으로 느껴지는 키워드를 선택해주세요.</TitleText>
-                    <TitleDesc>* 2~4개 키워드를 선택할 수 있어요.</TitleDesc>
-                    <KeywordArea>
-                        {keywords.map((keyword, index) => (
-                            <CategoryButton
-                                key={index}
-                                category={keyword}
-                                clicked={selectedKeywords.includes(keyword)}
-                                onPress={() => toggleKeyword(keyword)}
-                            />
-                        ))}
-                    </KeywordArea>
-                </BoxEditContainer>
-                <BoxEditContainer>
-                    <TitleText style={{ paddingBottom: 10 }}>뉴스를 가장 자주 보는 시간을 알려주세요.</TitleText>
-                    <TitleDesc>* 희소식이 그 시간에 따뜻한 긍정 뉴스를 전해드릴게요 :)</TitleDesc>
-                    <TimeArea>
-                        {timeText.map((text, index) => (
-                            <RoundButton
-                                width={145}
-                                key={index}
-                                text={text}
-                                clicked={selectedTime === text}
-                                onPress={() => setSelectedTime(text)}
-                            />
-                        ))}
-                    </TimeArea>
-                    <HourArea>
-                        <LabelText>시</LabelText>
-                        <TimeGrid>
-                            {hours.map((hour) => (
-                                <TimeButton
-                                    key={hour}
-                                    number={String(hour)}
-                                    clicked={selectedHour === hour}
-                                    onPress={() => setSelectedHour(hour)}
+            <Container>
+                <CustomAlert
+                    message={toastMessage}
+                    visible={toastVisible}
+                    backgroundColor={COLORS.MainYellow}
+                    duration={1500}
+                    onHide={() => setToastVisible(false)}
+                />
+                <InnerContainer
+                    contentContainerStyle={{ flexGrow: 1, paddingBottom: 70 }}
+                    showsVerticalScrollIndicator={false}
+                >
+                    <ImageEditContainer>
+                        <ImageEditInnerArea>
+                            {imageUri ? <ProfileImage source={{ uri: imageUri }} /> : <ProfileIcon size={75} />}
+                            <EditButton onPress={pickImage}>
+                                <Image
+                                    source={require("../../../assets/images/my/EditButton.png")}
+                                    style={{
+                                        width: 20,
+                                        height: 20,
+                                    }}
+                                />
+                            </EditButton>
+                        </ImageEditInnerArea>
+                    </ImageEditContainer>
+                    <NameEditContainer>
+                        <NameArea>
+                            <TitleText>닉네임</TitleText>
+                            <TitleDesc>* 필수 입력 항목입니다.</TitleDesc>
+                        </NameArea>
+                        <NameInput value={profile.name} onChange={(value) => setProfile({ name: value })} />
+                    </NameEditContainer>
+                    <BoxEditContainer>
+                        <TitleText style={{ paddingBottom: 10 }}>긍정적으로 느껴지는 키워드를 선택해주세요.</TitleText>
+                        <TitleDesc>* 2~4개 키워드를 선택할 수 있어요.</TitleDesc>
+                        <KeywordArea>
+                            {keywords.map((keyword, index) => (
+                                <CategoryButton
+                                    key={index}
+                                    category={keyword}
+                                    clicked={selectedKeywords.includes(keyword)}
+                                    onPress={() => toggleKeyword(keyword)}
                                 />
                             ))}
-                        </TimeGrid>
-                    </HourArea>
-                    <MinuteArea>
-                        <LabelText>분</LabelText>
-                        <TimeGrid>
-                            {minutes.map((minute) => (
-                                <TimeButton
-                                    key={minute}
-                                    number={minute < 10 ? `0${minute}` : String(minute)}
-                                    clicked={selectedMinute === minute}
-                                    onPress={() => setSelectedMinute(minute)}
+                        </KeywordArea>
+                    </BoxEditContainer>
+                    <BoxEditContainer>
+                        <TitleText style={{ paddingBottom: 10 }}>뉴스를 가장 자주 보는 시간을 알려주세요.</TitleText>
+                        <TitleDesc>* 희소식이 그 시간에 따뜻한 긍정 뉴스를 전해드릴게요 :)</TitleDesc>
+                        <TimeArea>
+                            {timeText.map((text, index) => (
+                                <RoundButton
+                                    width={145}
+                                    key={index}
+                                    text={text}
+                                    clicked={selectedTime === text}
+                                    onPress={() => setSelectedTime(text)}
                                 />
                             ))}
-                        </TimeGrid>
-                    </MinuteArea>
-                </BoxEditContainer>
-                <CompleteButtonContainer>
-                    <CompleteButton
-                        onPressIn={() => setIsCompletePressed(true)}
-                        onPressOut={() => setIsCompletePressed(false)}
-                        onPress={() => navigation.navigate("MyPage")}
-                        pressed={isCompletePressed}
-                    >
-                        <CompleteText pressed={isCompletePressed}>완료</CompleteText>
-                    </CompleteButton>
-                </CompleteButtonContainer>
+                        </TimeArea>
+                        <HourArea>
+                            <LabelText>시</LabelText>
+                            <TimeGrid>
+                                {hours.map((hour) => (
+                                    <TimeButton
+                                        key={hour}
+                                        number={String(hour)}
+                                        clicked={selectedHour === hour}
+                                        onPress={() => setSelectedHour(hour)}
+                                    />
+                                ))}
+                            </TimeGrid>
+                        </HourArea>
+                        <MinuteArea>
+                            <LabelText>분</LabelText>
+                            <TimeGrid>
+                                {minutes.map((minute) => (
+                                    <TimeButton
+                                        key={minute}
+                                        number={minute < 10 ? `0${minute}` : String(minute)}
+                                        clicked={selectedMinute === minute}
+                                        onPress={() => setSelectedMinute(minute)}
+                                    />
+                                ))}
+                            </TimeGrid>
+                        </MinuteArea>
+                    </BoxEditContainer>
+                    <CompleteButtonContainer>
+                        <CompleteButton
+                            onPressIn={() => setIsCompletePressed(true)}
+                            onPressOut={() => setIsCompletePressed(false)}
+                            onPress={handleComplete}
+                            pressed={isCompletePressed}
+                        >
+                            <CompleteText pressed={isCompletePressed}>완료</CompleteText>
+                        </CompleteButton>
+                    </CompleteButtonContainer>
+                </InnerContainer>
             </Container>
         </TouchableWithoutFeedback>
     )
 }
 
-const Container = styled.ScrollView`
+const Container = styled.View`
+    flex: 1;
+    background-color: ${COLORS.White};
+    padding-bottom: 80px;
+`;
+
+const InnerContainer = styled.ScrollView`
     background-color: ${COLORS.White};
     padding: 40px 25px;
 `;

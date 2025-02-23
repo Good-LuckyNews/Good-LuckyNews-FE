@@ -3,8 +3,7 @@ import { Animated, Dimensions, Image, PanResponder } from 'react-native';
 import styled from 'styled-components/native';
 import { COLORS } from '../theme/color';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import Alert from '../components/Alert/Alert';
-import { Feed } from '../components';
+import { CustomAlert, Feed } from '../components';
 
 const { width } = Dimensions.get("window");
 const SLIDER_WIDTH = width - 40;
@@ -86,7 +85,7 @@ const Home = () => {
                 </TopInnerContainer>
             </TopContainer>
 
-            <Alert
+            <CustomAlert
                 message={toastMessage}
                 visible={toastVisible}
                 backgroundColor={isExpanded ? COLORS.White : COLORS.MainYellow}

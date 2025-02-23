@@ -26,7 +26,7 @@ const ToastText = styled.Text`
   font-family: ${(props) => props.theme.fonts.medium};
 `;
 
-const Alert = ({ message, visible, duration =1500, onHide, backgroundColor }) => {
+const CustomAlert = ({ message, visible, duration =1500, onHide, backgroundColor }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
@@ -61,7 +61,7 @@ const Alert = ({ message, visible, duration =1500, onHide, backgroundColor }) =>
     )
 }
 
-Alert.propTypes = {
+CustomAlert.propTypes = {
     message: PropTypes.string.isRequired,
     visible: PropTypes.bool.isRequired,
     duration: PropTypes.number,
@@ -69,4 +69,4 @@ Alert.propTypes = {
     onHide: PropTypes.func.isRequired,
 };
 
-export default Alert
+export default CustomAlert
