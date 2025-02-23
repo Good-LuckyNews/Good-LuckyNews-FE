@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Pressable } from "react-native";
-import Svg, { Path } from "react-native-svg";
+import Svg, { Circle, Ellipse, Path } from "react-native-svg";
 
 export const HomeInActiveIcon = () => (
     <Svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 37 37" fill="none">
@@ -110,5 +110,13 @@ export const ScrapActiveButton = () => (
 export const LinkIcon = () => (
     <Svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18" fill="none">
         <Path d="M8.462 12.0578H5.80775C4.96175 12.0578 4.24075 11.7598 3.64475 11.1638C3.04875 10.5678 2.7505 9.84653 2.75 9.00003C2.7495 8.15353 3.04775 7.43228 3.64475 6.83628C4.24175 6.24028 4.96275 5.94203 5.80775 5.94153H8.462V6.69153H5.80775C5.17275 6.69153 4.6295 6.91753 4.178 7.36953C3.726 7.82203 3.5 8.36553 3.5 9.00003C3.5 9.63453 3.726 10.1778 4.178 10.6298C4.63 11.0818 5.17325 11.3078 5.80775 11.3078H8.462V12.0578ZM6.875 9.37503V8.62503H12.125V9.37503H6.875ZM10.5388 12.0578V11.3078H13.1923C13.8273 11.3078 14.3705 11.0818 14.822 10.6298C15.274 10.1778 15.5 9.63453 15.5 9.00003C15.5 8.36553 15.274 7.82228 14.822 7.37028C14.37 6.91828 13.8268 6.69228 13.1923 6.69228H10.5388V5.94228H13.1923C14.0383 5.94228 14.7595 6.24028 15.356 6.83628C15.9525 7.43228 16.2505 8.15353 16.25 9.00003C16.2495 9.84653 15.9512 10.5678 15.3552 11.1638C14.7592 11.7598 14.0383 12.058 13.1923 12.0585L10.5388 12.0578Z" fill="#5B5B5B" />
+    </Svg>
+)
+
+export const ProfileIcon = ({ size }) => (
+    <Svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none">
+        <Circle cx={size / 2} cy={size / 2} r={size / 2} fill="#D9D9D9" />
+        <Circle cx={size * 0.493} cy={size * 0.309} r={size * 0.165} fill="white" />
+        <Ellipse cx={size * 0.493} cy={size * 0.704} rx={size * 0.375} ry={size * 0.151} fill="white" />
     </Svg>
 )

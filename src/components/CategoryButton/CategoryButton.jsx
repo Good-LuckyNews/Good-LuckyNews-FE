@@ -13,7 +13,7 @@ const CategoryButton = ({ clicked, disabled, onPress, category }) => {
 
 const CategoryPressable = styled.Pressable`
     background-color: ${({ clicked }) => (clicked ? COLORS.MainYellow : "#F8F8F8")};
-    padding: 5px 22px;
+    padding: 5px 20px;
     border-radius: 15px;
     margin-right: 5px;
     width: auto;
@@ -22,7 +22,7 @@ const CategoryPressable = styled.Pressable`
 
 const CategoryText = styled.Text`
     color: ${({ clicked }) => (clicked ? COLORS.Black : COLORS.Gray)};
-    font-family: ${(props) => theme.fonts.medium};
+    font-family: ${(props) => props.theme.fonts.medium};
     font-size: 15px;
 `;
 

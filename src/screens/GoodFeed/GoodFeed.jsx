@@ -83,7 +83,7 @@ const InnerContainer = styled.View`
 
 const StyledText = styled.Text`
   font-size: 22px;
-  font-family: ${(props) => theme.fonts.medium};
+  font-family: ${(props) => props.theme.fonts.medium};
   padding-bottom: 20px;
 `;
 

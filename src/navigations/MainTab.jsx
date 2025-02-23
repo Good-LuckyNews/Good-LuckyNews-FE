@@ -6,6 +6,8 @@ import { GoodFeed, GoodNews, Home, My } from '../screens';
 import GoodFeedStack from './GoodFeed/GoodFeedStack';
 import { Image, Pressable } from 'react-native';
 import { theme } from '../theme/theme';
+import MyPage from '../screens/MyPage/MyPage';
+import MyPageStack from './MyPage/MyPageStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -117,11 +119,12 @@ const MainTab = () => {
             />
             <Tab.Screen
                 name='MY'
-                component={My}
+                component={MyPageStack}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabBarIcon focused={focused} ActiveIcon={MyActiveIcon} InactiveIcon={MyInActiveIcon} />
-                    )
+                    ),
+                    headerShown: false,
                 }}
             />
         </Tab.Navigator>
