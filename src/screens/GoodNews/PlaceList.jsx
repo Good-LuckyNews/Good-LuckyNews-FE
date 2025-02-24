@@ -9,14 +9,14 @@ import {
 } from "react-native";
 import { COLORS } from "../../theme/color";
 import PropTypes from "prop-types";
-import MakePlace from "./MakePlace";
+import MakePlaceButton from "./MakePlaceButton";
 
 const PlaceList = ({ placeList, sort }) => {
   return (
     <View style={styles.container}>
       <FlatList
         data={placeList}
-        ListHeaderComponent={sort === "my" && <MakePlace />}
+        ListHeaderComponent={sort === "my" && <MakePlaceButton />}
         renderItem={({ item }) => (
           <View style={styles.placeContainer}>
             <View>

@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { COLORS } from "../../theme/color";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import RoundButton from "../../components/RoundButton";
-import SquareButton from "../../components/SquareButton";
 import PlaceList from "./PlaceList";
 
 const GoodNews = () => {

@@ -1,8 +1,11 @@
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import SquareButton from "../../components/SquareButton";
+import { useNavigation } from "@react-navigation/native";
 
-const MakePlace = () => {
+const MakePlaceButton = () => {
+  const navigate = useNavigation();
+
   return (
     <View style={styles.makePlaceContainer}>
       <Text style={styles.makePlaceText}>함께 희소식을 공유할</Text>
@@ -19,12 +22,17 @@ const MakePlace = () => {
           source={require("../../../assets/icon.png")}
         />
       </View>
-      <SquareButton text="플레이스 만들기" width={117} height={28} />
+      <SquareButton
+        text="플레이스 만들기"
+        width={117}
+        height={28}
+        onPress={() => navigate.navigate("MakePlace")}
+      />
     </View>
   );
 };
 
-export default MakePlace;
+export default MakePlaceButton;
 
 const styles = StyleSheet.create({
   makePlaceContainer: {
