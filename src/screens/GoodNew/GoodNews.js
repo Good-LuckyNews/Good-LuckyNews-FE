@@ -9,6 +9,7 @@ const GoodNews = () => {
   const [sort, setSort] = useState("all");
   const [placeList, setPlaceList] = useState([
     {
+      id: 1,
       title: "웃음 한 스푼",
       content: "오늘 하루 미소지었던 순간은 언제인가요?",
       likeCount: 1,
@@ -16,6 +17,7 @@ const GoodNews = () => {
       image: "이미지 경로",
     },
     {
+      id: 2,
       title: "웃음 한 스푼",
       content: "오늘 하루 미소지었던 순간은 언제인가요?",
       likeCount: 1,
@@ -23,6 +25,55 @@ const GoodNews = () => {
       image: "이미지 경로",
     },
     {
+      id: 3,
+      title: "웃음 한 스푼",
+      content: "오늘 하루 미소지었던 순간은 언제인가요?",
+      likeCount: 2,
+      liked: true,
+      image: "이미지 경로",
+    },
+    {
+      id: 4,
+      title: "웃음 한 스푼",
+      content: "오늘 하루 미소지었던 순간은 언제인가요?",
+      likeCount: 1,
+      liked: true,
+      image: "이미지 경로",
+    },
+    {
+      id: 5,
+      title: "웃음 한 스푼",
+      content: "오늘 하루 미소지었던 순간은 언제인가요?",
+      likeCount: 1,
+      liked: false,
+      image: "이미지 경로",
+    },
+    {
+      id: 6,
+      title: "웃음 한 스푼",
+      content: "오늘 하루 미소지었던 순간은 언제인가요?",
+      likeCount: 2,
+      liked: true,
+      image: "이미지 경로",
+    },
+    {
+      id: 7,
+      title: "웃음 한 스푼",
+      content: "오늘 하루 미소지었던 순간은 언제인가요?",
+      likeCount: 1,
+      liked: true,
+      image: "이미지 경로",
+    },
+    {
+      id: 8,
+      title: "웃음 한 스푼",
+      content: "오늘 하루 미소지었던 순간은 언제인가요?",
+      likeCount: 1,
+      liked: false,
+      image: "이미지 경로",
+    },
+    {
+      id: 9,
       title: "웃음 한 스푼",
       content: "오늘 하루 미소지었던 순간은 언제인가요?",
       likeCount: 2,
@@ -48,30 +99,7 @@ const GoodNews = () => {
           onPress={() => setSort("my")}
         />
       </View>
-      {sort === "my" && <MakePlace />}
-      <PlaceList placeList={placeList} />
-    </View>
-  );
-};
-
-const MakePlace = () => {
-  return (
-    <View style={styles.makePlaceContainer}>
-      <Text style={styles.makePlaceText}>함께 희소식을 공유할</Text>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          marginBottom: "15",
-        }}
-      >
-        <Text style={styles.makePlaceText}>플레이스를 만들어주세요</Text>
-        <Image
-          style={{ width: "20", height: "14" }}
-          source={require("../../../assets/icon.png")}
-        />
-      </View>
-      <SquareButton text="플레이스 만들기" width={117} height={28} />
+      <PlaceList placeList={placeList} sort={sort} />
     </View>
   );
 };
@@ -84,6 +112,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.White,
     paddingHorizontal: "18",
     paddingTop: "24",
+    paddingBottom: 90,
   },
   mainTitle: {
     marginBottom: "17",
@@ -95,18 +124,5 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     gap: "6",
-  },
-
-  // MakePlace 컴포넌트
-  makePlaceContainer: {
-    alignItems: "center",
-    marginTop: "24",
-  },
-  makePlaceText: {
-    fontFamily: "FontL",
-    fontSize: "17",
-    fontWeight: "400",
-    lineHeight: "22",
-    letterSpacing: "-0.408",
   },
 });

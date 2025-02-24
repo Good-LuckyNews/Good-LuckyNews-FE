@@ -1,24 +1,39 @@
 import React from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { COLORS } from "../../theme/color";
 import PropTypes from "prop-types";
+import MakePlace from "./MakePlace";
 
-const PlaceList = ({ placeList }) => {
+const PlaceList = ({ placeList, sort }) => {
   return (
     <View style={styles.container}>
-      {placeList.map((place, idx) => (
-        <View style={styles.placeContainer} key={idx}>
-          <View>
-            <Text style={styles.placeTitle}>{place.title}</Text>
-            <Text style={styles.placeContent}>{place.content}</Text>
-            <LikeComponent likeCount={place.likeCount} liked={place.liked} />
+      <FlatList
+        data={placeList}
+        ListHeaderComponent={sort === "my" && <MakePlace />}
+        renderItem={({ item }) => (
+          <View style={styles.placeContainer}>
+            <View>
+              <Text style={styles.placeTitle}>{item.title}</Text>
+              <Text style={styles.placeContent}>{item.content}</Text>
+              <LikeComponent likeCount={item.likeCount} liked={item.liked} />
+            </View>
+            <Image
+              source={require("../../../assets/icon.png")}
+              style={styles.placeImage}
+            />
           </View>
-          <Image
-            source={require("../../../assets/icon.png")}
-            style={styles.placeImage}
-          />
-        </View>
-      ))}
+        )}
+        keyExtractor={(item) => item.id.toString()}
+        initialNumToRender={20}
+        maxToRenderPerBatch={20}
+      />
     </View>
   );
 };
@@ -42,6 +57,14 @@ const LikeComponent = ({
   );
 };
 
+const DeleteButton = (idx) => {
+  return (
+    <Pressable style={styles.deleteContainer}>
+      <Text style={styles.deleteText}>삭제</Text>
+    </Pressable>
+  );
+};
+
 LikeComponent.propTypes = {
   likeCount: PropTypes.number,
   liked: PropTypes.bool,
@@ -53,12 +76,11 @@ export default PlaceList;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: "24",
-    gap: "22",
   },
   placeContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginTop: 22,
     paddingBottom: "17",
     borderBottomColor: "#D9D9D9",
     borderBottomWidth: "1",
@@ -98,6 +120,31 @@ const styles = StyleSheet.create({
   likeCount: {
     fontFamily: "FontM",
     color: "#8A8888",
+    fontSize: "13",
+    fontWeight: "400",
+    lineHeight: "22",
+    letterSpacing: "-0.408",
+  },
+
+  // DeleteButton 컴포넌트
+  deleteContainer: {
+    width: "74",
+    height: "93",
+    backgroundColor: "#FF5B5B",
+    marginTop: 22,
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "flex-end",
+    position: "absolute", // 숨겨진 상태로 배치
+    top: 0,
+    bottom: 0,
+    right: 0, // 오른쪽 끝에 배치
+    borderRadius: 5,
+  },
+  deleteText: {
+    fontFamily: "FontM",
+    color: COLORS.White,
+    fontSize: "17",
     fontWeight: "400",
     lineHeight: "22",
     letterSpacing: "-0.408",
