@@ -1,19 +1,25 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../theme/color";
 
-const NextStepButton = ({ text = "완료", width, clicked }) => {
+const NextStepButton = ({
+  text = "완료",
+  width,
+  clicked = false,
+  onPress = () => {},
+}) => {
   return (
-    <View
+    <Pressable
       style={[
         styles.container,
         clicked && styles.clickedContainer,
         { width: width },
       ]}
+      onPress={onPress}
     >
       <Text style={[styles.text, clicked && styles.clickedText]}>{text}</Text>
-    </View>
+    </Pressable>
   );
 };
 
@@ -21,6 +27,7 @@ NextStepButton.propTypes = {
   text: PropTypes.string,
   width: PropTypes.number.isRequired,
   clicked: PropTypes.bool,
+  onPress: PropTypes.func,
 };
 
 export default NextStepButton;
