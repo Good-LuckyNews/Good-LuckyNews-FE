@@ -8,6 +8,7 @@ const NextStepButton = ({
   width,
   clicked = false,
   onPress = () => {},
+  style = {},
 }) => {
   return (
     <Pressable
@@ -15,6 +16,7 @@ const NextStepButton = ({
         styles.container,
         clicked && styles.clickedContainer,
         { width: width },
+        style,
       ]}
       onPress={onPress}
     >
@@ -28,6 +30,7 @@ NextStepButton.propTypes = {
   width: PropTypes.number.isRequired,
   clicked: PropTypes.bool,
   onPress: PropTypes.func,
+  style: PropTypes.object,
 };
 
 export default NextStepButton;
