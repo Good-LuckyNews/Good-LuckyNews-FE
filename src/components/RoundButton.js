@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 15,
-    backgroundColor: COLORS.White,
+    backgroundColor: COLORS.LightGray,
   },
   clickedContainer: {
     backgroundColor: COLORS.MainYellow,
