@@ -1,41 +1,9 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
-import { Image, Pressable } from "react-native";
-import {
-  AlarmActiveIcon,
-  AlarmInActiveIcon,
-  SearchActiveIcon,
-  SearchInActiveIcon,
-} from "../../utils/icons";
 import { COLORS } from "../../theme/color";
-import Login from "../../screens/Login/Login";
-import { SignUp } from "../../screens";
+import { Login, PrivacyConsent, SignUp, TermsOfService } from "../../screens";
 
 const Stack = createStackNavigator();
-
-const HeaderRight = ({ focused }) => {
-  // const navigation = useNavigation();
-
-  return (
-    <React.Fragment>
-      {/* 검색 버튼 */}
-      <Pressable
-        // onPress={() => navigation.navigate('SearchScreen')}
-        style={{ marginRight: 7 }}
-      >
-        {focused ? <SearchActiveIcon /> : <SearchInActiveIcon />}
-      </Pressable>
-
-      {/* 알림 버튼 */}
-      <Pressable
-      // onPress={() => navigation.navigate('NotificationScreen')}
-      // style={{ marginRight: 27 }}
-      >
-        {focused ? <AlarmActiveIcon /> : <AlarmInActiveIcon />}
-      </Pressable>
-    </React.Fragment>
-  );
-};
 
 const LoginStack = () => {
   return (
@@ -62,6 +30,16 @@ const LoginStack = () => {
         name="SignUp"
         component={SignUp}
         options={{ headerTitle: "회원가입" }}
+      />
+      <Stack.Screen
+        name="PrivacyConsent"
+        component={PrivacyConsent}
+        options={{ headerTitle: "개인정보 수집/이용 동의" }}
+      />
+      <Stack.Screen
+        name="TermsOfService"
+        component={TermsOfService}
+        options={{ headerTitle: "서비스 이용 약관" }}
       />
     </Stack.Navigator>
   );

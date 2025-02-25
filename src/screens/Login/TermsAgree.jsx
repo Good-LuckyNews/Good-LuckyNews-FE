@@ -16,6 +16,11 @@ const TermsAgree = ({ termsAgree, setTermsAgree, allChecked }) => {
     }
   };
 
+  const handleDetail = (idx) => {
+    if (idx === 1) navigation.navigate("PrivacyConsent");
+    else if (idx === 2) navigation.navigate("TermsOfService");
+  };
+
   const handleAgree = (idx) =>
     setTermsAgree((prev) =>
       prev.map((item) =>
@@ -55,7 +60,10 @@ const TermsAgree = ({ termsAgree, setTermsAgree, allChecked }) => {
               </Text>
             </Pressable>
             {term.detail && (
-              <Pressable onPress={() => {}} style={styles.detailButton}>
+              <Pressable
+                onPress={() => handleDetail(term.idx)}
+                style={styles.detailButton}
+              >
                 <Text style={styles.detailText}>보기</Text>
               </Pressable>
             )}
