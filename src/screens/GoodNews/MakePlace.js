@@ -21,12 +21,12 @@ const MakePlace = () => {
       <View style={{ paddingHorizontal: 12 }}>
         <View style={styles.uploadImageContainer}>
           <Image
-            source={require("../../../assets/images/makePlace/default_place_image.png")}
+            source={require("../../../assets/images/uploadImage/default_place_image.png")}
             style={styles.imagePreview}
           />
           <Pressable onPress={() => console.log("upload image")}>
             <Image
-              source={require("../../../assets/images/makePlace/upload_place_image.png")}
+              source={require("../../../assets/images/uploadImage/upload_image_button.png")}
               style={styles.uploadImageButton}
             />
           </Pressable>

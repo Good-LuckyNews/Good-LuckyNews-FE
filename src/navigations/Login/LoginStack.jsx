@@ -45,7 +45,6 @@ const LoginStack = () => {
         headerTintColor: COLORS.Black,
         cardStyle: { backgroundColor: COLORS.White },
         headerBackTitle: "",
-        headerRight: ({ focused }) => <HeaderRight focused={focused} />,
         headerLeftContainerStyle: {
           paddingLeft: 10,
         },
@@ -62,12 +61,7 @@ const LoginStack = () => {
       <Stack.Screen
         name="SignUp"
         component={SignUp}
-        options={{
-          headerTitle: "회원가입",
-          headerTitleStyle: {
-            fontFamily: "FontM",
-          },
-        }}
+        options={{ headerTitle: "회원가입" }}
       />
     </Stack.Navigator>
   );

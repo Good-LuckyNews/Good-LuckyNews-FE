@@ -33,38 +33,38 @@ const Login = () => {
         backgroundColor={COLORS.MainYellow}
         onHide={() => setAlert(false)}
       />
-      <Image
-        source={require("../../../assets/images/logo/logo.png")}
-        style={styles.logoImage}
-      />
-      <Image
-        source={require("../../../assets/images/logo/logo_text.png")}
-        style={styles.logoText}
-      />
 
-      <TextInput
-        placeholder="이메일"
-        value={email}
-        onChangeText={setEmail}
-        style={[styles.inputText, styles.emailInputText]}
-      />
-      <TextInput
-        placeholder="비밀번호"
-        value={password}
-        onChangeText={setPassword}
-        style={[styles.inputText, styles.passwordInputText]}
-        secureTextEntry={true}
-      />
-
-      <Pressable style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>로그인</Text>
-      </Pressable>
-
-      <View style={{ flexDirection: "row", gap: 2 }}>
-        <Text style={styles.signUpPromptText}>아직 회원이 아니신가요?</Text>
-        <Pressable onPress={() => navigation.navigate("SignUp")}>
-          <Text style={styles.signUpButton}>회원가입하기</Text>
+      <View style={{ marginTop: -30, alignItems: "center" }}>
+        <Image
+          source={require("../../../assets/images/logo/logo.png")}
+          style={styles.logoImage}
+        />
+        <Image
+          source={require("../../../assets/images/logo/logo_text.png")}
+          style={styles.logoText}
+        />
+        <TextInput
+          placeholder="이메일"
+          value={email}
+          onChangeText={setEmail}
+          style={[styles.inputText, styles.emailInputText]}
+        />
+        <TextInput
+          placeholder="비밀번호"
+          value={password}
+          onChangeText={setPassword}
+          style={[styles.inputText, styles.passwordInputText]}
+          secureTextEntry={true}
+        />
+        <Pressable style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.loginButtonText}>로그인</Text>
         </Pressable>
+        <View style={{ flexDirection: "row", gap: 2 }}>
+          <Text style={styles.signUpPromptText}>아직 회원이 아니신가요?</Text>
+          <Pressable onPress={() => navigation.navigate("SignUp")}>
+            <Text style={styles.signUpButton}>회원가입하기</Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    marginTop: 55,
   },
   logoImage: {
     width: 90,
