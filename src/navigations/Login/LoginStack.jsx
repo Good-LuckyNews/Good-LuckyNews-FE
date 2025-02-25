@@ -45,12 +45,6 @@ const LoginStack = () => {
         headerTintColor: COLORS.Black,
         cardStyle: { backgroundColor: COLORS.White },
         headerBackTitle: "",
-        headerTitle: () => (
-          <Image
-            source={require("../../../assets/images/logo/logo_top.png")}
-            style={{ width: 98, height: 34, resizeMode: "contain" }}
-          />
-        ),
         headerRight: ({ focused }) => <HeaderRight focused={focused} />,
         headerLeftContainerStyle: {
           paddingLeft: 10,
@@ -60,8 +54,21 @@ const LoginStack = () => {
         },
       }}
     >
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="SignUp" component={SignUp} />
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SignUp"
+        component={SignUp}
+        options={{
+          headerTitle: "회원가입",
+          headerTitleStyle: {
+            fontFamily: "FontM",
+          },
+        }}
+      />
     </Stack.Navigator>
   );
 };
