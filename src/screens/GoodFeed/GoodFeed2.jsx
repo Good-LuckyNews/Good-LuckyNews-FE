@@ -1,10 +1,10 @@
 import React from 'react'
 import { Text } from 'react-native'
 
-const GoodFeed = () => {
+const GoodFeed2 = () => {
   return (
-    <Text>GoodFeed</Text>
+    <Text>GoodFeed2</Text>
   )
 }
 
-export default GoodFeed
+export default GoodFeed2

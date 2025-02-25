@@ -1,6 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import { Home, Home2 } from '../../screens';
+import { GoodFeed, GoodFeed2 } from '../../screens';
 import { Image, Pressable } from 'react-native';
 import { AlarmActiveIcon, AlarmInActiveIcon, SearchActiveIcon, SearchInActiveIcon } from '../../utils/icons';
 import { COLORS } from '../../theme/color';
@@ -31,7 +31,7 @@ const HeaderRight = ({ focused }) => {
     );
 };
 
-const HomeStack = () => {
+const GoodFeedStack = () => {
     return (
         <Stack.Navigator
             screenOptions={{
@@ -56,10 +56,10 @@ const HomeStack = () => {
                 }
             }}
         >
-            <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen name="Home2" component={Home2} />
+            <Stack.Screen name="GoodFeed" component={GoodFeed} />
+            <Stack.Screen name="GoodFeed2" component={GoodFeed2} />
         </Stack.Navigator>
     );
 };
 
-export default HomeStack;
+export default GoodFeedStack;
