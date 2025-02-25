@@ -5,7 +5,7 @@ import { COLORS } from '../../theme/color';
 import FeedList from '../../components/Feed/FeedList';
 import CategoryButton from '../../components/CategoryButton/CategoryButton';
 import { theme } from '../../theme/theme';
-import { Alert } from '../../components';
+import { CustomAlert } from '../../components';
 
 const GoodFeed = () => {
   const [posts, setPosts] = useState([
@@ -34,7 +34,7 @@ const GoodFeed = () => {
 
   return (
     <Container>
-      <Alert
+      <CustomAlert
         message={toastMessage}
         visible={toastVisible}
         backgroundColor={COLORS.MainYellow}
@@ -83,7 +83,7 @@ const InnerContainer = styled.View`
 
 const StyledText = styled.Text`
   font-size: 22px;
-  font-family: ${(props) => theme.fonts.medium};
+  font-family: ${(props) => props.theme.fonts.medium};
   padding-bottom: 20px;
 `;
 

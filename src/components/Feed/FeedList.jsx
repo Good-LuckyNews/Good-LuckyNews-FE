@@ -64,14 +64,14 @@ const CategoryArea = styled.View`
 const FeedListTitle = styled.Text`
     align-self: flex-start;
     font-size: 16px;
-    font-family: ${(props) => theme.fonts.medium};
+    font-family: ${(props) => props.theme.fonts.medium};
     padding: 0 12px;
 `;
 
 const FeedListDate = styled.Text`
     align-self: flex-start;
     font-size: 13px;
-    font-family: ${(props) => theme.fonts.light};
+    font-family: ${(props) => props.theme.fonts.light};
     padding: 8px 12px 0 12px;
     color: #5B5B5B;
 `;

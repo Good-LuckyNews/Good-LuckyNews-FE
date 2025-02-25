@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
-import { Alert, Feed } from '../../components';
+import { CustomAlert, Feed } from '../../components';
 import { useRoute } from '@react-navigation/native';
 import { COLORS } from '../../theme/color';
 
@@ -30,7 +30,7 @@ const GoodFeedDetail = () => {
 
   return (
     <Container>
-      <Alert
+      <CustomAlert
         message={toastMessage}
         visible={toastVisible}
         backgroundColor={COLORS.MainYellow}
