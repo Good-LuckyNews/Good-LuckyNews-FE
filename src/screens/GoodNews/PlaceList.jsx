@@ -10,11 +10,35 @@ import {
 import { COLORS } from "../../theme/color";
 import PropTypes from "prop-types";
 import MakePlaceButton from "./MakePlaceButton";
+import { SwipeListView } from "react-native-swipe-list-view";
 
 const PlaceList = ({ placeList, sort }) => {
   return (
     <View style={styles.container}>
-      <FlatList
+      {sort === "my" && <MakePlaceButton />}
+      <SwipeListView
+        data={placeList}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.placeContainer}>
+            <View>
+              <Text style={styles.placeTitle}>{item.title}</Text>
+              <Text style={styles.placeContent}>{item.content}</Text>
+              <LikeComponent likeCount={item.likeCount} liked={item.liked} />
+            </View>
+            <Image
+              source={require("../../../assets/icon.png")}
+              style={styles.placeImage}
+            />
+          </View>
+        )}
+        render
+        renderHiddenItem={({ item }) => <DeleteButton idx={item.id} />}
+        rightOpenValue={-82}
+        stopLeftSwipe={15}
+        stopRightSwipe={-100}
+      />
+      {/* <FlatList
         data={placeList}
         ListHeaderComponent={sort === "my" && <MakePlaceButton />}
         renderItem={({ item }) => (
@@ -33,7 +57,7 @@ const PlaceList = ({ placeList, sort }) => {
         keyExtractor={(item) => item.id.toString()}
         initialNumToRender={20}
         maxToRenderPerBatch={20}
-      />
+      /> */}
     </View>
   );
 };
@@ -78,12 +102,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   placeContainer: {
+    height: 93,
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 22,
+    marginTop: "24",
     paddingBottom: "17",
     borderBottomColor: "#D9D9D9",
     borderBottomWidth: "1",
+    backgroundColor: COLORS.White,
   },
   placeTitle: {
     marginBottom: "6",
@@ -129,16 +155,12 @@ const styles = StyleSheet.create({
   // DeleteButton 컴포넌트
   deleteContainer: {
     width: "74",
-    height: "93",
+    height: 93,
     backgroundColor: "#FF5B5B",
-    marginTop: 22,
+    marginTop: 24,
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "flex-end",
-    position: "absolute", // 숨겨진 상태로 배치
-    top: 0,
-    bottom: 0,
-    right: 0, // 오른쪽 끝에 배치
     borderRadius: 5,
   },
   deleteText: {
