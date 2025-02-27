@@ -8,11 +8,11 @@ import MyCommentedNews from './MyCommentedNews';
 
 const shadowStyle = StyleSheet.create({
     shadow: {
-        shadowColor: 'rgba(0, 0, 0)',
+        shadowColor: 'rgba(0, 0, 0, 0.38)',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 4, // 그림자를 넣긴했지만 잘 보이진 않는 것 같음
+        elevation: 4,
     },
 });
 
@@ -36,12 +36,12 @@ const MyCustomTopTabs = () => {
     const [selectedTab, setSelectedTab] = useState(0);
 
     const renderComponent = () => {
-        // switch (selectedTab) {
-        //     case 0: return <Scrap />;
-        //     case 1: return <MyNews />;
-        //     case 2: return <MyCommentedNews />;
-        //     default: return null;
-        // }
+        switch (selectedTab) {
+            case 0: return <Scrap />;
+            case 1: return <MyNews />;
+            case 2: return <MyCommentedNews />;
+            default: return null;
+        }
     }
 
     return (

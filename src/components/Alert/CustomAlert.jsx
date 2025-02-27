@@ -22,9 +22,11 @@ const ToastContainer = styled(Animated.View)`
 const ToastText = styled.Text`
   color: ${COLORS.Black};
   font-weight: 400;
+  font-size: 13px;
+  font-family: ${(props) => props.theme.fonts.medium};
 `;
 
-const Alert = ({ message, visible, duration = 2000, onHide, backgroundColor }) => {
+const CustomAlert = ({ message, visible, duration =1500, onHide, backgroundColor }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
@@ -33,7 +35,6 @@ const Alert = ({ message, visible, duration = 2000, onHide, backgroundColor }) =
                 toValue: 1,
                 duration: 300,
                 useNativeDriver: true,
-
             }).start();
 
             setTimeout(() => {
@@ -60,7 +61,7 @@ const Alert = ({ message, visible, duration = 2000, onHide, backgroundColor }) =
     )
 }
 
-Alert.propTypes = {
+CustomAlert.propTypes = {
     message: PropTypes.string.isRequired,
     visible: PropTypes.bool.isRequired,
     duration: PropTypes.number,
@@ -68,4 +69,4 @@ Alert.propTypes = {
     onHide: PropTypes.func.isRequired,
 };
 
-export default Alert
+export default CustomAlert
