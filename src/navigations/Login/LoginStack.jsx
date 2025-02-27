@@ -1,7 +1,14 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { COLORS } from "../../theme/color";
-import { Login, PrivacyConsent, SignUp, TermsOfService } from "../../screens";
+import {
+  Login,
+  PrivacyConsent,
+  SignUp,
+  SignUpComplete,
+  SignUpPreference,
+  TermsOfService,
+} from "../../screens";
 
 const Stack = createStackNavigator();
 
@@ -40,6 +47,16 @@ const LoginStack = () => {
         name="TermsOfService"
         component={TermsOfService}
         options={{ headerTitle: "서비스 이용 약관" }}
+      />
+      <Stack.Screen
+        name="SignUpPreference"
+        component={SignUpPreference}
+        options={{ headerTitle: "회원가입" }}
+      />
+      <Stack.Screen
+        name="SignUpComplete"
+        component={SignUpComplete}
+        options={{ headerTitle: "회원가입", headerLeft: () => null }}
       />
     </Stack.Navigator>
   );

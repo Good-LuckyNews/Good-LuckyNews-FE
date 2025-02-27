@@ -65,7 +65,7 @@ const SignUp = () => {
     if (!username && !email && !password && !passwordCheck) {
       setAlert("필수 입력 항목을 모두 작성해주세요!");
     }
-    // 페이지 이동
+    navigation.navigate("SignUpPreference");
   };
 
   return (
