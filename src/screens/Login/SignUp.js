@@ -8,8 +8,7 @@ import {
   Pressable,
 } from "react-native";
 import { COLORS } from "../../theme/color";
-import Alert from "../../components/Alert/Alert";
-import { NextStepButton } from "../../components";
+import { CustomAlert, NextStepButton } from "../../components";
 import TermsAgree from "./TermsAgree";
 import { useNavigation } from "@react-navigation/native";
 
@@ -70,7 +69,7 @@ const SignUp = () => {
 
   return (
     <View>
-      <Alert
+      <CustomAlert
         message={alert}
         visible={!!alert}
         backgroundColor={COLORS.MainYellow}

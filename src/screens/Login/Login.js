@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 import { COLORS } from "../../theme/color";
-import Alert from "../../components/Alert/Alert";
+import { CustomAlert } from "../../components";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -27,7 +27,7 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
-      <Alert
+      <CustomAlert
         message="이메일과 비밀번호를 정확히 입력해주세요!"
         visible={alert}
         backgroundColor={COLORS.MainYellow}

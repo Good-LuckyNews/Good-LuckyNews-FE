@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { NextStepButton, RoundButton } from "../../components";
+import { CustomAlert, NextStepButton, RoundButton } from "../../components";
 import { COLORS } from "../../theme/color";
-import Alert from "../../components/Alert/Alert";
 import { useNavigation } from "@react-navigation/native";
 
 const SignUpPreference = () => {
@@ -21,7 +20,7 @@ const SignUpPreference = () => {
 
   return (
     <View>
-      <Alert
+      <CustomAlert
         message="필수 입력 항목을 모두 작성해주세요!"
         visible={alert}
         backgroundColor={COLORS.MainYellow}
