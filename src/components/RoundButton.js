@@ -3,13 +3,20 @@ import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../theme/color";
 
-const RoundButton = ({ text, width, clicked = false, onPress = () => {} }) => {
+const RoundButton = ({
+  text,
+  width,
+  clicked = false,
+  onPress = () => {},
+  style,
+}) => {
   return (
     <Pressable
       style={[
         styles.container,
         clicked && styles.clickedContainer,
-        { width: width },
+        width && { width: width },
+        style,
       ]}
       onPress={onPress}
     >
@@ -20,7 +27,7 @@ const RoundButton = ({ text, width, clicked = false, onPress = () => {} }) => {
 
 RoundButton.propTypes = {
   text: PropTypes.string.isRequired,
-  width: PropTypes.number.isRequired,
+  width: PropTypes.number,
   clicked: PropTypes.bool,
   onPress: PropTypes.func,
 };
