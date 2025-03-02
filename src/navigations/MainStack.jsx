@@ -1,6 +1,6 @@
-import { createStackNavigator } from "@react-navigation/stack";
-import React from "react";
-import MainTab from "./MainTab";
+import { createStackNavigator } from '@react-navigation/stack';
+import React from 'react';
+import MainTab from './MainTab';
 import LoginStack from "./Login/LoginStack";
 
 const Stack = createStackNavigator();

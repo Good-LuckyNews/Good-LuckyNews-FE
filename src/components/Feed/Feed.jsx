@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 import { LinkIcon } from "../../utils/icons";
-// import Slider from '@react-native-community/slider';
+import Slider from '@react-native-community/slider';
 import { COLORS } from "../../theme/color";
 import { useFocusEffect } from "@react-navigation/native";
 import { theme } from "../../theme/theme";

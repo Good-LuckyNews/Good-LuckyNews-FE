@@ -1,6 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import { GoodFeedDetail, MyPage, Notification, ProfileEdit } from '../../screens';
+import { Home, Notification } from '../../screens';
 import { Image, Pressable } from 'react-native';
 import { AlarmActiveIcon, AlarmInActiveIcon, SearchActiveIcon, SearchInActiveIcon } from '../../utils/icons';
 import { COLORS } from '../../theme/color';
@@ -31,7 +31,7 @@ const HeaderRight = ({ focused }) => {
     );
 };
 
-const MyPageStack = () => {
+const HomeStack = () => {
     return (
         <Stack.Navigator
             screenOptions={{
@@ -56,12 +56,10 @@ const MyPageStack = () => {
                 }
             }}
         >
-            <Stack.Screen name="MyPage" component={MyPage} />
-            <Stack.Screen name="ProfileEdit" component={ProfileEdit} />
-            <Stack.Screen name="GoodFeedDetail" component={GoodFeedDetail} />
+            <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name='Notification' component={Notification} />
         </Stack.Navigator>
     );
 };
 
-export default MyPageStack;
+export default HomeStack;

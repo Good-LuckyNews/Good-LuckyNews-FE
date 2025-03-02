@@ -3,12 +3,17 @@ import styled from 'styled-components/native';
 import { CommentIcon, HeartActiveIcon, HeartInActiveIcon } from '../../utils/icons';
 import { COLORS } from '../../theme/color';
 import { Pressable } from 'react-native';
+// import * as Notifications from 'expo-notifications';
 
 const NewsList = ({ item }) => {
-    const [isHearted, setIsHearted] = useState(true);
+    const [isHearted, setIsHearted] = useState(false);
 
-    const toggleHeart = () => {
+    const toggleHeart = async  () => {
         setIsHearted(!isHearted);
+
+        if (!isHearted) {
+            await sendLikeNotification();
+        }
     };
 
     return (
@@ -43,6 +48,20 @@ const NewsList = ({ item }) => {
             </NewsListInnerContainer>
         </NewsListContainer>
     )
+}
+
+async function sendLikeNotification() {
+    await Notifications.scheduleNotificationAsync({
+        content: {
+            title: "웃음 한 스푼 😊",
+            body: "희소식에 새로운 좋아요를 받았어요! 🙂",
+            sound: 'default',
+            badge: 1,
+        },
+        trigger: null, // 즉시 발송
+    });
+
+    Alert.alert("푸시 알림 전송됨", "좋아요 알림이 전송되었습니다!");
 }
 
 const NewsListContainer = styled.View`
