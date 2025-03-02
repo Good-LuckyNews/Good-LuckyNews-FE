@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, Platform, Alert, FlatList, Image } from 'react-native';
-import * as Notifications from 'expo-notifications';
-import * as Permissions from 'expo-permissions';
+// import * as Notifications from 'expo-notifications';
+// import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 import { useNavigation } from '@react-navigation/native';
 import styled from 'styled-components/native';
 import { COLORS } from '../../theme/color';
 
 // 알림 핸들러 설정
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
-    }),
-});
+// Notifications.setNotificationHandler({
+//     handleNotification: async () => ({
+//         shouldShowAlert: true,
+//         shouldPlaySound: true,
+//         shouldSetBadge: true,
+//     }),
+// });
 
 export default function Notification() {
     const navigation = useNavigation();

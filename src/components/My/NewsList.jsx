@@ -3,7 +3,7 @@ import styled from 'styled-components/native';
 import { CommentIcon, HeartActiveIcon, HeartInActiveIcon } from '../../utils/icons';
 import { COLORS } from '../../theme/color';
 import { Pressable } from 'react-native';
-import * as Notifications from 'expo-notifications';
+// import * as Notifications from 'expo-notifications';
 
 const NewsList = ({ item }) => {
     const [isHearted, setIsHearted] = useState(false);

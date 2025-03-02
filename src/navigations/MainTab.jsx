@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { COLORS } from '../theme/color';
 import { AlarmActiveIcon, AlarmInActiveIcon, GoodFeedActiveIcon, GoodFeedInActiveIcon, GoodNewsActiveIcon, GoodNewsInActiveIcon, HomeActiveIcon, HomeInActiveIcon, MyActiveIcon, MyInActiveIcon, SearchActiveIcon, SearchInActiveIcon } from '../utils/icons';
-import { GoodNews } from '../screens';
+import GoodNewsStack from "./GoodNews/GoodNewsStack";
 import GoodFeedStack from './GoodFeed/GoodFeedStack';
 import { Image, Pressable } from 'react-native';
 import { theme } from '../theme/theme';
@@ -110,7 +110,7 @@ const MainTab = () => {
             />
             <Tab.Screen
                 name='희소식'
-                component={GoodNews}
+                component={GoodNewsStack}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabBarIcon focused={focused} ActiveIcon={GoodNewsActiveIcon} InactiveIcon={GoodNewsInActiveIcon} />
