@@ -1,14 +1,15 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import { GoodFeed, GoodFeedDetail } from '../../screens';
+import { GoodFeed, GoodFeedDetail, Notification } from '../../screens';
 import { Image, Pressable } from 'react-native';
 import { AlarmActiveIcon, AlarmInActiveIcon, SearchActiveIcon, SearchInActiveIcon } from '../../utils/icons';
 import { COLORS } from '../../theme/color';
+import { useNavigation } from '@react-navigation/native';
 
 const Stack = createStackNavigator();
 
 const HeaderRight = ({ focused }) => {
-    // const navigation = useNavigation();
+    const navigation = useNavigation();
 
     return (
         <React.Fragment>
@@ -22,8 +23,7 @@ const HeaderRight = ({ focused }) => {
 
             {/* 알림 버튼 */}
             <Pressable
-            // onPress={() => navigation.navigate('NotificationScreen')}
-            // style={{ marginRight: 27 }}
+                onPress={() => navigation.navigate('Notification')}
             >
                 {focused ? <AlarmActiveIcon /> : <AlarmInActiveIcon />}
             </Pressable>
@@ -58,6 +58,7 @@ const GoodFeedStack = () => {
         >
             <Stack.Screen name="GoodFeed" component={GoodFeed} />
             <Stack.Screen name="GoodFeedDetail" component={GoodFeedDetail} />
+            <Stack.Screen name='Notification' component={Notification} />
         </Stack.Navigator>
     );
 };

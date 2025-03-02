@@ -2,12 +2,13 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { COLORS } from '../theme/color';
 import { AlarmActiveIcon, AlarmInActiveIcon, GoodFeedActiveIcon, GoodFeedInActiveIcon, GoodNewsActiveIcon, GoodNewsInActiveIcon, HomeActiveIcon, HomeInActiveIcon, MyActiveIcon, MyInActiveIcon, SearchActiveIcon, SearchInActiveIcon } from '../utils/icons';
-import { GoodFeed, GoodNews, Home, My } from '../screens';
+import { GoodNews } from '../screens';
 import GoodFeedStack from './GoodFeed/GoodFeedStack';
 import { Image, Pressable } from 'react-native';
 import { theme } from '../theme/theme';
-import MyPage from '../screens/MyPage/MyPage';
 import MyPageStack from './MyPage/MyPageStack';
+import { useNavigation } from '@react-navigation/native';
+import HomeStack from './Home/HomeStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,13 +19,13 @@ const TabBarIcon = ({ focused, ActiveIcon, InactiveIcon }) => {
 }
 
 const HeaderRight = ({focused}) => {
-    // const navigation = useNavigation();
+    const navigation = useNavigation();
 
     return (
         <React.Fragment>
             {/* 검색 버튼 */}
             <Pressable
-                // onPress={() => navigation.navigate('SearchScreen')}
+                // onPress={() => navigation.navigate('Search')}
                 style={{ marginRight: 7 }}
             >
                 {focused ? <SearchActiveIcon /> : <SearchInActiveIcon />}
@@ -32,8 +33,7 @@ const HeaderRight = ({focused}) => {
 
             {/* 알림 버튼 */}
             <Pressable
-                // onPress={() => navigation.navigate('NotificationScreen')}
-                // style={{ marginRight: 27 }}
+                onPress={() => navigation.navigate('Notification')}
             >
                 {focused ? <AlarmActiveIcon /> : <AlarmInActiveIcon />}
             </Pressable>
@@ -90,12 +90,12 @@ const MainTab = () => {
         >
             <Tab.Screen
                 name='홈'
-                component={Home}
+                component={HomeStack}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabBarIcon focused={focused} ActiveIcon={HomeActiveIcon} InactiveIcon={HomeInActiveIcon} />
                     ),
-                    // headerShown: false,
+                    headerShown: false,
                 }}
             />
             <Tab.Screen
