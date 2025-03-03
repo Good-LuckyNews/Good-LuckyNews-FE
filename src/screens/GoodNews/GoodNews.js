@@ -116,9 +116,9 @@ const styles = StyleSheet.create({
   mainTitle: {
     marginBottom: "17",
     fontFamily: "FontM",
-    fontSize: "22",
+    fontSize: 22,
     fontWeight: 400,
-    letterSpacing: "-0.408",
+    letterSpacing: -0.408,
   },
   buttonContainer: {
     flexDirection: "row",

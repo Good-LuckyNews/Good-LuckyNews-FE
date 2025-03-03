@@ -22,13 +22,14 @@ const SLIDER_WIDTH = width - 40;
 const MAX_VALUE = 100;
 const MIN_VALUE = 0;
 
-const Feed = ({ text, showToast, paddingTop }) => {
+const Feed = ({ article, showToast, paddingTop }) => {
   const [isScrapped, setIsScrapped] = useState(false);
   const [score, setScore] = useState(50);
   const [savedScore, setSavedScore] = useState(null);
   const [currentScore, setCurrentScore] = useState(score);
   const [showIndicator, setShowIndicator] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
+
   const thumbPosition = useRef(
     new Animated.Value((score / MAX_VALUE) * SLIDER_WIDTH)
   ).current;
@@ -67,8 +68,8 @@ const Feed = ({ text, showToast, paddingTop }) => {
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({ y: 0, animated: true });
-    }
-  }, [text]);
+    };
+  }, [article]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -83,26 +84,28 @@ const Feed = ({ text, showToast, paddingTop }) => {
       paddingTop={paddingTop}
     >
       <YellowInnerContainer>
-        <CategoryButton clicked={true} disabled={true} category="기부" />
+        <CategoryButton clicked={true} disabled={true} category={article.keywords} />
         <YellowInnerContent>
           <BoldText>
-            펫푸드 기업 ‘우리와’, 유기동물 보호단체에 사료 기부
+            {article.title}
           </BoldText>
           <ScrapButton isScrapped={isScrapped} onPress={handleScrap} />
         </YellowInnerContent>
       </YellowInnerContainer>
       <YellowContentContainer>
-        <ImageContainer>
-          <Image
-            source={{
-              uri: "https://s3-alpha-sig.figma.com/img/6e43/9c59/e39a2184abfeffa39e270dc8c99c36ab?Expires=1740960000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=EaxLXgW0jwDgLHR2njlZDEL7~wUi5PxA3t9PSwIf1jKBmt2uL3IAHzkhvMrFHcxuwDoP7Sw8cD-rZlS2ax3y~O3dcfZcRhGu-YIcsRFLbtp4y7cqr0fKUD0DGiwIXCj5CuVGk8BWVU1dycDXOmowIDws6no8u8FjraUnpDZ62VP6z3CZDjQZjOPq9jJ8TKmrK7Wze3StLTgC8xmn6AlpZWS5i5LGhPBMjI6KOjpskQDwIUCdXVGS0~qDBtiKJnLkPZrLvYU9SA9dltCCx~yPCTFxcC9z-A1AZA46lLoK4NfV7NuSHoIGJjVBySbAyJH3ef-LAxjGtDYM2gGG3ayhxg__",
-            }}
-            resizeMode="contain" // cover는 이미지가 많이 잘리지 않을까..
-            style={{ width: "100%", height: "100%" }}
-          />
-        </ImageContainer>
+        {article.image &&
+          <ImageContainer>
+            <Image
+              source={{
+                uri: `${article.image}`,
+              }}
+              resizeMode="contain" // cover는 이미지가 많이 잘리지 않을까..
+              style={{ width: "100%", height: "100%" }}
+            />
+          </ImageContainer>
+        }
         <YellowTextContainer>
-          {text.split("\n").map((line, index) => (
+          {article?.longContent?.split("\n").map((line, index) => (
             <StyledText key={index}>{line}</StyledText>
           ))}
           <TextFooter>
