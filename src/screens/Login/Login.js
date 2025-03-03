@@ -10,28 +10,56 @@ import {
 } from "react-native";
 import { COLORS } from "../../theme/color";
 import { CustomAlert } from "../../components";
+import api from "../../utils/common";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [alert, setAlert] = useState(false);
+  const [alert, setAlert] = useState("");
   const navigation = useNavigation();
 
   const handleLogin = () => {
     if (!email && !password) {
-      setAlert(true);
-      return;
+      setAlert("이메일과 비밀번호를 정확히 입력해주세요!");
+    } else {
+      async function loginAxios() {
+        try {
+          console.log({ email, password });
+          await api.post(
+            `/api/member/login`,
+            { email, password },
+            { headers: { "Content-Type": "application/json" } }
+          );
+          console.log("로그인 완료");
+        } catch (error) {
+          if (error.response) {
+            // 서버 응답이 있는 경우
+            console.error("Response error:", error.response);
+            console.log("\n");
+            console.error("Status code:", error.response.status);
+            console.log("\n");
+            console.error("Error data:", error.response.data);
+          } else if (error.request) {
+            // 요청은 보내졌으나 응답을 받지 못한 경우
+            console.error("Request error:", error.request);
+          } else {
+            // 에러 메시지
+            console.error("Error message:", error.message);
+          }
+          setAlert("로그인에 실패하였습니다.");
+        }
+      }
+      loginAxios();
     }
-    navigation.navigate("SignUp");
   };
 
   return (
     <View style={styles.container}>
       <CustomAlert
-        message="이메일과 비밀번호를 정확히 입력해주세요!"
-        visible={alert}
+        message={alert}
+        visible={!!alert}
         backgroundColor={COLORS.MainYellow}
-        onHide={() => setAlert(false)}
+        onHide={() => setAlert("")}
       />
 
       <View style={{ marginTop: -30, alignItems: "center" }}>
@@ -47,18 +75,23 @@ const Login = () => {
           placeholder="이메일"
           value={email}
           onChangeText={setEmail}
+          autoCapitalize="none"
+          autoCompleteType="off"
           style={[styles.inputText, styles.emailInputText]}
         />
         <TextInput
           placeholder="비밀번호"
           value={password}
           onChangeText={setPassword}
+          autoCapitalize="none"
+          autoCompleteType="off"
           style={[styles.inputText, styles.passwordInputText]}
           secureTextEntry={true}
         />
         <Pressable style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginButtonText}>로그인</Text>
         </Pressable>
+
         <View style={{ flexDirection: "row", gap: 2 }}>
           <Text style={styles.signUpPromptText}>아직 회원이 아니신가요?</Text>
           <Pressable onPress={() => navigation.navigate("SignUp")}>
