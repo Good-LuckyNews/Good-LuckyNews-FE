@@ -16,6 +16,7 @@
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/stack": "^7.1.1",
     "@sekizlipenguen/react-native-popup-confirm-toast": "^1.0.2",
+    "axios": "^1.8.1",
     "expo": "~52.0.33",
     "expo-font": "~13.0.3",
     "expo-image-picker": "^16.0.6",

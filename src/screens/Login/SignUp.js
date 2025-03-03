@@ -58,13 +58,27 @@ const SignUp = () => {
   const [passwordCheck, setPasswordCheck] = useState("");
   const [alert, setAlert] = useState("");
   const [termsAgree, setTermsAgree] = useState(initialTerms);
+  const [bottomButtonclicked, setButtonClicked] = useState(false);
   const allChecked = termsAgree.every((term) => term.checked);
 
   const handleNextButton = () => {
     if (!username && !email && !password && !passwordCheck) {
       setAlert("필수 입력 항목을 모두 작성해주세요!");
+    } else if (!email.includes("@") || !email.includes(".")) {
+      setAlert("이메일 형식이 잘못되었습니다.");
+    } else if (password.length < 8) {
+      setAlert("비밀번호는 8~12자 이내로 작성해주시기 바랍니다.");
+    } else if (password !== passwordCheck) {
+      setAlert("비밀번호가 일치하지 않습니다.");
+    } else {
+      setButtonClicked(true);
+      navigation.navigate("SignUpPreference", {
+        email,
+        password,
+        name: username,
+        profileImage: "",
+      });
     }
-    navigation.navigate("SignUpPreference");
   };
 
   return (
@@ -132,7 +146,12 @@ const SignUp = () => {
           allChecked={allChecked}
         />
 
-        <NextStepButton width={339} text="다음" onPress={handleNextButton} />
+        <NextStepButton
+          width={339}
+          text="다음"
+          clicked={bottomButtonclicked}
+          onPress={handleNextButton}
+        />
       </View>
     </View>
   );
@@ -201,6 +220,8 @@ const StyledTextInput = ({
       value={value}
       onChangeText={onChangeText}
       secureTextEntry={secureTextEntry}
+      autoCapitalize="none"
+      autoCompleteType="off"
     />
   );
 };
