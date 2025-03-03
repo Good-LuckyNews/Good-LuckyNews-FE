@@ -6,11 +6,16 @@ import { Text } from 'react-native';
 import { ProfileIcon } from '../../utils/icons';
 import { theme } from '../../theme/theme';
 import { useNavigation } from '@react-navigation/native';
+import * as SecureStore from 'expo-secure-store';
 
 const MyPage = () => {
     const navigation = useNavigation();
     const [isEditPressed, setIsEditPressed] = useState(false);
     const [isLogoutPressed, setIsLogoutPressed] = useState(false);
+    const removeToken = async () => {
+        await SecureStore.deleteItemAsync('userToken');
+        navigation.replace('LoginStack');
+    };
 
     const profile = {
         name: '김소식',
@@ -29,7 +34,7 @@ const MyPage = () => {
                             <ProfileEditButton
                                 onPressIn={() => setIsEditPressed(true)}
                                 onPressOut={() => setIsEditPressed(false)}
-                                onPress = {() => navigation.navigate("ProfileEdit")}
+                                onPress={() => navigation.navigate("ProfileEdit")}
                                 pressed={isEditPressed}
                             >
                                 <Text
@@ -47,6 +52,7 @@ const MyPage = () => {
                                 onPressIn={() => setIsLogoutPressed(true)}
                                 onPressOut={() => setIsLogoutPressed(false)}
                                 pressed={isLogoutPressed}
+                                onPress = {() => removeToken()}
                             >
                                 <Text
                                     style={{

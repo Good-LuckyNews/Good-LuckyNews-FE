@@ -108,13 +108,13 @@ const styles = StyleSheet.create({
     marginTop: "24",
     paddingBottom: "17",
     borderBottomColor: "#D9D9D9",
-    borderBottomWidth: "1",
+    borderBottomWidth: 1,
     backgroundColor: COLORS.White,
   },
   placeTitle: {
     marginBottom: "6",
     fontFamily: "FontB",
-    fontSize: "16",
+    fontSize: 16,
     fontWeight: "400",
   },
   placeContent: {
@@ -127,8 +127,8 @@ const styles = StyleSheet.create({
     width: "72",
     height: "72",
     borderColor: COLORS.LightGray,
-    borderWidth: "1",
-    borderRadius: "100%",
+    borderWidth: 1,
+    borderRadius: 50,
   },
 
   // LikeComponent
@@ -146,10 +146,10 @@ const styles = StyleSheet.create({
   likeCount: {
     fontFamily: "FontM",
     color: "#8A8888",
-    fontSize: "13",
+    fontSize: 13,
     fontWeight: "400",
     lineHeight: "22",
-    letterSpacing: "-0.408",
+    letterSpacing: -0.408,
   },
 
   // DeleteButton 컴포넌트
@@ -166,9 +166,9 @@ const styles = StyleSheet.create({
   deleteText: {
     fontFamily: "FontM",
     color: COLORS.White,
-    fontSize: "17",
+    fontSize: 17,
     fontWeight: "400",
     lineHeight: "22",
-    letterSpacing: "-0.408",
+    letterSpacing: -0.408,
   },
 });

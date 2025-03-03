@@ -11,6 +11,7 @@ import {
 import { COLORS } from "../../theme/color";
 import { CustomAlert } from "../../components";
 import api from "../../utils/common";
+import * as SecureStore from 'expo-secure-store';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -25,12 +26,15 @@ const Login = () => {
       async function loginAxios() {
         try {
           console.log({ email, password });
-          await api.post(
+          const response = await api.post(
             `/api/member/login`,
             { email, password },
             { headers: { "Content-Type": "application/json" } }
           );
           console.log("로그인 완료");
+          const token = response.data.result;
+          SecureStore.setItemAsync('userToken', token, { keychainAccessible: SecureStore.WHEN_UNLOCKED });
+          navigation.replace('Main');
         } catch (error) {
           if (error.response) {
             // 서버 응답이 있는 경우
