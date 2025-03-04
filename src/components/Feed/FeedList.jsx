@@ -3,29 +3,68 @@ import { Image, Pressable } from 'react-native';
 import styled from 'styled-components/native';
 import CategoryButton from '../CategoryButton/CategoryButton';
 import ScrapButton from '../ScrapButton/ScrapButton';
-import { theme } from '../../theme/theme';
 import { useNavigation } from '@react-navigation/native';
+import * as SecureStore from 'expo-secure-store';
+import { useScrap } from '../../contexts';
+import api from '../../utils/common';
 
 const FeedList = ({ item, showToast }) => {
     const navigation = useNavigation();
-    const [isScrapped, setIsScrapped] = useState(false);
+    const { scrapStatus, toggleScrap } = useScrap();
+    const isScrapped = scrapStatus[item?.id] ?? (item?.likeCount === 1);
 
-    const handleScrap = () => {
-        setIsScrapped(prevState => {
-            const newState = !prevState;
-            showToast(newState ? "긍정 피드를 스크랩했어요!" : "긍정 피드 스크랩을 취소했어요!");
-            return newState;
-        });
+    const imageUrl = item?.image ? item.image : `https://img.freepik.com/premium-vector/no-photo-available-vector-icon-default-image-symbol-picture-coming-soon-web-site-mobile-app_87543-18055.jpg`;
+
+    const handleScrap = async () => {
+        try {
+            const token = await SecureStore.getItemAsync('userToken');
+            if (!token) {
+                console.error("No token found");
+                return;
+            }
+
+            const url = `/article/${item?.id}/like`;
+
+            if (isScrapped) {
+                const response = await api.delete(url, {
+                    headers: {
+                        'Authorization': `${token}`,
+                    },
+                });
+
+                if (response.data.isSuccess) {
+                    showToast("긍정 피드 스크랩을 취소했어요!");
+                    toggleScrap(item?.id, false);
+                } else {
+                    console.error("스크랩 취소 실패:", response.data.message);
+                }
+            } else {
+                const response = await api.post(url, {}, {
+                    headers: {
+                        'Authorization': `${token}`,
+                    },
+                });
+
+                if (response.data.isSuccess) {
+                    showToast("긍정 피드를 스크랩했어요!");
+                    toggleScrap(item?.id, true);
+                } else {
+                    console.error("스크랩 추가 실패:", response.data.message);
+                }
+            }
+        } catch (error) {
+            console.error("Error handling scrap:", error);
+        }
     };
 
     return (
         <FeedListContainer>
             <FeedListInnerContainer>
                 <Pressable onPress={() => navigation.navigate("GoodFeedDetail", { id: item.id })} style={{ width: '100%', display: 'flex' }}>
-                    <Image source={{ uri: 'https://s3-alpha-sig.figma.com/img/6e43/9c59/e39a2184abfeffa39e270dc8c99c36ab?Expires=1740960000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=EaxLXgW0jwDgLHR2njlZDEL7~wUi5PxA3t9PSwIf1jKBmt2uL3IAHzkhvMrFHcxuwDoP7Sw8cD-rZlS2ax3y~O3dcfZcRhGu-YIcsRFLbtp4y7cqr0fKUD0DGiwIXCj5CuVGk8BWVU1dycDXOmowIDws6no8u8FjraUnpDZ62VP6z3CZDjQZjOPq9jJ8TKmrK7Wze3StLTgC8xmn6AlpZWS5i5LGhPBMjI6KOjpskQDwIUCdXVGS0~qDBtiKJnLkPZrLvYU9SA9dltCCx~yPCTFxcC9z-A1AZA46lLoK4NfV7NuSHoIGJjVBySbAyJH3ef-LAxjGtDYM2gGG3ayhxg__' }} style={{ width: '100%', height: 180, borderRadius: 20 }} />
+                    <Image source={{ uri: imageUrl }} style={{ width: '100%', height: 180, borderRadius: 20 }} />
                 </Pressable>
                 <CategoryArea>
-                    <CategoryButton disabled={true} category={item.tag} />
+                    <CategoryButton disabled={true} category={item?.keywords} />
                     <ScrapButton isScrapped={isScrapped} onPress={handleScrap} />
                 </CategoryArea>
                 <Pressable onPress={() => navigation.navigate("GoodFeedDetail", { id: item.id })} style={{ width: '100%', display: 'flex' }}>
