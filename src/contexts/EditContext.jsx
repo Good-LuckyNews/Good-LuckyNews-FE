@@ -4,6 +4,7 @@ const EditingContext = createContext();
 
 export const EditingProvider = ({ children }) => {
   const [editingStatus, setEditingStatus] = useState({});
+  const [scoreStatus, setScoreStatus] = useState({});
 
   const toggleEditing = (articleId, isEditing) => {
     setEditingStatus((prev) => ({
@@ -12,8 +13,15 @@ export const EditingProvider = ({ children }) => {
     }));
   };
 
+  const updateScore = (articleId, score) => {
+    setScoreStatus((prev) => ({
+      ...prev,
+      [articleId]: score,
+    }));
+  };
+
   return (
-    <EditingContext.Provider value={{ editingStatus, toggleEditing }}>
+    <EditingContext.Provider value={{ editingStatus, toggleEditing, scoreStatus, updateScore }}>
       {children}
     </EditingContext.Provider>
   );

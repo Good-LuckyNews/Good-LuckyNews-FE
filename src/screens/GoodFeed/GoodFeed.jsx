@@ -5,8 +5,8 @@ import { COLORS } from '../../theme/color';
 import FeedList from '../../components/Feed/FeedList';
 import CategoryButton from '../../components/CategoryButton/CategoryButton';
 import { CustomAlert } from '../../components';
-import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import api from '../../utils/common';
 
 const GoodFeed = () => {
   const [posts, setPosts] = useState([]);
@@ -23,7 +23,7 @@ const GoodFeed = () => {
       try {
         const token = await SecureStore.getItemAsync('userToken');
         if (token) {
-          const response = await axios.get(`https://draconist.goodluckynews.store/article`, {
+          const response = await api.get(`/article`, {
             headers: {
               'Authorization': `${token}`
             }
@@ -38,8 +38,6 @@ const GoodFeed = () => {
     }
     fetchPost();
   }, []);
-
-  console.log(posts);
 
   const handleShowToast = (message) => {
     setToastMessage(message);

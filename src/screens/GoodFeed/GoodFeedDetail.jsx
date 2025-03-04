@@ -4,8 +4,8 @@ import { CustomAlert, Feed } from '../../components';
 import { useRoute } from '@react-navigation/native';
 import { COLORS } from '../../theme/color';
 import { ActivityIndicator, View } from 'react-native';
-import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import api from '../../utils/common';
 
 const GoodFeedDetail = () => {
   const route = useRoute();
@@ -20,7 +20,7 @@ const GoodFeedDetail = () => {
       try {
         const token = await SecureStore.getItemAsync('userToken');
         if (token) {
-          const response = await axios.get(`https://draconist.goodluckynews.store/article/${id}`, {
+          const response = await api.get(`/article/${id}`, {
             headers: {
               Authorization: `${token}`,
             },

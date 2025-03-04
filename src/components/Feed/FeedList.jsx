@@ -5,8 +5,8 @@ import CategoryButton from '../CategoryButton/CategoryButton';
 import ScrapButton from '../ScrapButton/ScrapButton';
 import { useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
-import axios from 'axios';
 import { useScrap } from '../../contexts';
+import api from '../../utils/common';
 
 const FeedList = ({ item, showToast }) => {
     const navigation = useNavigation();
@@ -23,10 +23,10 @@ const FeedList = ({ item, showToast }) => {
                 return;
             }
 
-            const url = `https://draconist.goodluckynews.store/article/${item?.id}/like`;
+            const url = `/article/${item?.id}/like`;
 
             if (isScrapped) {
-                const response = await axios.delete(url, {
+                const response = await api.delete(url, {
                     headers: {
                         'Authorization': `${token}`,
                     },
@@ -39,7 +39,7 @@ const FeedList = ({ item, showToast }) => {
                     console.error("스크랩 취소 실패:", response.data.message);
                 }
             } else {
-                const response = await axios.post(url, {}, {
+                const response = await api.post(url, {}, {
                     headers: {
                         'Authorization': `${token}`,
                     },

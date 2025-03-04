@@ -18,8 +18,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import { theme } from "../../theme/theme";
 import CategoryButton from "../CategoryButton/CategoryButton";
 import * as SecureStore from 'expo-secure-store';
-import axios from 'axios';
 import { useEditing, useScrap } from "../../contexts";
+import api from "../../utils/common";
 
 const { width } = Dimensions.get("window");
 const SLIDER_WIDTH = width - 40;
@@ -29,11 +29,11 @@ const MIN_VALUE = 0;
 const Feed = ({ article, showToast, paddingTop }) => {
   const { scrapStatus, toggleScrap } = useScrap();
   const isScrapped = scrapStatus[article?.id] ?? (article?.likeCount === 1);
-  const [score, setScore] = useState(article?.degree ? article.degree : 50);
   const [currentScore, setCurrentScore] = useState(score);
   const [showIndicator, setShowIndicator] = useState(false);
-  const { editingStatus, toggleEditing } = useEditing();
+  const { editingStatus, toggleEditing, scoreStatus, updateScore } = useEditing();
   const isEditing = editingStatus[article?.id] ?? (article?.degree ? false : true);
+  const score = scoreStatus[article?.id] ?? (article?.degree ? article.degree : 50);
 
   const thumbPosition = useRef(
     new Animated.Value((score / MAX_VALUE) * SLIDER_WIDTH)
@@ -48,8 +48,8 @@ const Feed = ({ article, showToast, paddingTop }) => {
         console.error("No token found");
         return;
       }
-      const response = await axios.post(
-        `https://draconist.goodluckynews.store/article/${article?.id}/completed`,
+      const response = await api.post(
+        `/article/${article?.id}/completed`,
         { degree: score },
         {
           headers: {
@@ -82,10 +82,10 @@ const Feed = ({ article, showToast, paddingTop }) => {
         return;
       }
   
-      const url = `https://draconist.goodluckynews.store/article/${article?.id}/like`;
+      const url = `/article/${article?.id}/like`;
   
       if (isScrapped) {
-        const response = await axios.delete(url, {
+        const response = await api.delete(url, {
           headers: {
             'Authorization': `${token}`,
           },
@@ -98,7 +98,7 @@ const Feed = ({ article, showToast, paddingTop }) => {
           console.error("스크랩 취소 실패:", response.data.message);
         }
       } else {
-        const response = await axios.post(url, {}, {
+        const response = await api.post(url, {}, {
           headers: {
             'Authorization': `${token}`,
           },
@@ -266,7 +266,7 @@ const Feed = ({ article, showToast, paddingTop }) => {
                 thumbPosition.setValue((value / MAX_VALUE) * SLIDER_WIDTH);
               }}
               onSlidingComplete={(value) => {
-                setScore(value);
+                updateScore(article?.id, value);
                 setShowIndicator(false);
               }}
             />
