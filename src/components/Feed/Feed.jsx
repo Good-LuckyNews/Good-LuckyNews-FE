@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components/native";
-import RoundButton from "../RoundButton";
 import ScrapButton from "../ScrapButton/ScrapButton";
 import {
   Animated,
   Dimensions,
   Image,
+  Linking,
+  Pressable,
   ScrollView,
   Text,
   View,
@@ -16,6 +17,9 @@ import { COLORS } from "../../theme/color";
 import { useFocusEffect } from "@react-navigation/native";
 import { theme } from "../../theme/theme";
 import CategoryButton from "../CategoryButton/CategoryButton";
+import * as SecureStore from 'expo-secure-store';
+import axios from 'axios';
+import { useEditing, useScrap } from "../../contexts";
 
 const { width } = Dimensions.get("window");
 const SLIDER_WIDTH = width - 40;
@@ -23,38 +27,97 @@ const MAX_VALUE = 100;
 const MIN_VALUE = 0;
 
 const Feed = ({ article, showToast, paddingTop }) => {
-  const [isScrapped, setIsScrapped] = useState(false);
-  const [score, setScore] = useState(50);
-  const [savedScore, setSavedScore] = useState(null);
+  const { scrapStatus, toggleScrap } = useScrap();
+  const isScrapped = scrapStatus[article?.id] ?? (article?.likeCount === 1);
+  const [score, setScore] = useState(article?.degree ? article.degree : 50);
   const [currentScore, setCurrentScore] = useState(score);
   const [showIndicator, setShowIndicator] = useState(false);
-  const [isEditing, setIsEditing] = useState(true);
+  const { editingStatus, toggleEditing } = useEditing();
+  const isEditing = editingStatus[article?.id] ?? (article?.degree ? false : true);
 
   const thumbPosition = useRef(
     new Animated.Value((score / MAX_VALUE) * SLIDER_WIDTH)
   ).current;
   const scrollRef = useRef(null);
 
-  const handleComplete = () => {
-    showToast("긍정 평가를 저장했어요!");
-    setSavedScore(score);
-    setIsEditing(false);
+  const handleComplete = async  () => {
+    try {
+
+      const token = await SecureStore.getItemAsync('userToken');
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      const response = await axios.post(
+        `https://draconist.goodluckynews.store/article/${article?.id}/completed`,
+        { degree: score },
+        {
+          headers: {
+            'Authorization': `${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.data.isSuccess) {
+        showToast("긍정 평가를 저장했어요!");
+        toggleEditing(article?.id, false);
+      } else {
+        console.error("API 요청 실패:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error sending degree:", error);
+    }
   };
 
   const handleEdit = () => {
-    setIsEditing(true);
+    toggleEditing(article?.id, true);
   };
 
-  const handleScrap = () => {
-    setIsScrapped((prevState) => {
-      const newState = !prevState;
-      showToast(
-        newState
-          ? "긍정 피드를 스크랩했어요!"
-          : "긍정 피드 스크랩을 취소했어요!"
-      );
-      return newState;
-    });
+  const handleScrap = async  () => {
+    try {
+      const token = await SecureStore.getItemAsync('userToken');
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+  
+      const url = `https://draconist.goodluckynews.store/article/${article?.id}/like`;
+  
+      if (isScrapped) {
+        const response = await axios.delete(url, {
+          headers: {
+            'Authorization': `${token}`,
+          },
+        });
+  
+        if (response.data.isSuccess) {
+          showToast("긍정 피드 스크랩을 취소했어요!");
+          toggleScrap(article?.id, false);
+        } else {
+          console.error("스크랩 취소 실패:", response.data.message);
+        }
+      } else {
+        const response = await axios.post(url, {}, {
+          headers: {
+            'Authorization': `${token}`,
+          },
+        });
+  
+        if (response.data.isSuccess) {
+          showToast("긍정 피드를 스크랩했어요!");
+          toggleScrap(article?.id, true);
+        } else {
+          console.error("스크랩 추가 실패:", response.data.message);
+        }
+      }
+    } catch (error) {
+      console.error("Error handling scrap:", error);
+    }
+  };
+
+  const handleLink = () => {
+    Linking.openURL(`${article.originalLink}`); // 원하는 링크 입력
   };
 
   useFocusEffect(
@@ -77,6 +140,10 @@ const Feed = ({ article, showToast, paddingTop }) => {
     }
   }, []);
 
+  const formattedDate = article?.originalDate?.split('T')[0].replaceAll('-', '.');
+  const originalDomain = article?.originalLink ? new URL(article.originalLink).origin : '';
+  const imageUrl = article?.image?.startsWith('https') ? article.image : `${originalDomain}${article.image}`;
+
   return (
     <YellowContent
       keyboardShouldPersistTaps="handled"
@@ -97,7 +164,7 @@ const Feed = ({ article, showToast, paddingTop }) => {
           <ImageContainer>
             <Image
               source={{
-                uri: `${article.image}`,
+                uri: imageUrl,
               }}
               resizeMode="contain" // cover는 이미지가 많이 잘리지 않을까..
               style={{ width: "100%", height: "100%" }}
@@ -111,9 +178,11 @@ const Feed = ({ article, showToast, paddingTop }) => {
           <TextFooter>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <LinkIcon />
-              <FooterText>출처: 이데일리</FooterText>
+              <Pressable onPress={handleLink}>
+                <FooterText>출처</FooterText>
+              </Pressable>
             </View>
-            <FooterText>2025.02.17</FooterText>
+            <FooterText>{formattedDate}</FooterText>
           </TextFooter>
         </YellowTextContainer>
         <YellowEvalContainer>
