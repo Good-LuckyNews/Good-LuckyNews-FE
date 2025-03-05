@@ -1,23 +1,53 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { COLORS } from '../../theme/color';
 import { Alert, Image, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { ProfileIcon } from '../../utils/icons';
 import * as ImagePicker from "expo-image-picker";
-import { theme } from '../../theme/theme';
 import { CategoryButton, CustomAlert, TimeButton } from '../../components';
 import RoundButton from '../../components/RoundButton';
 import { useNavigation } from '@react-navigation/native';
+import * as SecureStore from 'expo-secure-store';
+import api from '../../utils/common';
 
 const ProfileEdit = () => {
     const navigation = useNavigation();
     const [isCompletePressed, setIsCompletePressed] = useState(false);
+    const [profile, setProfile] = useState([]);
+    const [selectedTime, setSelectedTime] = useState(null);
+    const [selectedHour, setSelectedHour] = useState(null);
+    const [selectedMinute, setSelectedMinute] = useState(null);
     const [imageUri, setImageUri] = useState(null);
-    const [profile, setProfile] = useState({
-        name: '김소식',
-        email: 'example@example.com',
-        imageUri: 'https://s3-alpha-sig.figma.com/img/343e/3803/87084a97e1c341102db218412fd35710?Expires=1740960000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=WMhVKf6AXTRsFfO2mWh5qWkzEaFgtIJ9I8RzH8mSLq6lN2ljMow0k9LI6gjYK7SMgZccrCRCCaG4y7e0wTbbMTloU9yBbEn9HqcxoK61HDwB3xfs~XvJ~sCz~XqaT4i0Xwg1EjYC09b4enmGZhgpsh5QmNxARqm8cRl-NvxQ~PFOW3NoP5LrGKF7ArautSxu6KLC7IxxMtDwoWqYiQw8eOSm73tr9dRCoSUeDnGkP9UHAOlzf0lhi80IORUJSx~-v~uVuVNPZCPDjb5StKtuLzpBhfaMSdJdG55WATF9S-fxK0ebDZ~Mmjm5TvucVkKOLvCHLAHoZoVoDNEZ2vUSZw__',
-    });
+
+    const getProfile = async () => {
+        try {
+            const token = await SecureStore.getItemAsync('userToken');
+            if (token) {
+                const response = await api.get(`/api/member/info`, {
+                    headers: {
+                        'Authorization': `${token}`
+                    }
+                });
+                const profileData = response.data.result;
+                setProfile(profileData);
+                console.log(profileData);
+
+                setSelectedTime(profileData.amPm === 'AM' ? '오전' : '오후');
+                setSelectedHour(profileData.hours);
+                setSelectedMinute(profileData.minutes);
+                setSelectedKeywords(profileData.keywords.split(","));
+                setImageUri(profileData.profileImage || null);
+            } else {
+                console.log('No token found');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        getProfile();
+    }, [])
 
     const [toastVisible, setToastVisible] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
@@ -28,9 +58,6 @@ const ProfileEdit = () => {
     };
 
     const timeText = ["오전", "오후"];
-    const [selectedTime, setSelectedTime] = useState("오후");
-    const [selectedHour, setSelectedHour] = useState(2);
-    const [selectedMinute, setSelectedMinute] = useState(0);
 
     const hours = Array.from({ length: 12 }, (_, i) => i + 1);
     const minutes = Array.from({ length: 12 }, (_, i) => i * 5);
@@ -41,7 +68,7 @@ const ProfileEdit = () => {
         "성과", "영웅", "향상"
     ];
 
-    const [selectedKeywords, setSelectedKeywords] = useState(["감동적", "행복", "웰빙"]);
+    const [selectedKeywords, setSelectedKeywords] = useState([]);
 
     const toggleKeyword = (keyword) => {
         setSelectedKeywords((prevSelected) => {
@@ -73,13 +100,55 @@ const ProfileEdit = () => {
         }
     };
 
-    const handleComplete = () => {
+    const handleComplete = async () => {
         if (!profile.name || selectedKeywords.length < 2 || selectedKeywords.length > 4 ||
             !selectedTime || !selectedHour || !selectedMinute) {
             handleShowToast("필수 입력 항목을 모두 작성해주세요!");
             return;
         }
-        navigation.navigate("MyPage");
+
+        try {
+            const token = await SecureStore.getItemAsync('userToken');
+            if (!token) {
+                console.log('No token found');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("name", profile.name);
+            formData.append("amPm", selectedTime === "오전" ? "AM" : "PM");
+            formData.append("hours", Number(selectedHour));
+            formData.append("minutes", Number(selectedMinute));
+            formData.append("keywords", selectedKeywords.join(","));
+
+            if (imageUri) {
+                const fileName = imageUri.split('/').pop();
+                const fileType = fileName.split('.').pop();
+                const mimeType = `image/${fileType}`;
+
+                formData.append("image", imageUri);
+            } else {
+                formData.append("image", profile.ProfileImage ? profile.ProfileImage : null);
+            }
+
+            const response = await api.put(`/api/member/edit`, formData, {
+                headers: {
+                    'Authorization': `${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (response.data === '회원정보가 수정되었습니다.') {
+                Alert.alert("수정 완료", "프로필이 성공적으로 수정되었습니다.");
+                getProfile();
+                navigation.navigate("MyPage");
+            } else {
+                Alert.alert("수정 실패", response.data.message);
+            }
+        } catch (error) {
+            console.error("수정 요청 실패:", error);
+            Alert.alert("오류", "프로필 수정 중 문제가 발생했습니다.");
+        }
     };
 
     return (
@@ -95,6 +164,8 @@ const ProfileEdit = () => {
                 <InnerContainer
                     contentContainerStyle={{ flexGrow: 1, paddingBottom: 70 }}
                     showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="always"
+                    keyboardDismissMode="on-drag"
                 >
                     <ImageEditContainer>
                         <ImageEditInnerArea>
