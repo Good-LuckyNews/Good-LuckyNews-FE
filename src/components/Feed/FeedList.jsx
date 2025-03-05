@@ -8,12 +8,16 @@ import * as SecureStore from 'expo-secure-store';
 import { useScrap } from '../../contexts';
 import api from '../../utils/common';
 
-const FeedList = ({ item, showToast }) => {
+const FeedList = ({ item, showToast, onScrapChange }) => {
     const navigation = useNavigation();
     const { scrapStatus, toggleScrap } = useScrap();
     const isScrapped = scrapStatus[item?.id] ?? (item?.likeCount === 1);
 
-    const imageUrl = item?.image ? item.image : `https://img.freepik.com/premium-vector/no-photo-available-vector-icon-default-image-symbol-picture-coming-soon-web-site-mobile-app_87543-18055.jpg`;
+    const originalDomain = item?.originalLink ? new URL(item.originalLink).origin : '';
+    const imageUrl = item?.image
+        ? (item.image.startsWith('https') ? item.image : `${originalDomain}${item.image}`)
+        : "https://img.freepik.com/premium-vector/no-photo-available-vector-icon-default-image-symbol-picture-coming-soon-web-site-mobile-app_87543-18055.jpg";
+
 
     const handleScrap = async () => {
         try {
@@ -35,6 +39,9 @@ const FeedList = ({ item, showToast }) => {
                 if (response.data.isSuccess) {
                     showToast("긍정 피드 스크랩을 취소했어요!");
                     toggleScrap(item?.id, false);
+                    if (onScrapChange) {
+                        onScrapChange();
+                    }
                 } else {
                     console.error("스크랩 취소 실패:", response.data.message);
                 }
@@ -48,6 +55,9 @@ const FeedList = ({ item, showToast }) => {
                 if (response.data.isSuccess) {
                     showToast("긍정 피드를 스크랩했어요!");
                     toggleScrap(item?.id, true);
+                    if (onScrapChange) {
+                        onScrapChange();
+                    }
                 } else {
                     console.error("스크랩 추가 실패:", response.data.message);
                 }

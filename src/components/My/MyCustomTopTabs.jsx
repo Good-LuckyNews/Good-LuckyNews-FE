@@ -32,12 +32,12 @@ const CustomTabButton = styled.Pressable`
 
 const tabs = ["스크랩", "작성한 소식", "답글 단 소식"];
 
-const MyCustomTopTabs = () => {
+const MyCustomTopTabs = ({ handleShowToast }) => {
     const [selectedTab, setSelectedTab] = useState(0);
 
     const renderComponent = () => {
         switch (selectedTab) {
-            case 0: return <Scrap />;
+            case 0: return <Scrap handleShowToast={handleShowToast} />;
             case 1: return <MyNews />;
             case 2: return <MyCommentedNews />;
             default: return null;

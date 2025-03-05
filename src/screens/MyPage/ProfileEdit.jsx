@@ -30,7 +30,6 @@ const ProfileEdit = () => {
                 });
                 const profileData = response.data.result;
                 setProfile(profileData);
-                console.log(profileData);
 
                 setSelectedTime(profileData.amPm === 'AM' ? '오전' : '오후');
                 setSelectedHour(profileData.hours);
@@ -138,7 +137,7 @@ const ProfileEdit = () => {
                 },
             });
 
-            if (response.data === '회원정보가 수정되었습니다.') {
+            if (response.data.isSuccess) {
                 Alert.alert("수정 완료", "프로필이 성공적으로 수정되었습니다.");
                 getProfile();
                 navigation.navigate("MyPage");

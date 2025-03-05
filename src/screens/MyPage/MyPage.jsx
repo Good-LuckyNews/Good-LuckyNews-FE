@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { COLORS } from '../../theme/color';
-import { Graph, MyCustomTopTabs } from '../../components';
+import { CustomAlert, Graph, MyCustomTopTabs } from '../../components';
 import { Text } from 'react-native';
 import { ProfileIcon } from '../../utils/icons';
 import { theme } from '../../theme/theme';
@@ -14,6 +14,14 @@ const MyPage = () => {
     const [isEditPressed, setIsEditPressed] = useState(false);
     const [isLogoutPressed, setIsLogoutPressed] = useState(false);
     const [profile, setProfile] = useState([]);
+    const [toastVisible, setToastVisible] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+
+    const handleShowToast = (message) => {
+        setToastMessage(message);
+        setToastVisible(true);
+    };
+
     const removeToken = async () => {
         await SecureStore.deleteItemAsync('userToken');
         navigation.replace('LoginStack');
@@ -42,12 +50,19 @@ const MyPage = () => {
 
     return (
         <Container>
+            <CustomAlert
+                message={toastMessage}
+                visible={toastVisible}
+                backgroundColor={COLORS.MainYellow}
+                duration={1500}
+                onHide={() => setToastVisible(false)}
+            />
             <InnerTopContainer>
                 <ProfileContainer>
                     <ProfileInnerContainer>
                         <ProfileLeftArea>
                             <ProfileName>{profile.name}</ProfileName>
-                            <ProfileEmail>test@example8.com</ProfileEmail>
+                            <ProfileEmail>{profile.email}</ProfileEmail>
                             <ProfileEditButton
                                 onPressIn={() => setIsEditPressed(true)}
                                 onPressOut={() => setIsEditPressed(false)}
@@ -69,7 +84,7 @@ const MyPage = () => {
                                 onPressIn={() => setIsLogoutPressed(true)}
                                 onPressOut={() => setIsLogoutPressed(false)}
                                 pressed={isLogoutPressed}
-                                onPress = {() => removeToken()}
+                                onPress={() => removeToken()}
                             >
                                 <Text
                                     style={{
@@ -84,7 +99,7 @@ const MyPage = () => {
                 </ProfileContainer>
                 <Graph />
             </InnerTopContainer>
-            <MyCustomTopTabs />
+            <MyCustomTopTabs handleShowToast={handleShowToast} />
         </Container>
     )
 }
