@@ -8,7 +8,12 @@ import {
   SearchInActiveIcon,
 } from "../../utils/icons";
 import { COLORS } from "../../theme/color";
-import { GoodNews, MakePlace } from "../../screens";
+import {
+  GoodNews,
+  GoodNewsDetail,
+  MakePlace,
+  WriteGoodNews,
+} from "../../screens";
 
 const Stack = createStackNavigator();
 
@@ -61,6 +66,8 @@ const GoodNewsStack = () => {
     >
       <Stack.Screen name="GoodNews" component={GoodNews} />
       <Stack.Screen name="MakePlace" component={MakePlace} />
+      <Stack.Screen name="GoodNewsDetail" component={GoodNewsDetail} />
+      <Stack.Screen name="WriteGoodNews" component={WriteGoodNews} />
     </Stack.Navigator>
   );
 };
