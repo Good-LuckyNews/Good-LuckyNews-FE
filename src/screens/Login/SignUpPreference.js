@@ -68,8 +68,6 @@ const SignUpPreference = ({ route }) => {
             headers: { "Content-Type": "multipart/form-data" },
           });
 
-          const token = response.data.result;
-          await fetchNews(token);
           navigation.navigate("SignUpComplete");
         } catch (error) {
           setAlert(true);
@@ -88,18 +86,6 @@ const SignUpPreference = ({ route }) => {
             // 에러 메시지
             console.error("Error message:", error.message);
           }
-        }
-      }
-
-      async function fetchNews(token) {
-        try {
-          const response = await api.get(`/fetch-news`, {
-            headers: {
-              Authorization: `${token}`,
-            },
-          });
-        } catch (error) {
-          console.error("뉴스 요청 실패:", error);
         }
       }
 

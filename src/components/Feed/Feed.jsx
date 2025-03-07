@@ -20,6 +20,7 @@ import CategoryButton from "../CategoryButton/CategoryButton";
 import * as SecureStore from 'expo-secure-store';
 import { useEditing, useScrap } from "../../contexts";
 import api from "../../utils/common";
+import he from 'he';
 
 const { width } = Dimensions.get("window");
 const SLIDER_WIDTH = width - 40;
@@ -28,7 +29,7 @@ const MIN_VALUE = 0;
 
 const Feed = ({ article, showToast, paddingTop }) => {
   const { scrapStatus, toggleScrap } = useScrap();
-  const isScrapped = scrapStatus[article?.id] ?? (article?.likeCount === 1);
+  const isScrapped = scrapStatus[article?.id] ?? (article?.bookmarked);
   const [currentScore, setCurrentScore] = useState(score);
   const [showIndicator, setShowIndicator] = useState(false);
   const { editingStatus, toggleEditing, scoreStatus, updateScore } = useEditing();
@@ -40,9 +41,8 @@ const Feed = ({ article, showToast, paddingTop }) => {
   ).current;
   const scrollRef = useRef(null);
 
-  const handleComplete = async  () => {
+  const handleComplete = async () => {
     try {
-
       const token = await SecureStore.getItemAsync('userToken');
       if (!token) {
         console.error("No token found");
@@ -74,42 +74,28 @@ const Feed = ({ article, showToast, paddingTop }) => {
     toggleEditing(article?.id, true);
   };
 
-  const handleScrap = async  () => {
+  const handleScrap = async () => {
     try {
       const token = await SecureStore.getItemAsync('userToken');
       if (!token) {
         console.error("No token found");
         return;
       }
-  
-      const url = `/article/${article?.id}/like`;
-  
-      if (isScrapped) {
-        const response = await api.delete(url, {
-          headers: {
-            'Authorization': `${token}`,
-          },
-        });
-  
-        if (response.data.isSuccess) {
-          showToast("긍정 피드 스크랩을 취소했어요!");
-          toggleScrap(article?.id, false);
-        } else {
-          console.error("스크랩 취소 실패:", response.data.message);
-        }
+
+      const response = await api.post(`/article/${article?.id}/like`, {}, {
+        headers: {
+          'Authorization': `${token}`,
+        },
+      });
+
+      if (response.data.isSuccess) {
+        const updatedBookmarked = response.data.result.bookmarked;
+
+        showToast(updatedBookmarked ? "긍정 피드를 스크랩했어요!" : "긍정 피드 스크랩을 취소했어요!");
+
+        toggleScrap(article?.id, updatedBookmarked);
       } else {
-        const response = await api.post(url, {}, {
-          headers: {
-            'Authorization': `${token}`,
-          },
-        });
-  
-        if (response.data.isSuccess) {
-          showToast("긍정 피드를 스크랩했어요!");
-          toggleScrap(article?.id, true);
-        } else {
-          console.error("스크랩 추가 실패:", response.data.message);
-        }
+        console.error(`스크랩 요청 실패:`, response.data.message);
       }
     } catch (error) {
       console.error("Error handling scrap:", error);
@@ -117,7 +103,7 @@ const Feed = ({ article, showToast, paddingTop }) => {
   };
 
   const handleLink = () => {
-    Linking.openURL(`${article.originalLink}`); // 원하는 링크 입력
+    Linking.openURL(`${article.originalLink}`);
   };
 
   useFocusEffect(
@@ -142,7 +128,7 @@ const Feed = ({ article, showToast, paddingTop }) => {
 
   const formattedDate = article?.originalDate?.split('T')[0].replaceAll('-', '.');
   const originalDomain = article?.originalLink ? new URL(article.originalLink).origin : '';
-  const imageUrl = article?.image?.startsWith('https') ? article.image : `${originalDomain}${article.image}`;
+  const imageUrl = article?.image?.startsWith('https') ? article?.image : `${originalDomain}${article.image}`;
 
   return (
     <YellowContent
@@ -154,7 +140,7 @@ const Feed = ({ article, showToast, paddingTop }) => {
         <CategoryButton clicked={true} disabled={true} category={article.keywords} />
         <YellowInnerContent>
           <BoldText>
-            {article.title}
+            {he.decode(article?.title || "")}
           </BoldText>
           <ScrapButton isScrapped={isScrapped} onPress={handleScrap} />
         </YellowInnerContent>
@@ -172,8 +158,11 @@ const Feed = ({ article, showToast, paddingTop }) => {
           </ImageContainer>
         }
         <YellowTextContainer>
-          {article?.longContent?.split("\n").map((line, index) => (
-            <StyledText key={index}>{line}</StyledText>
+          {(article?.longContent?.includes("\n")
+            ? article?.longContent?.split("\n")
+            : cleanAndSplitText(article?.longContent)
+          ).map((line, index) => (
+            <StyledText key={index}>{he.decode(line.trim())}</StyledText>
           ))}
           <TextFooter>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -338,6 +327,15 @@ const Feed = ({ article, showToast, paddingTop }) => {
       </YellowContentContainer>
     </YellowContent>
   );
+};
+
+const cleanAndSplitText = (text) => {
+  if (!text) return [];
+
+  return text
+    .replace(/AD|공유하기|Copyright|ⓒ|All rights reserved/gi, '') // 광고 및 저작권 정보 제거
+    .split(/(?<=[.!?])\s+/) // 문장을 마침표, 물음표, 느낌표 기준으로 분리
+    .filter(sentence => sentence.trim() !== ""); // 빈 문장 제거
 };
 
 const YellowContent = styled(ScrollView)`

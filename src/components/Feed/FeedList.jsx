@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Image, Pressable } from 'react-native';
 import styled from 'styled-components/native';
 import CategoryButton from '../CategoryButton/CategoryButton';
@@ -7,13 +7,15 @@ import { useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
 import { useScrap } from '../../contexts';
 import api from '../../utils/common';
+import he from 'he';
 
-const FeedList = ({ item, showToast }) => {
+const FeedList = ({ item, showToast, onScrapChange }) => {
     const navigation = useNavigation();
     const { scrapStatus, toggleScrap } = useScrap();
-    const isScrapped = scrapStatus[item?.id] ?? (item?.likeCount === 1);
+    const isScrapped = scrapStatus[item?.id] ?? (item?.bookmarked);
 
-    const imageUrl = item?.image ? item.image : `https://img.freepik.com/premium-vector/no-photo-available-vector-icon-default-image-symbol-picture-coming-soon-web-site-mobile-app_87543-18055.jpg`;
+    const originalDomain = item?.originalLink ? new URL(item.originalLink).origin : '';
+    const imageUrl = item.image.startsWith('https') ? item.image : `${originalDomain}${item.image}`;
 
     const handleScrap = async () => {
         try {
@@ -23,34 +25,24 @@ const FeedList = ({ item, showToast }) => {
                 return;
             }
 
-            const url = `/article/${item?.id}/like`;
+            const response = await api.post(`/article/${item?.id}/like`, {}, {
+                headers: {
+                    'Authorization': `${token}`,
+                },
+            });
 
-            if (isScrapped) {
-                const response = await api.delete(url, {
-                    headers: {
-                        'Authorization': `${token}`,
-                    },
-                });
+            if (response.data.isSuccess) {
+                const updatedBookmarked = response.data.result.bookmarked;
 
-                if (response.data.isSuccess) {
-                    showToast("긍정 피드 스크랩을 취소했어요!");
-                    toggleScrap(item?.id, false);
-                } else {
-                    console.error("스크랩 취소 실패:", response.data.message);
+                toggleScrap(item?.id, updatedBookmarked);
+
+                showToast(updatedBookmarked ? "긍정 피드를 스크랩했어요!" : "긍정 피드 스크랩을 취소했어요!");
+
+                if (onScrapChange) {
+                    onScrapChange();
                 }
             } else {
-                const response = await api.post(url, {}, {
-                    headers: {
-                        'Authorization': `${token}`,
-                    },
-                });
-
-                if (response.data.isSuccess) {
-                    showToast("긍정 피드를 스크랩했어요!");
-                    toggleScrap(item?.id, true);
-                } else {
-                    console.error("스크랩 추가 실패:", response.data.message);
-                }
+                console.error(`스크랩 요청 실패:`, response.data.message);
             }
         } catch (error) {
             console.error("Error handling scrap:", error);
@@ -60,15 +52,17 @@ const FeedList = ({ item, showToast }) => {
     return (
         <FeedListContainer>
             <FeedListInnerContainer>
-                <Pressable onPress={() => navigation.navigate("GoodFeedDetail", { id: item.id })} style={{ width: '100%', display: 'flex' }}>
-                    <Image source={{ uri: imageUrl }} style={{ width: '100%', height: 180, borderRadius: 20 }} />
-                </Pressable>
+                {imageUrl &&
+                    <Pressable onPress={() => navigation.navigate("GoodFeedDetail", { id: item.id })} style={{ width: '100%', display: 'flex' }}>
+                        <Image source={{ uri: imageUrl }} style={{ width: '100%', height: 180, borderRadius: 20 }} />
+                    </Pressable>
+                }
                 <CategoryArea>
                     <CategoryButton disabled={true} category={item?.keywords} />
                     <ScrapButton isScrapped={isScrapped} onPress={handleScrap} />
                 </CategoryArea>
                 <Pressable onPress={() => navigation.navigate("GoodFeedDetail", { id: item.id })} style={{ width: '100%', display: 'flex' }}>
-                    <FeedListTitle>{item.title}</FeedListTitle>
+                    <FeedListTitle>{he.decode(item.title)}</FeedListTitle>
                     <FeedListDate>{item.date}</FeedListDate>
                 </Pressable>
             </FeedListInnerContainer>

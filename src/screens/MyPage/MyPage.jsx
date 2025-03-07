@@ -1,30 +1,62 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { COLORS } from '../../theme/color';
-import { Graph, MyCustomTopTabs } from '../../components';
+import { CustomAlert, Graph, MyCustomTopTabs } from '../../components';
 import { Text } from 'react-native';
 import { ProfileIcon } from '../../utils/icons';
 import { theme } from '../../theme/theme';
 import { useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
+import api from '../../utils/common';
 
 const MyPage = () => {
     const navigation = useNavigation();
     const [isEditPressed, setIsEditPressed] = useState(false);
     const [isLogoutPressed, setIsLogoutPressed] = useState(false);
+    const [profile, setProfile] = useState([]);
+    const [toastVisible, setToastVisible] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+
+    const handleShowToast = (message) => {
+        setToastMessage(message);
+        setToastVisible(true);
+    };
+
     const removeToken = async () => {
         await SecureStore.deleteItemAsync('userToken');
         navigation.replace('LoginStack');
     };
 
-    const profile = {
-        name: '김소식',
-        email: 'example@example.com',
-        imageUri: 'https://s3-alpha-sig.figma.com/img/343e/3803/87084a97e1c341102db218412fd35710?Expires=1740960000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=WMhVKf6AXTRsFfO2mWh5qWkzEaFgtIJ9I8RzH8mSLq6lN2ljMow0k9LI6gjYK7SMgZccrCRCCaG4y7e0wTbbMTloU9yBbEn9HqcxoK61HDwB3xfs~XvJ~sCz~XqaT4i0Xwg1EjYC09b4enmGZhgpsh5QmNxARqm8cRl-NvxQ~PFOW3NoP5LrGKF7ArautSxu6KLC7IxxMtDwoWqYiQw8eOSm73tr9dRCoSUeDnGkP9UHAOlzf0lhi80IORUJSx~-v~uVuVNPZCPDjb5StKtuLzpBhfaMSdJdG55WATF9S-fxK0ebDZ~Mmjm5TvucVkKOLvCHLAHoZoVoDNEZ2vUSZw__',
-    }
+    useEffect(() => {
+        const getProfile = async () => {
+            try {
+                const token = await SecureStore.getItemAsync('userToken');
+                if (token) {
+                    const response = await api.get(`/api/member/info`, {
+                        headers: {
+                            'Authorization': `${token}`
+                        }
+                    });
+                    setProfile(response.data.result);
+                } else {
+                    console.log('No token found');
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        getProfile();
+    }, [])
 
     return (
         <Container>
+            <CustomAlert
+                message={toastMessage}
+                visible={toastVisible}
+                backgroundColor={COLORS.MainYellow}
+                duration={1500}
+                onHide={() => setToastVisible(false)}
+            />
             <InnerTopContainer>
                 <ProfileContainer>
                     <ProfileInnerContainer>
@@ -47,12 +79,12 @@ const MyPage = () => {
                             </ProfileEditButton>
                         </ProfileLeftArea>
                         <ProfileRightArea>
-                            {profile.imageUri ? <ProfileImage source={profile.imageUri && { uri: profile.imageUri }} /> : <ProfileIcon size={70} />}
+                            {profile.profileImage ? <ProfileImage source={profile.profileImage && { uri: profile.profileImage }} /> : <ProfileIcon size={70} />}
                             <LogoutButton
                                 onPressIn={() => setIsLogoutPressed(true)}
                                 onPressOut={() => setIsLogoutPressed(false)}
                                 pressed={isLogoutPressed}
-                                onPress = {() => removeToken()}
+                                onPress={() => removeToken()}
                             >
                                 <Text
                                     style={{
@@ -67,7 +99,7 @@ const MyPage = () => {
                 </ProfileContainer>
                 <Graph />
             </InnerTopContainer>
-            <MyCustomTopTabs />
+            <MyCustomTopTabs handleShowToast={handleShowToast} />
         </Container>
     )
 }
