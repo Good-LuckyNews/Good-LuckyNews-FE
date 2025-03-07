@@ -26,6 +26,10 @@ const GoodFeed = () => {
           const response = await api.get(`/article`, {
             headers: {
               'Authorization': `${token}`
+            },
+            params: {
+              page: 0,
+              size: 10,
             }
           });
           setPosts(response.data.result);
@@ -81,6 +85,7 @@ const GoodFeed = () => {
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 80, }}
+          ListEmptyComponent={<EmptyMessage>해당 카테고리의 기사가 없습니다.</EmptyMessage>}
         />
       </InnerContainer>
     </Container>
@@ -110,6 +115,14 @@ const CategoryWrapper = styled.View`
 
 const CategoryArea = styled.ScrollView`
   flex-direction: row;
+`;
+
+const EmptyMessage = styled.Text`
+    text-align: center;
+    font-size: 16px;
+    font-family: ${(props) => props.theme.fonts.medium};
+    color: #8A8888;
+    margin-top: 20px;
 `;
 
 export default GoodFeed

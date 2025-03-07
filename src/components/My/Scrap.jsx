@@ -21,9 +21,14 @@ const Scrap = ({handleShowToast}) => {
         const response = await api.get(`/user/article/likes`, {
           headers: {
             'Authorization': `${token}`
+          },
+          params: {
+            page: 0,
+            size: 10,
           }
         });
         setPosts(response.data.result);
+        console.log(response.data.result)
       } else {
         console.log('No token found');
       }

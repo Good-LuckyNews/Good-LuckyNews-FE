@@ -69,7 +69,7 @@ const Graph = () => {
 
     useEffect(() => {
         fetchEmotionData();
-    }, []);
+    }, [selectedTab]);
 
     const [animatedHeights, setAnimatedHeights] = useState(
         emotionData[selectedTab].map((value) => new Animated.Value(value))

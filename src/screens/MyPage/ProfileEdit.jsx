@@ -125,7 +125,11 @@ const ProfileEdit = () => {
                 const fileType = fileName.split('.').pop();
                 const mimeType = `image/${fileType}`;
 
-                formData.append("image", imageUri);
+                formData.append("image", {
+                    uri: imageUri,
+                    name: fileName,
+                    type: mimeType,
+                });
             } else {
                 formData.append("image", profile.ProfileImage ? profile.ProfileImage : null);
             }
