@@ -28,7 +28,6 @@ const Scrap = ({handleShowToast}) => {
           }
         });
         setPosts(response.data.result);
-        console.log(response.data.result)
       } else {
         console.log('No token found');
       }
