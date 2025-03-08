@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { COLORS } from '../../theme/color';
-import { Alert, Image, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { ActivityIndicator, Alert, Image, Keyboard, TouchableWithoutFeedback, View } from 'react-native';
 import { ProfileIcon } from '../../utils/icons';
 import * as ImagePicker from "expo-image-picker";
 import { CategoryButton, CustomAlert, TimeButton } from '../../components';
@@ -18,6 +18,7 @@ const ProfileEdit = () => {
     const [selectedHour, setSelectedHour] = useState(null);
     const [selectedMinute, setSelectedMinute] = useState(null);
     const [imageUri, setImageUri] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     const getProfile = async () => {
         try {
@@ -41,6 +42,8 @@ const ProfileEdit = () => {
             }
         } catch (error) {
             console.log(error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -101,7 +104,7 @@ const ProfileEdit = () => {
 
     const handleComplete = async () => {
         if (!profile.name || selectedKeywords.length < 2 || selectedKeywords.length > 4 ||
-            !selectedTime || !selectedHour || !selectedMinute) {
+            selectedTime === null || selectedHour === null || selectedMinute === null) {
             handleShowToast("필수 입력 항목을 모두 작성해주세요!");
             return;
         }
@@ -151,8 +154,18 @@ const ProfileEdit = () => {
         } catch (error) {
             console.error("수정 요청 실패:", error);
             Alert.alert("오류", "프로필 수정 중 문제가 발생했습니다.");
+        } finally {
+            setLoading(false);
         }
     };
+
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
+    }
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -172,7 +185,7 @@ const ProfileEdit = () => {
                 >
                     <ImageEditContainer>
                         <ImageEditInnerArea>
-                            {imageUri ? <ProfileImage source={{ uri: imageUri }} /> : <ProfileIcon size={75} />}
+                            {imageUri !== "null" ? <ProfileImage source={{ uri: imageUri }} /> : <ProfileIcon size={75} />}
                             <EditButton onPress={pickImage}>
                                 <Image
                                     source={require("../../../assets/images/my/EditButton.png")}

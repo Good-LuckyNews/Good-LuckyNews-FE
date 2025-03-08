@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { COLORS } from '../../theme/color';
 import { CustomAlert, Graph, MyCustomTopTabs } from '../../components';
-import { Text } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { ProfileIcon } from '../../utils/icons';
 import { theme } from '../../theme/theme';
 import { useNavigation } from '@react-navigation/native';
@@ -16,6 +16,8 @@ const MyPage = () => {
     const [profile, setProfile] = useState([]);
     const [toastVisible, setToastVisible] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [profileImage, setProfileImage] = useState(null);
 
     const handleShowToast = (message) => {
         setToastMessage(message);
@@ -38,15 +40,27 @@ const MyPage = () => {
                         }
                     });
                     setProfile(response.data.result);
+                    setProfileImage(response.data.result.profileImage);
                 } else {
                     console.log('No token found');
                 }
             } catch (error) {
                 console.log(error);
+            } finally {
+                setLoading(false);
             }
+
         };
         getProfile();
     }, [])
+
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
+    }
 
     return (
         <Container>
@@ -79,7 +93,11 @@ const MyPage = () => {
                             </ProfileEditButton>
                         </ProfileLeftArea>
                         <ProfileRightArea>
-                            {profile.profileImage ? <ProfileImage source={profile.profileImage && { uri: profile.profileImage }} /> : <ProfileIcon size={70} />}
+                            {profileImage !== "null" ? (
+                                <ProfileImage source={{ uri: profileImage }} />
+                            ) : (
+                                <ProfileIcon size={70} />
+                            )}
                             <LogoutButton
                                 onPressIn={() => setIsLogoutPressed(true)}
                                 onPressOut={() => setIsLogoutPressed(false)}
