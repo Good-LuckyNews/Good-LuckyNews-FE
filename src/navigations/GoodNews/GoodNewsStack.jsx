@@ -67,7 +67,13 @@ const GoodNewsStack = () => {
       <Stack.Screen name="GoodNews" component={GoodNews} />
       <Stack.Screen name="MakePlace" component={MakePlace} />
       <Stack.Screen name="GoodNewsDetail" component={GoodNewsDetail} />
-      <Stack.Screen name="WriteGoodNews" component={WriteGoodNews} />
+      <Stack.Screen
+        name="WriteGoodNews"
+        component={WriteGoodNews}
+        options={({ route }) => ({
+          headerTitle: route.params?.title || "희소식 작성하기",
+        })}
+      />
     </Stack.Navigator>
   );
 };

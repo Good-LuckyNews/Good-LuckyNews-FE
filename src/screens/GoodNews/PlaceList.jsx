@@ -45,7 +45,9 @@ const PlaceList = ({ placeList, sort }) => {
       /> */}
       <FlatList
         data={placeList}
-        ListHeaderComponent={sort === "my" && <MakePlaceButton />}
+        ListHeaderComponent={
+          sort === "my" && <MakePlaceButton type="플레이스" />
+        }
         renderItem={({ item }) => (
           <Pressable style={styles.placeContainer} onPress={moveToDetail}>
             <View>

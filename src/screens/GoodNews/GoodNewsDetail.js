@@ -95,7 +95,6 @@ const timeline = [
 ];
 
 const GoodNewsDetail = () => {
-  const navigation = useNavigation();
   const [selectedCommentId, setSelectedCommentId] = useState(null);
 
   return (
@@ -137,6 +136,7 @@ const GoodNewsDetail = () => {
         timeline={timeline}
         selectedCommentId={selectedCommentId}
         setSelectedCommentId={setSelectedCommentId}
+        placeName={goodNewInfo.placeName}
       />
     </Pressable>
   );

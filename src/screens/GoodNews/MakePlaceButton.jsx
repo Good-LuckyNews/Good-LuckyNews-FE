@@ -3,7 +3,7 @@ import { Image, StyleSheet, Text, View } from "react-native";
 import SquareButton from "../../components/SquareButton";
 import { useNavigation } from "@react-navigation/native";
 
-const MakePlaceButton = ({ type, style }) => {
+const MakePlaceButton = ({ type, title, style }) => {
   const navigate = useNavigation();
 
   return (
@@ -32,9 +32,12 @@ const MakePlaceButton = ({ type, style }) => {
         text={type === "플레이스" ? "플레이스 만들기" : "희소식 작성하기"}
         width={117}
         height={28}
-        onPress={() =>
-          navigate.navigate(type === "플레이스" ? "MakePlace" : "WriteGoodNews")
-        }
+        onPress={() => {
+          navigate.navigate(
+            type === "플레이스" ? "MakePlace" : "WriteGoodNews",
+            type === "희소식" ? { title: title } : undefined
+          );
+        }}
       />
     </View>
   );

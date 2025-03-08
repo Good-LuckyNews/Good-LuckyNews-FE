@@ -10,11 +10,13 @@ import {
 import { CommentComponent, LikeComponent } from "../../components";
 import { COLORS } from "../../theme/color";
 import MakePlaceButton from "./MakePlaceButton";
+import { useNavigation } from "@react-navigation/native";
 
 const GoodNewsList = ({
   timeline,
   selectedCommentId,
   setSelectedCommentId,
+  placeName,
 }) => {
   const handleDelete = (id) => {
     // 데이터 삭제
@@ -32,6 +34,7 @@ const GoodNewsList = ({
             <MakePlaceButton
               type="희소식"
               style={{ marginVertical: 30, marginBottom: 7 }}
+              title={placeName}
             />
           }
           renderItem={({ item }) => (
