@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 48,
     height: 48,
-    borderRadius: "100%",
+    borderRadius: 50,
   },
   usernameText: {
     fontFamily: "FontM",

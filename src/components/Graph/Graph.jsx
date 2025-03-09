@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Pressable, Animated } from "react-native";
 import styled from "styled-components/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { COLORS } from "../../theme/color";
 import api from "../../utils/common";
 import * as SecureStore from "expo-secure-store";
+import { useFocusEffect } from "@react-navigation/native";
 
 const tabs = ["이번 주", "지난 달", "최근 6개월", "전체"];
 const barWidth = 30;
@@ -67,9 +68,11 @@ const Graph = () => {
         }
     };
 
-    useEffect(() => {
-        fetchEmotionData();
-    }, [selectedTab]);
+    useFocusEffect(
+        useCallback(() => {
+            fetchEmotionData();
+        }, [selectedTab])
+    );
 
     const [animatedHeights, setAnimatedHeights] = useState(
         emotionData[selectedTab].map((value) => new Animated.Value(value))

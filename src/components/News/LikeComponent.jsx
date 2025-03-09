@@ -44,9 +44,9 @@ const styles = StyleSheet.create({
   likeCount: {
     fontFamily: "FontM",
     color: "#8A8888",
-    fontSize: "13",
+    fontSize: 13,
     fontWeight: "400",
     lineHeight: "22",
-    letterSpacing: "-0.408",
+    letterSpacing: -0.408,
   },
 });
