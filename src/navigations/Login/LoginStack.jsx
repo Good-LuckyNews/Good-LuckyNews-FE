@@ -2,6 +2,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { COLORS } from "../../theme/color";
 import {
+  Home,
   Login,
   PrivacyConsent,
   SignUp,
@@ -9,6 +10,7 @@ import {
   SignUpPreference,
   TermsOfService,
 } from "../../screens";
+import MainTab from "../MainTab";
 
 const Stack = createStackNavigator();
 

@@ -82,13 +82,13 @@ const styles = StyleSheet.create({
     marginTop: "24",
     paddingBottom: "17",
     borderBottomColor: "#D9D9D9",
-    borderBottomWidth: "1",
+    borderBottomWidth: 1,
     backgroundColor: COLORS.White,
   },
   placeTitle: {
     marginBottom: "6",
     fontFamily: "FontB",
-    fontSize: "16",
+    fontSize: 16,
     fontWeight: "400",
   },
   placeContent: {
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     width: "72",
     height: "72",
     borderColor: COLORS.LightGray,
-    borderWidth: "1",
-    borderRadius: "100%",
+    borderWidth: 1,
+    borderRadius: 50,
   },
 });

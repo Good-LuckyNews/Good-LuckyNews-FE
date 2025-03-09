@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components/native";
-import RoundButton from "../RoundButton";
 import ScrapButton from "../ScrapButton/ScrapButton";
 import {
   Animated,
   Dimensions,
   Image,
+  Linking,
+  Pressable,
   ScrollView,
   Text,
   View,
@@ -16,44 +17,93 @@ import { COLORS } from "../../theme/color";
 import { useFocusEffect } from "@react-navigation/native";
 import { theme } from "../../theme/theme";
 import CategoryButton from "../CategoryButton/CategoryButton";
+import * as SecureStore from 'expo-secure-store';
+import { useEditing, useScrap } from "../../contexts";
+import api from "../../utils/common";
+import he from 'he';
 
 const { width } = Dimensions.get("window");
 const SLIDER_WIDTH = width - 40;
 const MAX_VALUE = 100;
 const MIN_VALUE = 0;
 
-const Feed = ({ text, showToast, paddingTop }) => {
-  const [isScrapped, setIsScrapped] = useState(false);
-  const [score, setScore] = useState(50);
-  const [savedScore, setSavedScore] = useState(null);
+const Feed = ({ article, showToast, paddingTop }) => {
+  const { scrapStatus, toggleScrap } = useScrap();
+  const isScrapped = scrapStatus[article?.id] ?? (article?.bookmarked);
   const [currentScore, setCurrentScore] = useState(score);
   const [showIndicator, setShowIndicator] = useState(false);
-  const [isEditing, setIsEditing] = useState(true);
+  const { editingStatus, toggleEditing, scoreStatus, updateScore } = useEditing();
+  const isEditing = editingStatus[article?.id] ?? (article?.degree ? false : true);
+  const score = scoreStatus[article?.id] ?? (article?.degree ? article.degree : 50);
+
   const thumbPosition = useRef(
     new Animated.Value((score / MAX_VALUE) * SLIDER_WIDTH)
   ).current;
   const scrollRef = useRef(null);
 
-  const handleComplete = () => {
-    showToast("긍정 평가를 저장했어요!");
-    setSavedScore(score);
-    setIsEditing(false);
+  const handleComplete = async () => {
+    try {
+      const token = await SecureStore.getItemAsync('userToken');
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      const response = await api.post(
+        `/article/${article?.id}/completed`,
+        { degree: score },
+        {
+          headers: {
+            'Authorization': `${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.data.isSuccess) {
+        showToast("긍정 평가를 저장했어요!");
+        toggleEditing(article?.id, false);
+      } else {
+        console.error("API 요청 실패:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error sending degree:", error);
+    }
   };
 
   const handleEdit = () => {
-    setIsEditing(true);
+    toggleEditing(article?.id, true);
   };
 
-  const handleScrap = () => {
-    setIsScrapped((prevState) => {
-      const newState = !prevState;
-      showToast(
-        newState
-          ? "긍정 피드를 스크랩했어요!"
-          : "긍정 피드 스크랩을 취소했어요!"
-      );
-      return newState;
-    });
+  const handleScrap = async () => {
+    try {
+      const token = await SecureStore.getItemAsync('userToken');
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+
+      const response = await api.post(`/article/${article?.id}/like`, {}, {
+        headers: {
+          'Authorization': `${token}`,
+        },
+      });
+
+      if (response.data.isSuccess) {
+        const updatedBookmarked = response.data.result.bookmarked;
+
+        showToast(updatedBookmarked ? "긍정 피드를 스크랩했어요!" : "긍정 피드 스크랩을 취소했어요!");
+
+        toggleScrap(article?.id, updatedBookmarked);
+      } else {
+        console.error(`스크랩 요청 실패:`, response.data.message);
+      }
+    } catch (error) {
+      console.error("Error handling scrap:", error);
+    }
+  };
+
+  const handleLink = () => {
+    Linking.openURL(`${article.originalLink}`);
   };
 
   useFocusEffect(
@@ -67,14 +117,18 @@ const Feed = ({ text, showToast, paddingTop }) => {
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({ y: 0, animated: true });
-    }
-  }, [text]);
+    };
+  }, [article]);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({ y: 0, animated: true });
     }
   }, []);
+
+  const formattedDate = article?.originalDate?.split('T')[0].replaceAll('-', '.');
+  const originalDomain = article?.originalLink ? new URL(article.originalLink).origin : '';
+  const imageUrl = article?.image?.startsWith('https') ? article?.image : `${originalDomain}${article.image}`;
 
   return (
     <YellowContent
@@ -83,34 +137,41 @@ const Feed = ({ text, showToast, paddingTop }) => {
       paddingTop={paddingTop}
     >
       <YellowInnerContainer>
-        <CategoryButton clicked={true} disabled={true} category="기부" />
+        <CategoryButton clicked={true} disabled={true} category={article.keywords} />
         <YellowInnerContent>
           <BoldText>
-            펫푸드 기업 ‘우리와’, 유기동물 보호단체에 사료 기부
+            {cleanHtml(article?.title || "")}
           </BoldText>
           <ScrapButton isScrapped={isScrapped} onPress={handleScrap} />
         </YellowInnerContent>
       </YellowInnerContainer>
       <YellowContentContainer>
-        <ImageContainer>
-          <Image
-            source={{
-              uri: "https://s3-alpha-sig.figma.com/img/6e43/9c59/e39a2184abfeffa39e270dc8c99c36ab?Expires=1740960000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=EaxLXgW0jwDgLHR2njlZDEL7~wUi5PxA3t9PSwIf1jKBmt2uL3IAHzkhvMrFHcxuwDoP7Sw8cD-rZlS2ax3y~O3dcfZcRhGu-YIcsRFLbtp4y7cqr0fKUD0DGiwIXCj5CuVGk8BWVU1dycDXOmowIDws6no8u8FjraUnpDZ62VP6z3CZDjQZjOPq9jJ8TKmrK7Wze3StLTgC8xmn6AlpZWS5i5LGhPBMjI6KOjpskQDwIUCdXVGS0~qDBtiKJnLkPZrLvYU9SA9dltCCx~yPCTFxcC9z-A1AZA46lLoK4NfV7NuSHoIGJjVBySbAyJH3ef-LAxjGtDYM2gGG3ayhxg__",
-            }}
-            resizeMode="contain" // cover는 이미지가 많이 잘리지 않을까..
-            style={{ width: "100%", height: "100%" }}
-          />
-        </ImageContainer>
+        {article.image &&
+          <ImageContainer>
+            <Image
+              source={{
+                uri: imageUrl,
+              }}
+              resizeMode="contain" // cover는 이미지가 많이 잘리지 않을까..
+              style={{ width: "100%", height: "100%" }}
+            />
+          </ImageContainer>
+        }
         <YellowTextContainer>
-          {text.split("\n").map((line, index) => (
-            <StyledText key={index}>{line}</StyledText>
+          {(article?.longContent?.includes("\n")
+            ? article?.longContent?.split("\n")
+            : cleanAndSplitText(article?.longContent)
+          ).map((line, index) => (
+            <StyledText key={index}>{cleanHtml(line.trim())}</StyledText>
           ))}
           <TextFooter>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <LinkIcon />
-              <FooterText>출처: 이데일리</FooterText>
+              <Pressable onPress={handleLink}>
+                <FooterText>출처</FooterText>
+              </Pressable>
             </View>
-            <FooterText>2025.02.17</FooterText>
+            <FooterText>{formattedDate}</FooterText>
           </TextFooter>
         </YellowTextContainer>
         <YellowEvalContainer>
@@ -194,7 +255,7 @@ const Feed = ({ text, showToast, paddingTop }) => {
                 thumbPosition.setValue((value / MAX_VALUE) * SLIDER_WIDTH);
               }}
               onSlidingComplete={(value) => {
-                setScore(value);
+                updateScore(article?.id, value);
                 setShowIndicator(false);
               }}
             />
@@ -266,6 +327,25 @@ const Feed = ({ text, showToast, paddingTop }) => {
       </YellowContentContainer>
     </YellowContent>
   );
+};
+
+const cleanHtml = (text) => {
+  if (!text) return '';
+
+  let decodedText = he.decode(text);
+
+  decodedText = decodedText.replace(/<br\s*\/?>/gi, '\n');
+
+  return decodedText.replace(/<\/?[^>]+(>|$)/g, "");
+};
+
+const cleanAndSplitText = (text) => {
+  if (!text) return [];
+
+  return text
+    .replace(/AD|공유하기|Copyright|ⓒ|All rights reserved/gi, '')
+    .split(/(?<=[.!?])\s+/)
+    .filter(sentence => sentence.trim() !== "");
 };
 
 const YellowContent = styled(ScrollView)`

@@ -52,9 +52,9 @@ const styles = StyleSheet.create({
   },
   makePlaceText: {
     fontFamily: "FontL",
-    fontSize: "17",
+    fontSize: 17,
     fontWeight: "400",
     lineHeight: "22",
-    letterSpacing: "-0.408",
+    letterSpacing: -0.408,
   },
 });

@@ -3,7 +3,8 @@ import { View, Pressable, Animated } from "react-native";
 import styled from "styled-components/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { COLORS } from "../../theme/color";
-import { theme } from "../../theme/theme";
+import api from "../../utils/common";
+import * as SecureStore from "expo-secure-store";
 
 const tabs = ["이번 주", "지난 달", "최근 6개월", "전체"];
 const barWidth = 30;
@@ -11,13 +12,64 @@ const graphHeight = 130;
 
 const Graph = () => {
     const [selectedTab, setSelectedTab] = useState("이번 주");
+    const [emotionData, setEmotionData] = useState({
+        "이번 주": [0, 0, 0, 0, 0, 0, 0],
+        "지난 달": [0, 0, 0, 0, 0, 0, 0],
+        "최근 6개월": [0, 0, 0, 0, 0, 0, 0],
+        "전체": [0, 0, 0, 0, 0, 0, 0],
+    });
 
-    const emotionData = {
-        "이번 주": [10, 30, 50, 40, 60, 20, 70],
-        "지난 달": [20, 40, 60, 30, 80, 50, 90],
-        "최근 6개월": [80, 50, 40, 90, 60, 20, 70],
-        "전체": [100, 70, 50, 60, 90, 40, 80],
+    const getApiUrl = (tab) => {
+        switch (tab) {
+            case "이번 주": return "/user/articles/completed/week";
+            case "지난 달": return "/user/articles/completed/month";
+            case "최근 6개월": return "/user/articles/completed/sixmonth";
+            case "전체": return "/user/articles/completed/alldays";
+            default: return "/user/articles/completed/week";
+        }
     };
+
+    const fetchEmotionData = async () => {
+        try {
+            const token = await SecureStore.getItemAsync("userToken");
+            if (!token) {
+                console.log("No token found");
+                return;
+            }
+
+            const apiUrl = getApiUrl(selectedTab);
+            const response = await api.get(apiUrl, {
+                headers: {
+                    'Authorization': `${token}`
+                }
+            });
+
+            if (response.data.isSuccess) {
+                const result = response.data.result;
+
+                const values = Object.values(result);
+
+                const maxValue = Math.max(...values);
+
+                const formattedData = maxValue === 0
+                    ? values.map(() => 0)
+                    : values.map(value => (value / maxValue) * 100);
+
+                setEmotionData((prevData) => ({
+                    ...prevData,
+                    [selectedTab]: formattedData,
+                }));
+
+                setAnimatedHeights(formattedData.map((value) => new Animated.Value(value)));
+            }
+        } catch (error) {
+            console.error(`데이터 가져오기 실패 (${selectedTab}):`, error);
+        }
+    };
+
+    useEffect(() => {
+        fetchEmotionData();
+    }, [selectedTab]);
 
     const [animatedHeights, setAnimatedHeights] = useState(
         emotionData[selectedTab].map((value) => new Animated.Value(value))

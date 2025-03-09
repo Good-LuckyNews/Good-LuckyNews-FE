@@ -1,41 +1,84 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Image, Pressable } from 'react-native';
 import styled from 'styled-components/native';
 import CategoryButton from '../CategoryButton/CategoryButton';
 import ScrapButton from '../ScrapButton/ScrapButton';
-import { theme } from '../../theme/theme';
 import { useNavigation } from '@react-navigation/native';
+import * as SecureStore from 'expo-secure-store';
+import { useScrap } from '../../contexts';
+import api from '../../utils/common';
+import he from 'he';
 
-const FeedList = ({ item, showToast }) => {
+const FeedList = ({ item, showToast, onScrapChange }) => {
     const navigation = useNavigation();
-    const [isScrapped, setIsScrapped] = useState(false);
+    const { scrapStatus, toggleScrap } = useScrap();
+    const isScrapped = scrapStatus[item?.id] ?? (item?.bookmarked);
 
-    const handleScrap = () => {
-        setIsScrapped(prevState => {
-            const newState = !prevState;
-            showToast(newState ? "긍정 피드를 스크랩했어요!" : "긍정 피드 스크랩을 취소했어요!");
-            return newState;
-        });
+    const originalDomain = item?.originalLink ? new URL(item.originalLink).origin : '';
+    const imageUrl = item.image.startsWith('https') ? item.image : `${originalDomain}${item.image}`;
+
+    const handleScrap = async () => {
+        try {
+            const token = await SecureStore.getItemAsync('userToken');
+            if (!token) {
+                console.error("No token found");
+                return;
+            }
+
+            const response = await api.post(`/article/${item?.id}/like`, {}, {
+                headers: {
+                    'Authorization': `${token}`,
+                },
+            });
+
+            if (response.data.isSuccess) {
+                const updatedBookmarked = response.data.result.bookmarked;
+
+                toggleScrap(item?.id, updatedBookmarked);
+
+                showToast(updatedBookmarked ? "긍정 피드를 스크랩했어요!" : "긍정 피드 스크랩을 취소했어요!");
+
+                if (onScrapChange) {
+                    onScrapChange();
+                }
+            } else {
+                console.error(`스크랩 요청 실패:`, response.data.message);
+            }
+        } catch (error) {
+            console.error("Error handling scrap:", error);
+        }
     };
 
     return (
         <FeedListContainer>
             <FeedListInnerContainer>
-                <Pressable onPress={() => navigation.navigate("GoodFeedDetail", { id: item.id })} style={{ width: '100%', display: 'flex' }}>
-                    <Image source={{ uri: 'https://s3-alpha-sig.figma.com/img/6e43/9c59/e39a2184abfeffa39e270dc8c99c36ab?Expires=1740960000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=EaxLXgW0jwDgLHR2njlZDEL7~wUi5PxA3t9PSwIf1jKBmt2uL3IAHzkhvMrFHcxuwDoP7Sw8cD-rZlS2ax3y~O3dcfZcRhGu-YIcsRFLbtp4y7cqr0fKUD0DGiwIXCj5CuVGk8BWVU1dycDXOmowIDws6no8u8FjraUnpDZ62VP6z3CZDjQZjOPq9jJ8TKmrK7Wze3StLTgC8xmn6AlpZWS5i5LGhPBMjI6KOjpskQDwIUCdXVGS0~qDBtiKJnLkPZrLvYU9SA9dltCCx~yPCTFxcC9z-A1AZA46lLoK4NfV7NuSHoIGJjVBySbAyJH3ef-LAxjGtDYM2gGG3ayhxg__' }} style={{ width: '100%', height: 180, borderRadius: 20 }} />
-                </Pressable>
+                {imageUrl &&
+                    <Pressable onPress={() => navigation.navigate("GoodFeedDetail", { id: item.id })} style={{ width: '100%', display: 'flex' }}>
+                        <Image source={{ uri: imageUrl }} style={{ width: '100%', height: 180, borderRadius: 20 }} />
+                    </Pressable>
+                }
                 <CategoryArea>
-                    <CategoryButton disabled={true} category={item.tag} />
+                    <CategoryButton disabled={true} category={item?.keywords} />
                     <ScrapButton isScrapped={isScrapped} onPress={handleScrap} />
                 </CategoryArea>
                 <Pressable onPress={() => navigation.navigate("GoodFeedDetail", { id: item.id })} style={{ width: '100%', display: 'flex' }}>
-                    <FeedListTitle>{item.title}</FeedListTitle>
+                    <FeedListTitle>{cleanHtml(item?.title || "")}</FeedListTitle>
                     <FeedListDate>{item.date}</FeedListDate>
                 </Pressable>
             </FeedListInnerContainer>
         </FeedListContainer>
     )
 }
+
+const cleanHtml = (text) => {
+  if (!text) return '';
+
+  let decodedText = he.decode(text);
+
+  decodedText = decodedText.replace(/<br\s*\/?>/gi, '\n');
+
+  return decodedText.replace(/<\/?[^>]+(>|$)/g, "");
+};
 
 const FeedListContainer = styled.View`
     flex: 1;

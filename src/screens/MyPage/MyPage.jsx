@@ -1,25 +1,76 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { COLORS } from '../../theme/color';
-import { Graph, MyCustomTopTabs } from '../../components';
-import { Text } from 'react-native';
+import { CustomAlert, Graph, MyCustomTopTabs } from '../../components';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { ProfileIcon } from '../../utils/icons';
 import { theme } from '../../theme/theme';
 import { useNavigation } from '@react-navigation/native';
+import * as SecureStore from 'expo-secure-store';
+import api from '../../utils/common';
 
 const MyPage = () => {
     const navigation = useNavigation();
     const [isEditPressed, setIsEditPressed] = useState(false);
     const [isLogoutPressed, setIsLogoutPressed] = useState(false);
+    const [profile, setProfile] = useState([]);
+    const [toastVisible, setToastVisible] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [profileImage, setProfileImage] = useState(null);
 
-    const profile = {
-        name: '김소식',
-        email: 'example@example.com',
-        imageUri: 'https://s3-alpha-sig.figma.com/img/343e/3803/87084a97e1c341102db218412fd35710?Expires=1740960000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=WMhVKf6AXTRsFfO2mWh5qWkzEaFgtIJ9I8RzH8mSLq6lN2ljMow0k9LI6gjYK7SMgZccrCRCCaG4y7e0wTbbMTloU9yBbEn9HqcxoK61HDwB3xfs~XvJ~sCz~XqaT4i0Xwg1EjYC09b4enmGZhgpsh5QmNxARqm8cRl-NvxQ~PFOW3NoP5LrGKF7ArautSxu6KLC7IxxMtDwoWqYiQw8eOSm73tr9dRCoSUeDnGkP9UHAOlzf0lhi80IORUJSx~-v~uVuVNPZCPDjb5StKtuLzpBhfaMSdJdG55WATF9S-fxK0ebDZ~Mmjm5TvucVkKOLvCHLAHoZoVoDNEZ2vUSZw__',
+    const handleShowToast = (message) => {
+        setToastMessage(message);
+        setToastVisible(true);
+    };
+
+    const removeToken = async () => {
+        await SecureStore.deleteItemAsync('userToken');
+        navigation.replace('LoginStack');
+    };
+
+    useEffect(() => {
+        const getProfile = async () => {
+            try {
+                const token = await SecureStore.getItemAsync('userToken');
+                if (token) {
+                    const response = await api.get(`/api/member/info`, {
+                        headers: {
+                            'Authorization': `${token}`
+                        }
+                    });
+                    setProfile(response.data.result);
+                    setProfileImage(response.data.result.profileImage);
+                } else {
+                    console.log('No token found');
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setLoading(false);
+            }
+
+        };
+        getProfile();
+    }, [])
+
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
     }
 
     return (
         <Container>
+            <CustomAlert
+                message={toastMessage}
+                visible={toastVisible}
+                backgroundColor={COLORS.MainYellow}
+                duration={1500}
+                onHide={() => setToastVisible(false)}
+            />
             <InnerTopContainer>
                 <ProfileContainer>
                     <ProfileInnerContainer>
@@ -29,7 +80,7 @@ const MyPage = () => {
                             <ProfileEditButton
                                 onPressIn={() => setIsEditPressed(true)}
                                 onPressOut={() => setIsEditPressed(false)}
-                                onPress = {() => navigation.navigate("ProfileEdit")}
+                                onPress={() => navigation.navigate("ProfileEdit")}
                                 pressed={isEditPressed}
                             >
                                 <Text
@@ -42,11 +93,16 @@ const MyPage = () => {
                             </ProfileEditButton>
                         </ProfileLeftArea>
                         <ProfileRightArea>
-                            {profile.imageUri ? <ProfileImage source={profile.imageUri && { uri: profile.imageUri }} /> : <ProfileIcon size={70} />}
+                            {profileImage !== "null" ? (
+                                <ProfileImage source={{ uri: profileImage }} />
+                            ) : (
+                                <ProfileIcon size={70} />
+                            )}
                             <LogoutButton
                                 onPressIn={() => setIsLogoutPressed(true)}
                                 onPressOut={() => setIsLogoutPressed(false)}
                                 pressed={isLogoutPressed}
+                                onPress={() => removeToken()}
                             >
                                 <Text
                                     style={{
@@ -61,7 +117,7 @@ const MyPage = () => {
                 </ProfileContainer>
                 <Graph />
             </InnerTopContainer>
-            <MyCustomTopTabs />
+            <MyCustomTopTabs handleShowToast={handleShowToast} />
         </Container>
     )
 }
