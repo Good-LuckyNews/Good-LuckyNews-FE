@@ -51,17 +51,21 @@ const PlaceList = ({ placeList, sort }) => {
         renderItem={({ item }) => (
           <Pressable style={styles.placeContainer} onPress={moveToDetail}>
             <View>
-              <Text style={styles.placeTitle}>{item.title}</Text>
-              <Text style={styles.placeContent}>{item.content}</Text>
+              <Text style={styles.placeTitle}>{item.placeName}</Text>
+              <Text style={styles.placeContent}>{item.placeDetails}</Text>
               <LikeComponent likeCount={item.likeCount} liked={item.liked} />
             </View>
             <Image
-              source={require("../../../assets/icon.png")}
+              source={
+                item.placeImg
+                  ? { uri: item.placeImg }
+                  : require("../../../assets/icon.png")
+              }
               style={styles.placeImage}
             />
           </Pressable>
         )}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.placeId.toString()}
         initialNumToRender={20}
         maxToRenderPerBatch={20}
       />
