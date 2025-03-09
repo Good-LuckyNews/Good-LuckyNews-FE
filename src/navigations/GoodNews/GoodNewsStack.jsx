@@ -12,6 +12,7 @@ import {
   GoodNews,
   GoodNewsDetail,
   MakePlace,
+  SeeCommentDetail,
   WriteGoodNews,
 } from "../../screens";
 
@@ -72,6 +73,13 @@ const GoodNewsStack = () => {
         component={WriteGoodNews}
         options={({ route }) => ({
           headerTitle: route.params?.title || "희소식 작성하기",
+        })}
+      />
+      <Stack.Screen
+        name="SeeCommentDetail"
+        component={SeeCommentDetail}
+        options={({ route }) => ({
+          headerTitle: route.params?.title || "댓글 보기",
         })}
       />
     </Stack.Navigator>

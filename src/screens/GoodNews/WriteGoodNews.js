@@ -150,7 +150,6 @@ const styles = StyleSheet.create({
     height: 49,
     position: "absolute",
     bottom: 80,
-    backgroundColor: "",
     justifyContent: "center",
     alignItems: "flex-end",
     alignSelf: "center",
