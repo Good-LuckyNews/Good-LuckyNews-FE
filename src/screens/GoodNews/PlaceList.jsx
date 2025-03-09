@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   FlatList,
   Image,
@@ -11,11 +11,19 @@ import { COLORS } from "../../theme/color";
 import MakePlaceButton from "./MakePlaceButton";
 import { useNavigation } from "@react-navigation/native";
 import { LikeComponent } from "../../components";
+import DeleteModal from "../../components/News/DeleteModal";
 
 const PlaceList = ({ placeList, sort }) => {
+  const [selectedId, setSelectedId] = useState(null);
   const navigation = useNavigation();
 
   const moveToDetail = () => navigation.navigate("GoodNewsDetail");
+
+  const deletePlace = (id) => {
+    // axios 연동
+
+    setSelectedId(null);
+  };
 
   return (
     <View style={styles.container}>
@@ -43,13 +51,24 @@ const PlaceList = ({ placeList, sort }) => {
         stopLeftSwipe={15}
         stopRightSwipe={-100}
       /> */}
+      <DeleteModal
+        visible={!!selectedId}
+        text="플레이스를 삭제하시겠습니까?"
+        onCancel={() => setSelectedId(null)}
+        onDelete={() => deletePlace(selectedId)}
+      />
       <FlatList
         data={placeList}
         ListHeaderComponent={
           sort === "my" && <MakePlaceButton type="플레이스" />
         }
         renderItem={({ item }) => (
-          <Pressable style={styles.placeContainer} onPress={moveToDetail}>
+          <Pressable
+            style={styles.placeContainer}
+            onPress={moveToDetail}
+            onLongPress={() => setSelectedId(item.placeId)}
+            delayLongPress={500}
+          >
             <View>
               <Text style={styles.placeTitle}>{item.placeName}</Text>
               <Text style={styles.placeContent}>{item.placeDetails}</Text>

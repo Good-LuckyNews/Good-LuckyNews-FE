@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import GoodNewsComponent from "../../components/News/GoodNewsComponent";
 import { COLORS } from "../../theme/color";
+import DeleteModal from "../../components/News/DeleteModal";
 
 const commentList = [
   {
@@ -63,9 +64,22 @@ const SeeCommentDetail = () => {
   const route = useRoute();
   //   const commentId = route.params?.commentId || 0;
   const commentId = 5;
+  const [selectedId, setSelectedId] = useState(null);
+
+  const deleteComment = () => {
+    // axios 연동
+
+    setSelectedId(null);
+  };
 
   return (
     <View style={{ flex: 1 }}>
+      <DeleteModal
+        visible={!!selectedId}
+        text="답글을 삭제하시겠습니까?"
+        onCancel={() => setSelectedId(null)}
+        onDelete={() => deleteComment(selectedId)}
+      />
       <View
         style={{
           width: "100%",
@@ -122,6 +136,8 @@ const SeeCommentDetail = () => {
           commentList.slice(2).map((comment, idx) => (
             <Pressable
               key={comment.id}
+              onLongPress={() => setSelectedId(comment.id)}
+              delayLongPress={500}
               style={
                 commentList.length === 3 && {
                   borderBottomWidth: 1,
