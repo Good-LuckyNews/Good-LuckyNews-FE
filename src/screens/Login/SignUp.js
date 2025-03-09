@@ -6,11 +6,14 @@ import {
   TextInput,
   Image,
   Pressable,
+  Alert,
 } from "react-native";
 import { COLORS } from "../../theme/color";
 import { CustomAlert, NextStepButton } from "../../components";
 import TermsAgree from "./TermsAgree";
 import { useNavigation } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker";
+
 
 const initialTerms = [
   {
@@ -60,6 +63,8 @@ const SignUp = () => {
   const [termsAgree, setTermsAgree] = useState(initialTerms);
   const [bottomButtonclicked, setButtonClicked] = useState(false);
   const allChecked = termsAgree.every((term) => term.checked);
+  const [imageUri, setImageUri] = useState(null);
+
 
   const handleNextButton = () => {
     if (!username && !email && !password && !passwordCheck) {
@@ -72,12 +77,50 @@ const SignUp = () => {
       setAlert("비밀번호가 일치하지 않습니다.");
     } else {
       setButtonClicked(true);
-      navigation.navigate("SignUpPreference", {
-        email,
-        password,
-        name: username,
-        profileImage: "",
-      });
+      if (imageUri) {
+        const fileName = imageUri.split('/').pop();
+        const fileType = fileName.split('.').pop();
+        const mimeType = `image/${fileType}`;
+
+        const imageUrl = {
+          uri: imageUri,
+          name: fileName,
+          type: mimeType,
+        };
+
+        navigation.navigate("SignUpPreference", {
+          email,
+          password,
+          name: username,
+          image: imageUrl,
+        });
+      } else {
+        navigation.navigate("SignUpPreference", {
+          email,
+          password,
+          name: username,
+          profileImage: null,
+        });
+      }
+    }
+  };
+
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("권한 필요", "이미지를 선택하려면 갤러리 접근 권한이 필요합니다.");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
     }
   };
 
@@ -95,14 +138,22 @@ const SignUp = () => {
           style={styles.uploadImageContainer}
           onPress={() => console.log("object")}
         >
-          <Image
-            source={require("../../../assets/images/uploadImage/default_profile_image.png")}
-            style={styles.uploadImagePreview}
-          />
-          <Image
-            source={require("../../../assets/images/uploadImage/upload_image_button.png")}
-            style={styles.uploadImageButton}
-          />
+          {imageUri ?
+            <Image
+              source={{ uri: imageUri }}
+              style={styles.uploadImagePreview}
+            /> :
+            <Image
+              source={require("../../../assets/images/uploadImage/default_profile_image.png")}
+              style={styles.uploadImagePreview}
+            />
+          }
+          <Pressable onPress={pickImage}>
+            <Image
+              source={require("../../../assets/images/uploadImage/upload_image_button.png")}
+              style={styles.uploadImageButton}
+            />
+          </Pressable>
         </Pressable>
 
         <View style={{ gap: 25 }}>
@@ -233,7 +284,7 @@ const styles = StyleSheet.create({
   },
 
   uploadImageContainer: { width: 77, alignSelf: "center", marginBottom: 30 },
-  uploadImagePreview: { width: 77, height: 77 },
+  uploadImagePreview: { width: 77, height: 77, borderRadius: 50 },
   uploadImageButton: {
     width: 17,
     height: 17,

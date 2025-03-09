@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Image, PanResponder } from 'react-native';
+import { ActivityIndicator, Animated, Dimensions, Image, PanResponder, View } from 'react-native';
 import styled from 'styled-components/native';
 import { COLORS } from '../theme/color';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -19,6 +19,7 @@ const Home = () => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [article, setArticle] = useState([]);
     const [isOverlayVisible, setIsOverlayVisible] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         heightAnim.setValue(0);
@@ -85,10 +86,20 @@ const Home = () => {
                 }
             } catch (error) {
                 console.log(error);
+            } finally {
+                setLoading(false);
             }
         };
         fetchData();
     }, [])
+
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
+    }
 
     return (
         <Container onLayout={(event) => setContainerHeight(event.nativeEvent.layout.height)}>
@@ -107,7 +118,7 @@ const Home = () => {
                 onHide={() => setToastVisible(false)}
             />
 
-            {containerHeight > 0 && (
+            {!loading && containerHeight >= 0 && (
                 <YellowContainer
                     style={{
                         height: heightAnim.interpolate({

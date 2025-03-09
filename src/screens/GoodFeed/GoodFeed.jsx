@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList } from 'react-native';
+import { ActivityIndicator, FlatList, View } from 'react-native';
 import styled from 'styled-components/native';
 import { COLORS } from '../../theme/color';
 import FeedList from '../../components/Feed/FeedList';
@@ -10,6 +10,7 @@ import api from '../../utils/common';
 
 const GoodFeed = () => {
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [selectedCategory, setSelectedCategory] = useState("전체");
   const category = ['전체', '감동적', '선행', '기부', '행복', '봉사활동', '따뜻한', '치유', '웰빙', '(선한)영향력', '기여/이바지', '혁신', '힐링', '성과', '영웅', '향상'];
@@ -38,10 +39,20 @@ const GoodFeed = () => {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     }
     fetchPost();
   }, []);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   const handleShowToast = (message) => {
     setToastMessage(message);

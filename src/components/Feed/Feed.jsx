@@ -140,7 +140,7 @@ const Feed = ({ article, showToast, paddingTop }) => {
         <CategoryButton clicked={true} disabled={true} category={article.keywords} />
         <YellowInnerContent>
           <BoldText>
-            {he.decode(article?.title || "")}
+            {cleanHtml(article?.title || "")}
           </BoldText>
           <ScrapButton isScrapped={isScrapped} onPress={handleScrap} />
         </YellowInnerContent>
@@ -162,7 +162,7 @@ const Feed = ({ article, showToast, paddingTop }) => {
             ? article?.longContent?.split("\n")
             : cleanAndSplitText(article?.longContent)
           ).map((line, index) => (
-            <StyledText key={index}>{he.decode(line.trim())}</StyledText>
+            <StyledText key={index}>{cleanHtml(line.trim())}</StyledText>
           ))}
           <TextFooter>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -329,13 +329,23 @@ const Feed = ({ article, showToast, paddingTop }) => {
   );
 };
 
+const cleanHtml = (text) => {
+  if (!text) return '';
+
+  let decodedText = he.decode(text);
+
+  decodedText = decodedText.replace(/<br\s*\/?>/gi, '\n');
+
+  return decodedText.replace(/<\/?[^>]+(>|$)/g, "");
+};
+
 const cleanAndSplitText = (text) => {
   if (!text) return [];
 
   return text
-    .replace(/AD|공유하기|Copyright|ⓒ|All rights reserved/gi, '') // 광고 및 저작권 정보 제거
-    .split(/(?<=[.!?])\s+/) // 문장을 마침표, 물음표, 느낌표 기준으로 분리
-    .filter(sentence => sentence.trim() !== ""); // 빈 문장 제거
+    .replace(/AD|공유하기|Copyright|ⓒ|All rights reserved/gi, '')
+    .split(/(?<=[.!?])\s+/)
+    .filter(sentence => sentence.trim() !== "");
 };
 
 const YellowContent = styled(ScrollView)`
