@@ -83,7 +83,7 @@ const MakePlace = () => {
           const response = await api.post(`/api/place`, formData, {
             headers: { Authorization: token },
           });
-          navigation.goBack();
+          navigation.navigate("GoodNews", { refresh: true });
         } catch (error) {
           if (error.response) {
             // 서버 응답이 있는 경우

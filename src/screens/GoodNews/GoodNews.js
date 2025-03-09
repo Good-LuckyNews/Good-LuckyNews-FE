@@ -6,32 +6,36 @@ import PlaceList from "./PlaceList";
 import api from "../../utils/common";
 import * as SecureStore from "expo-secure-store";
 
-const GoodNews = () => {
+const GoodNews = ({ route }) => {
   const [sort, setSort] = useState("all");
   const [placeList, setPlaceList] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = await SecureStore.getItemAsync("userToken");
-        if (!token) {
-          console.log("No token found");
-          return;
-        }
-
-        const response = await api.get(`/api/place`, {
-          headers: { Authorization: token },
-          params: { page: 0, size: 10 },
-        });
-        setPlaceList(response.data.result.content);
-        console.log(response.data.result.content);
-      } catch (e) {
-        console.log(e);
+  const fetchData = async () => {
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
       }
-    };
 
+      const response = await api.get(`/api/place`, {
+        headers: { Authorization: token },
+        params: { page: 0, size: 10 },
+      });
+      setPlaceList(response.data.result.content);
+      console.log(response.data.result.content);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (route.params?.refresh) fetchData();
+  }, [route.params]);
 
   return (
     <View style={styles.cotainer}>
