@@ -62,13 +62,23 @@ const FeedList = ({ item, showToast, onScrapChange }) => {
                     <ScrapButton isScrapped={isScrapped} onPress={handleScrap} />
                 </CategoryArea>
                 <Pressable onPress={() => navigation.navigate("GoodFeedDetail", { id: item.id })} style={{ width: '100%', display: 'flex' }}>
-                    <FeedListTitle>{he.decode(item.title)}</FeedListTitle>
+                    <FeedListTitle>{cleanHtml(item?.title || "")}</FeedListTitle>
                     <FeedListDate>{item.date}</FeedListDate>
                 </Pressable>
             </FeedListInnerContainer>
         </FeedListContainer>
     )
 }
+
+const cleanHtml = (text) => {
+  if (!text) return '';
+
+  let decodedText = he.decode(text);
+
+  decodedText = decodedText.replace(/<br\s*\/?>/gi, '\n');
+
+  return decodedText.replace(/<\/?[^>]+(>|$)/g, "");
+};
 
 const FeedListContainer = styled.View`
     flex: 1;
