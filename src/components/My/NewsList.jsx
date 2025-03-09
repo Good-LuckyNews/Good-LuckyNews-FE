@@ -31,7 +31,7 @@ const NewsList = ({ item }) => {
                         </LeftContentArea>
                     </TopLeftContainer>
                     <TopRightContainer>
-                        {item.image ? <ProfileImage source={{ uri: item.image }} /> : <ProfileIcon size={70} />}
+                        {item.image ? <ProfileImage source={{ uri: item.image }} /> : <ProfileImage source={require("../../../assets/images/logo/logo.png")} />}
                     </TopRightContainer>
                 </NewsTopContainer>
                 <NewsBottomContainer>

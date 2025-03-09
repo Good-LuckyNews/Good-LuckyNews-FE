@@ -1,38 +1,60 @@
-import React, { useState, useEffect } from 'react'
-import { FlatList } from 'react-native'
+import React, { useState, useEffect, useCallback } from 'react'
+import { ActivityIndicator, FlatList, RefreshControl, View } from 'react-native'
 import styled from 'styled-components/native';
 import NewsList from './NewsList';
 import api from '../../utils/common';
 import * as SecureStore from 'expo-secure-store';
+import { useFocusEffect } from '@react-navigation/native';
 
 const MyNews = () => {
   const [news, setNews] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const renderItem = ({ item }) => (
     <NewsList item={item} />
   );
 
-  useEffect(() => {
-    const fetchMyNews = async () => {
-      try {
-        const token = await SecureStore.getItemAsync('userToken');
-        if (token) {
-          const response = await api.get(`/api/posts/mypage`, {
-            headers: {
-              'Authorization': `${token}`
-            },
-          });
-          setNews(response.data);
-        } else {
-          console.log('No token found');
-        }
-      } catch (error) {
-        console.log(error);
+  const fetchMyNews = async () => {
+    setLoading(true);
+    try {
+      const token = await SecureStore.getItemAsync('userToken');
+      if (token) {
+        const response = await api.get(`/api/posts/mypage`, {
+          headers: {
+            'Authorization': `${token}`
+          },
+        });
+        setNews(response.data);
+      } else {
+        console.log('No token found');
       }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
-    fetchMyNews();
-  }, [])
+  }
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchMyNews();
+    }, [])
+  );
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchMyNews();
+    setRefreshing(false);
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <Container>
@@ -42,6 +64,9 @@ const MyNews = () => {
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 80, }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
         ListEmptyComponent={
           <EmptyContainer>
             <EmptyText>작성한 소식이 없습니다.</EmptyText>

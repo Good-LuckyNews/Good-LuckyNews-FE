@@ -1,20 +1,22 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { FlatList, RefreshControl } from 'react-native'
+import { ActivityIndicator, FlatList, RefreshControl, View } from 'react-native'
 import FeedList from '../Feed/FeedList';
 import styled from 'styled-components/native';
 import api from '../../utils/common';
 import * as SecureStore from 'expo-secure-store';
+import { useFocusEffect } from '@react-navigation/native';
 
-const Scrap = ({handleShowToast}) => {
+const Scrap = ({ handleShowToast }) => {
   const [posts, setPosts] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
- 
+  const [loading, setLoading] = useState(true);
 
   const renderItem = ({ item }) => (
     <FeedList item={item} showToast={handleShowToast} onScrapChange={handleScrapChange} />
   );
 
   const fetchPost = async () => {
+    setLoading(true);
     try {
       const token = await SecureStore.getItemAsync('userToken');
       if (token) {
@@ -33,12 +35,16 @@ const Scrap = ({handleShowToast}) => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchPost();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchPost();
+    }, [])
+  );
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -49,6 +55,14 @@ const Scrap = ({handleShowToast}) => {
   const handleScrapChange = async () => {
     await fetchPost();
   };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <Container>
