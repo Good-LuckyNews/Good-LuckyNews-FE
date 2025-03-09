@@ -76,14 +76,23 @@ const MakePlace = () => {
       async function makePlaceAxios() {
         try {
           const formData = new FormData();
-          formData.append("image", { imageSrc });
+          const fileName = imageSrc.split("/").pop();
+          const fileType = fileName.split(".").pop();
+          const mimeType = `image/${fileType}`;
+
+          const imageUrl = {
+            uri: imageSrc,
+            name: fileName,
+            type: mimeType,
+          };
+          formData.append("image", imageUrl);
           formData.append("placeName", placeName);
           formData.append("placeDetails", placeIntro);
 
           const response = await api.post(`/api/place`, formData, {
             headers: { Authorization: token },
           });
-          navigation.navigate("GoodNews", { refresh: true });
+          navigation.replace("GoodNews", { refresh: true });
         } catch (error) {
           if (error.response) {
             // 서버 응답이 있는 경우
