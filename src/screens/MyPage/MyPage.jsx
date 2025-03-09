@@ -33,6 +33,7 @@ const MyPage = () => {
         const getProfile = async () => {
             try {
                 const token = await SecureStore.getItemAsync('userToken');
+                console.log(token);
                 if (token) {
                     const response = await api.get(`/api/member/info`, {
                         headers: {

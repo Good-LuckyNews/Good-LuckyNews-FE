@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
-import * as Permissions from 'expo-permissions';
+// import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';

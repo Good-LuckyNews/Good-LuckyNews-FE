@@ -4,11 +4,7 @@ import styled from 'styled-components/native';
 import NewsList from './NewsList';
 
 const MyCommentedNews = () => {
-  const [news, setNews] = useState([
-    { id: "1", nickname: "웃음 한 스푼", content: "오늘 아파트 엘리베이터에서 만난 할머니가 저한테 ‘오늘 하루도 힘내요~’라고 인사해주셨어요! 덕분에 하루 종일 미소가 떠나질 않네요 :)", date: "1일 전", heart: "3", comment: "1" },
-    { id: "5", nickname: "웃음 한 스푼", content: "오늘 아파트 엘리베이터에서 만난 할머니가 저한테 ‘오늘 하루도 힘내요~’라고 인사해주셨어요! 덕분에 하루 종일 미소가 떠나질 않네요 :)", date: "1일 전", heart: "3", comment: "1" },
-    { id: "6", nickname: "웃음 한 스푼", content: "오늘 아파트 엘리베이터에서 만난 할머니가 저한테 ‘오늘 하루도 힘내요~’라고 인사해주셨어요! 덕분에 하루 종일 미소가 떠나질 않네요 :)", date: "1일 전", heart: "3", comment: "1" },
-  ]);
+  const [news, setNews] = useState([]);
 
   const renderItem = ({ item }) => (
     <NewsList item={item} />
@@ -22,6 +18,11 @@ const MyCommentedNews = () => {
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 80, }}
+        ListEmptyComponent={
+          <EmptyContainer>
+            <EmptyText>답글 단 소식이 없습니다.</EmptyText>
+          </EmptyContainer>
+        }
       />
     </Container>
   )
@@ -30,6 +31,18 @@ const MyCommentedNews = () => {
 const Container = styled.View`
     flex: 1;
     padding: 10px 20px;
+`;
+
+const EmptyContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+`;
+
+const EmptyText = styled.Text`
+  font-size: 16px;
+  color: #8A8888;
+  font-family: ${(props) => props.theme.fonts.medium};
 `;
 
 export default MyCommentedNews

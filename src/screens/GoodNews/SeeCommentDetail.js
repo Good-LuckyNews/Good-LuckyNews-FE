@@ -164,7 +164,7 @@ const PrevComment = ({ username, content, image, style }) => {
     >
       <Image
         source={require("../../../assets/images/uploadImage/default_profile_image.png")}
-        style={{ width: 25, height: 25, borderRadius: "100%" }}
+        style={{ width: 25, height: 25, borderRadius: 50 }}
       />
       <Text style={styles.prevText}>{username}</Text>
       <Text

@@ -61,6 +61,11 @@ const Scrap = ({handleShowToast}) => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
+        ListEmptyComponent={
+          <EmptyContainer>
+            <EmptyText>스크랩 한 소식이 없습니다.</EmptyText>
+          </EmptyContainer>
+        }
       />
     </Container>
   )
@@ -69,6 +74,18 @@ const Scrap = ({handleShowToast}) => {
 const Container = styled.View`
     flex: 1;
     padding: 10px 20px;
+`;
+
+const EmptyContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+`;
+
+const EmptyText = styled.Text`
+  font-size: 16px;
+  color: #8A8888;
+  font-family: ${(props) => props.theme.fonts.medium};
 `;
 
 export default Scrap
