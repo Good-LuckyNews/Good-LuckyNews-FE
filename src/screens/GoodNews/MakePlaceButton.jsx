@@ -3,12 +3,14 @@ import { Image, StyleSheet, Text, View } from "react-native";
 import SquareButton from "../../components/SquareButton";
 import { useNavigation } from "@react-navigation/native";
 
-const MakePlaceButton = () => {
+const MakePlaceButton = ({ type, title, style }) => {
   const navigate = useNavigation();
 
   return (
-    <View style={styles.makePlaceContainer}>
-      <Text style={styles.makePlaceText}>함께 희소식을 공유할</Text>
+    <View style={[styles.makePlaceContainer, style]}>
+      {type === "플레이스" && (
+        <Text style={styles.makePlaceText}>함께 희소식을 공유할</Text>
+      )}
       <View
         style={{
           flexDirection: "row",
@@ -16,17 +18,26 @@ const MakePlaceButton = () => {
           marginBottom: "15",
         }}
       >
-        <Text style={styles.makePlaceText}>플레이스를 만들어주세요</Text>
+        <Text style={styles.makePlaceText}>
+          {type === "플레이스"
+            ? "플레이스를 만들어주세요"
+            : "희소식을 들려주세요"}
+        </Text>
         <Image
           style={{ width: "20", height: "14" }}
           source={require("../../../assets/icon.png")}
         />
       </View>
       <SquareButton
-        text="플레이스 만들기"
+        text={type === "플레이스" ? "플레이스 만들기" : "희소식 작성하기"}
         width={117}
         height={28}
-        onPress={() => navigate.navigate("MakePlace")}
+        onPress={() => {
+          navigate.navigate(
+            type === "플레이스" ? "MakePlace" : "WriteGoodNews",
+            type === "희소식" ? { title: title } : undefined
+          );
+        }}
       />
     </View>
   );

@@ -10,6 +10,9 @@ import TimeButton from "./My/TimeButton";
 import NextStepButton from "./NextStepButton";
 import RoundButton from "./RoundButton";
 import SquareButton from "./SquareButton";
+import LikeComponent from "./News/LikeComponent";
+import CommentComponent from "./News/CommentComponent";
+import GoodNewsComponent from "./News/GoodNewsComponent";
 
 export {
   CustomAlert,
@@ -24,4 +27,7 @@ export {
   NextStepButton,
   RoundButton,
   SquareButton,
+  LikeComponent,
+  CommentComponent,
+  GoodNewsComponent,
 };

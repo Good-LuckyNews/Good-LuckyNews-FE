@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.408,
   },
   buttonContainer: {
+    marginBottom: 5,
     flexDirection: "row",
     gap: "6",
   },
