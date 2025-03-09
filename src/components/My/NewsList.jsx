@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import styled from 'styled-components/native';
-import { CommentIcon, HeartActiveIcon, HeartInActiveIcon } from '../../utils/icons';
+import { CommentIcon, HeartActiveIcon, HeartInActiveIcon, ProfileIcon } from '../../utils/icons';
 import { COLORS } from '../../theme/color';
 import { Pressable } from 'react-native';
+import { getTimeDifference } from '../../hooks';
 // import * as Notifications from 'expo-notifications';
 
 const NewsList = ({ item }) => {
     const [isHearted, setIsHearted] = useState(false);
 
-    const toggleHeart = async  () => {
+    const toggleHeart = async () => {
         setIsHearted(!isHearted);
 
         if (!isHearted) {
@@ -22,15 +23,15 @@ const NewsList = ({ item }) => {
                 <NewsTopContainer>
                     <TopLeftContainer>
                         <LeftTopArea>
-                            <NameText>{item.nickname}</NameText>
-                            <DateText>{item.date}</DateText>
+                            <NameText>{item.title}</NameText>
+                            <DateText>{getTimeDifference(item.updatedAt)}</DateText>
                         </LeftTopArea>
                         <LeftContentArea>
                             <ContentText>{item.content}</ContentText>
                         </LeftContentArea>
                     </TopLeftContainer>
                     <TopRightContainer>
-                        <ProfileImage source={{ uri: "https://s3-alpha-sig.figma.com/img/4b9e/6e57/ac552dc6b46db60ff3c47a4927913721?Expires=1740960000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=MC3jyhb8oQ1yUYdGi2fk3e4D3BZ7u~OyClkb0GLzNAoV5NpSNtHR4h~4N-IZ4iI~jLcllbHnjkqy1QcEF7p8zCqQdwxtYwZRMRphpErBMs4qWcOQXQZ4y0Tp~0rERPEQOUyj5lZ6mVQ8Iw-UvrmSkNlXnoetqIsskYXVZCdP2nhghx1ZtlwkGAjLKlIMJZe7pCV6ggvN7BmGgrESfk6sNrr9ZY75WCBnOk3WvlfTLSKsbsAAijo3~mnnFxE4~6YdRc6A4fC-WP7ruajwOHSrBRbiatIiYQNtYba8YdlVcmrSTx8dOcNnyVoGVb5NMwQYOkR68Gfqp7QBJ4wcJAfM4g__" }} />
+                        {item.image ? <ProfileImage source={{ uri: item.image }} /> : <ProfileImage source={require("../../../assets/images/logo/logo.png")} />}
                     </TopRightContainer>
                 </NewsTopContainer>
                 <NewsBottomContainer>
@@ -38,11 +39,13 @@ const NewsList = ({ item }) => {
                         <Pressable onPress={toggleHeart}>
                             {isHearted ? <HeartActiveIcon /> : <HeartInActiveIcon />}
                         </Pressable>
-                        <CountText isHearted={isHearted}>{item.heart}</CountText>
+                        {/* <CountText isHearted={isHearted}>{item.heart}</CountText> */}
+                        <CountText isHearted={isHearted}>{item.likeCount}</CountText>
                     </HeartArea>
                     <CommentArea>
                         <CommentIcon />
-                        <CountText>{item.comment}</CountText>
+                        {/* <CountText>{item.comment}</CountText> */}
+                        <CountText>{item.commentCount}</CountText>
                     </CommentArea>
                 </NewsBottomContainer>
             </NewsListInnerContainer>

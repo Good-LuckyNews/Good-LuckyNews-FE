@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   placeImage: {
     width: 77,
     height: 77,
-    borderRadius: "100%",
+    borderRadius: 50,
     marginLeft: "auto",
     marginRight: 6,
   },
