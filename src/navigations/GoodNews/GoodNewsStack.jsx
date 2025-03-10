@@ -12,20 +12,22 @@ import {
   GoodNews,
   GoodNewsDetail,
   MakePlace,
+  Search,
   SeeCommentDetail,
   WriteGoodNews,
 } from "../../screens";
+import { useNavigation } from "@react-navigation/native";
 
 const Stack = createStackNavigator();
 
 const HeaderRight = ({ focused }) => {
-  // const navigation = useNavigation();
+  const navigation = useNavigation();
 
   return (
     <React.Fragment>
       {/* 검색 버튼 */}
       <Pressable
-        // onPress={() => navigation.navigate('SearchScreen')}
+        onPress={() => navigation.navigate("Search")}
         style={{ marginRight: 7 }}
       >
         {focused ? <SearchActiveIcon /> : <SearchInActiveIcon />}
@@ -81,6 +83,11 @@ const GoodNewsStack = () => {
         options={({ route }) => ({
           headerTitle: route.params?.title || "댓글 보기",
         })}
+      />
+      <Stack.Screen
+        name="Search"
+        component={Search}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
