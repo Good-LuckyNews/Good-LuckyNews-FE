@@ -15,6 +15,7 @@ import PrivacyConsent from "./Login/PrivacyConsent";
 import TermsOfService from "./Login/TermsOfService";
 import SignUpPreference from "./Login/SignUpPreference";
 import SignUpComplete from "./Login/SignUpComplete";
+import Search from "./Search/Search";
 
 export {
   Home,
@@ -34,4 +35,5 @@ export {
   TermsOfService,
   SignUpPreference,
   SignUpComplete,
+  Search,
 };

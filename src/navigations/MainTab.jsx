@@ -36,7 +36,7 @@ const HeaderRight = ({ focused }) => {
     <React.Fragment>
       {/* 검색 버튼 */}
       <Pressable
-        // onPress={() => navigation.navigate('Search')}
+        onPress={() => navigation.navigate("Search")}
         style={{ marginRight: 7 }}
       >
         {focused ? <SearchActiveIcon /> : <SearchInActiveIcon />}
