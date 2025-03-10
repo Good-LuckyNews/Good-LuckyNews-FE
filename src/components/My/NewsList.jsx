@@ -4,7 +4,7 @@ import { CommentIcon, HeartActiveIcon, HeartInActiveIcon, ProfileIcon } from '..
 import { COLORS } from '../../theme/color';
 import { Pressable } from 'react-native';
 import { getTimeDifference } from '../../hooks';
-// import * as Notifications from 'expo-notifications';
+import * as Notifications from 'expo-notifications';
 
 const NewsList = ({ item }) => {
     const [isHearted, setIsHearted] = useState(false);

@@ -5,7 +5,7 @@ import { View } from "react-native";
 import Navigation from "./src/navigations";
 import { ThemeProvider } from "styled-components/native";
 import { theme } from "./src/theme/theme";
-import { EditingProvider, ScrapProvider } from "./src/contexts";
+import { EditingProvider, NotificationProvider, ScrapProvider } from "./src/contexts";
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -25,15 +25,17 @@ export default function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <ScrapProvider>
-      <EditingProvider>
-        <ThemeProvider theme={theme}>
-          <View style={{ flex: 1 }}>
-            <StatusBar style="auto" />
-            <Navigation />
-          </View>
-        </ThemeProvider>
-      </EditingProvider>
-    </ScrapProvider>
+    <NotificationProvider>
+      <ScrapProvider>
+        <EditingProvider>
+          <ThemeProvider theme={theme}>
+            <View style={{ flex: 1 }}>
+              <StatusBar style="auto" />
+              <Navigation />
+            </View>
+          </ThemeProvider>
+        </EditingProvider>
+      </ScrapProvider>
+    </NotificationProvider>
   );
 }

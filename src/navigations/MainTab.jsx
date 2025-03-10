@@ -17,11 +17,12 @@ import {
 } from "../utils/icons";
 import GoodNewsStack from "./GoodNews/GoodNewsStack";
 import GoodFeedStack from "./GoodFeed/GoodFeedStack";
-import { Image, Pressable } from "react-native";
+import { Image, Pressable, View } from "react-native";
 import { theme } from "../theme/theme";
 import MyPageStack from "./MyPage/MyPageStack";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import HomeStack from "./Home/HomeStack";
+import { useNotification } from "../contexts";
 
 const Tab = createBottomTabNavigator();
 
@@ -31,6 +32,11 @@ const TabBarIcon = ({ focused, ActiveIcon, InactiveIcon }) => {
 
 const HeaderRight = ({ focused }) => {
   const navigation = useNavigation();
+  const { notificationList } = useNotification();
+  const unreadCount = notificationList.filter((item) => !item.read).length;
+  const route = useRoute();
+  const isNotificationScreen = route.name === "Notification";
+  const isSearchScreen = route.name === "Search";
 
   return (
     <React.Fragment>
@@ -39,12 +45,27 @@ const HeaderRight = ({ focused }) => {
         // onPress={() => navigation.navigate('Search')}
         style={{ marginRight: 7 }}
       >
-        {focused ? <SearchActiveIcon /> : <SearchInActiveIcon />}
+        {isSearchScreen ? <SearchActiveIcon /> : <SearchInActiveIcon />}
       </Pressable>
 
       {/* 알림 버튼 */}
       <Pressable onPress={() => navigation.navigate("Notification")}>
-        {focused ? <AlarmActiveIcon /> : <AlarmInActiveIcon />}
+        {isNotificationScreen ? <AlarmActiveIcon /> : <AlarmInActiveIcon />}
+        {unreadCount > 0 && (
+          <View
+            style={{
+              position: "absolute",
+              right: 1.2,
+              top: 2.2,
+              backgroundColor: "#FF5B5B",
+              width: 5,
+              height: 5,
+              borderRadius: 50,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          ></View>
+        )}
       </Pressable>
     </React.Fragment>
   );
@@ -86,7 +107,7 @@ const MainTab = () => {
             style={{ width: 98, height: 34, resizeMode: "contain" }}
           />
         ),
-        headerRight: ({ focused }) => <HeaderRight focused={focused} />,
+        headerRight: () => <HeaderRight />,
         headerLeftContainerStyle: {
           paddingLeft: 10,
         },
