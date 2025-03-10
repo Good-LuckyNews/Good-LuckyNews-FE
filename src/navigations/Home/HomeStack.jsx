@@ -1,6 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import { Home, Notification } from '../../screens';
+import { Home, Notification, Search } from '../../screens';
 import { Image, Pressable, View } from 'react-native';
 import { AlarmActiveIcon, AlarmInActiveIcon, SearchActiveIcon, SearchInActiveIcon } from '../../utils/icons';
 import { COLORS } from '../../theme/color';
@@ -19,15 +19,12 @@ const HeaderRight = () => {
 
     return (
         <React.Fragment>
-            {/* 검색 버튼 */}
             <Pressable
-                // onPress={() => navigation.navigate('SearchScreen')}
+                onPress={() => navigation.navigate("Search")}
                 style={{ marginRight: 7 }}
             >
                 {isSearchScreen ? <SearchActiveIcon /> : <SearchInActiveIcon />}
             </Pressable>
-
-            {/* 알림 버튼 */}
             <Pressable
                 onPress={() => navigation.navigate('Notification')}
             >
@@ -79,6 +76,11 @@ const HomeStack = () => {
         >
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name='Notification' component={Notification} />
+            <Stack.Screen
+                name="Search"
+                component={Search}
+                options={{ headerShown: false }}
+            />
         </Stack.Navigator>
     );
 };

@@ -1,15 +1,6 @@
 import React, { useState } from "react";
-import {
-  Button,
-  Image,
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { LikeComponent, SquareButton } from "../../components";
-import { useNavigation } from "@react-navigation/native";
+import { Image, StyleSheet, Text, View } from "react-native";
+import { LikeComponent } from "../../components";
 import { COLORS } from "../../theme/color";
 import GoodNewsList from "./GoodNewsList";
 
@@ -98,25 +89,7 @@ const GoodNewsDetail = () => {
   const [selectedCommentId, setSelectedCommentId] = useState(null);
 
   return (
-    <Pressable
-      style={{ flex: 1 }}
-      onPress={() => {
-        setSelectedCommentId(null);
-        console.log("mainContainer");
-      }}
-    >
-      <Modal
-        transparent={true}
-        visible={!!selectedCommentId}
-        onRequestClose={() => setSelectedCommentId(null)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text>댓글을 삭제하시겠습니까?</Text>
-            <Button title="닫기" onPress={() => setSelectedCommentId(null)} />
-          </View>
-        </View>
-      </Modal>
+    <View style={{ flex: 1 }}>
       <View style={styles.placeInfoContainer}>
         <View style={{ marginTop: 7, gap: 16 }}>
           <Text style={styles.placeNameText}>{goodNewInfo.placeName}</Text>
@@ -138,27 +111,13 @@ const GoodNewsDetail = () => {
         setSelectedCommentId={setSelectedCommentId}
         placeName={goodNewInfo.placeName}
       />
-    </Pressable>
+    </View>
   );
 };
 
 export default GoodNewsDetail;
 
 const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalContent: {
-    width: 300,
-    padding: 20,
-    backgroundColor: "white",
-    borderRadius: 10,
-    alignItems: "center",
-  },
-
   placeInfoContainer: {
     paddingTop: 29,
     paddingHorizontal: 22,

@@ -1,6 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import { GoodFeedDetail, MyPage, Notification, ProfileEdit } from '../../screens';
+import { GoodFeedDetail, MyPage, Notification, ProfileEdit, Search } from '../../screens';
 import { Image, Pressable, View } from 'react-native';
 import { AlarmActiveIcon, AlarmInActiveIcon, SearchActiveIcon, SearchInActiveIcon } from '../../utils/icons';
 import { COLORS } from '../../theme/color';
@@ -9,7 +9,7 @@ import { useNotification } from '../../contexts';
 
 const Stack = createStackNavigator();
 
-const HeaderRight = ({ focused }) => {
+const HeaderRight = () => {
     const navigation = useNavigation();
     const { notificationList } = useNotification();
     const unreadCount = notificationList.filter((item) => !item.read).length;
@@ -21,7 +21,7 @@ const HeaderRight = ({ focused }) => {
         <React.Fragment>
             {/* 검색 버튼 */}
             <Pressable
-                // onPress={() => navigation.navigate('SearchScreen')}
+                onPress={() => navigation.navigate("Search")}
                 style={{ marginRight: 7 }}
             >
                 {isSearchScreen ? <SearchActiveIcon /> : <SearchInActiveIcon />}
@@ -81,6 +81,11 @@ const MyPageStack = () => {
             <Stack.Screen name="ProfileEdit" component={ProfileEdit} />
             <Stack.Screen name="GoodFeedDetail" component={GoodFeedDetail} />
             <Stack.Screen name='Notification' component={Notification} />
+            <Stack.Screen
+                name="Search"
+                component={Search}
+                options={{ headerShown: false }}
+            />
         </Stack.Navigator>
     );
 };

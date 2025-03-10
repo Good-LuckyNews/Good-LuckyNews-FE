@@ -13,6 +13,7 @@ import {
   GoodNewsDetail,
   MakePlace,
   Notification,
+  Search,
   SeeCommentDetail,
   WriteGoodNews,
 } from "../../screens";
@@ -21,7 +22,7 @@ import { useNotification } from "../../contexts";
 
 const Stack = createStackNavigator();
 
-const HeaderRight = ({ focused }) => {
+const HeaderRight = () => {
   const navigation = useNavigation();
   const { notificationList } = useNotification();
   const unreadCount = notificationList.filter((item) => !item.read).length;
@@ -31,15 +32,13 @@ const HeaderRight = ({ focused }) => {
 
   return (
     <React.Fragment>
-      {/* 검색 버튼 */}
       <Pressable
-        // onPress={() => navigation.navigate('SearchScreen')}
+        onPress={() => navigation.navigate("Search")}
         style={{ marginRight: 7 }}
       >
         {isSearchScreen ? <SearchActiveIcon /> : <SearchInActiveIcon />}
       </Pressable>
 
-      {/* 알림 버튼 */}
       <Pressable
         onPress={() => navigation.navigate('Notification')}
       >
@@ -104,6 +103,11 @@ const GoodNewsStack = () => {
         options={({ route }) => ({
           headerTitle: route.params?.title || "댓글 보기",
         })}
+      />
+      <Stack.Screen
+        name="Search"
+        component={Search}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
