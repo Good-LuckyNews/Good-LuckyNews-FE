@@ -1,85 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { COLORS } from "../../theme/color";
 import { StyleSheet, Text, View } from "react-native";
 import RoundButton from "../../components/RoundButton";
 import PlaceList from "./PlaceList";
+import api from "../../utils/common";
+import * as SecureStore from "expo-secure-store";
 
-const GoodNews = () => {
+const GoodNews = ({ route }) => {
   const [sort, setSort] = useState("all");
-  const [placeList, setPlaceList] = useState([
-    {
-      id: 1,
-      title: "웃음 한 스푼",
-      content: "오늘 하루 미소지었던 순간은 언제인가요?",
-      likeCount: 1,
-      liked: true,
-      image: "이미지 경로",
-    },
-    {
-      id: 2,
-      title: "웃음 한 스푼",
-      content: "오늘 하루 미소지었던 순간은 언제인가요?",
-      likeCount: 1,
-      liked: false,
-      image: "이미지 경로",
-    },
-    {
-      id: 3,
-      title: "웃음 한 스푼",
-      content: "오늘 하루 미소지었던 순간은 언제인가요?",
-      likeCount: 2,
-      liked: true,
-      image: "이미지 경로",
-    },
-    {
-      id: 4,
-      title: "웃음 한 스푼",
-      content: "오늘 하루 미소지었던 순간은 언제인가요?",
-      likeCount: 1,
-      liked: true,
-      image: "이미지 경로",
-    },
-    {
-      id: 5,
-      title: "웃음 한 스푼",
-      content: "오늘 하루 미소지었던 순간은 언제인가요?",
-      likeCount: 1,
-      liked: false,
-      image: "이미지 경로",
-    },
-    {
-      id: 6,
-      title: "웃음 한 스푼",
-      content: "오늘 하루 미소지었던 순간은 언제인가요?",
-      likeCount: 2,
-      liked: true,
-      image: "이미지 경로",
-    },
-    {
-      id: 7,
-      title: "웃음 한 스푼",
-      content: "오늘 하루 미소지었던 순간은 언제인가요?",
-      likeCount: 1,
-      liked: true,
-      image: "이미지 경로",
-    },
-    {
-      id: 8,
-      title: "웃음 한 스푼",
-      content: "오늘 하루 미소지었던 순간은 언제인가요?",
-      likeCount: 1,
-      liked: false,
-      image: "이미지 경로",
-    },
-    {
-      id: 9,
-      title: "웃음 한 스푼",
-      content: "오늘 하루 미소지었던 순간은 언제인가요?",
-      likeCount: 2,
-      liked: true,
-      image: "이미지 경로",
-    },
-  ]);
+  const [placeList, setPlaceList] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+
+      const response = await api.get(`/api/place`, {
+        headers: { Authorization: token },
+        params: { page: 0, size: 10 },
+      });
+      setPlaceList(response.data.result.content);
+      console.log(response.data.result.content);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (route.params?.refresh) fetchData();
+  }, [route.params]);
 
   return (
     <View style={styles.cotainer}>

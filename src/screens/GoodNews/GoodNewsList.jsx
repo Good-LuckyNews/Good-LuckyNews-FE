@@ -11,6 +11,7 @@ import { COLORS } from "../../theme/color";
 import MakePlaceButton from "./MakePlaceButton";
 import { useNavigation } from "@react-navigation/native";
 import { GoodNewsComponent } from "../../components";
+import DeleteModal from "../../components/News/DeleteModal";
 
 const GoodNewsList = ({
   timeline,
@@ -22,12 +23,22 @@ const GoodNewsList = ({
 
   const handleDelete = (id) => {
     // 데이터 삭제
-    console.log(id);
     setSelectedCommentId(id);
+  };
+
+  const deleteGoodNews = () => {
+    // 희소식 삭제하기 axios
+    setSelectedCommentId(null);
   };
 
   return (
     <View style={{ flex: 1 }}>
+      <DeleteModal
+        visible={!!selectedCommentId}
+        text="희소식을 삭제하시겠습니까?"
+        onCancel={() => setSelectedCommentId(null)}
+        onDelete={deleteGoodNews}
+      />
       <View style={styles.container}>
         <FlatList
           data={timeline}
@@ -48,10 +59,7 @@ const GoodNewsList = ({
               }}
             >
               <Pressable
-                style={[
-                  styles.goodNewsContainer,
-                  selectedCommentId === item.id && styles.selectedItem,
-                ]}
+                style={styles.goodNewsContainer}
                 onPress={() =>
                   navigation.navigate("SeeCommentDetail", {
                     title: placeName,
@@ -113,10 +121,7 @@ const CommentList = ({ commentList, selectedCommentId, handleDelete }) => {
         commentList.map((comment) => (
           <Pressable
             key={comment.id}
-            style={[
-              { marginBottom: 22 },
-              selectedCommentId === comment.id && styles.selectedItem,
-            ]}
+            style={{ marginBottom: 22 }}
             onLongPress={(e) => {
               e.stopPropagation();
               handleDelete(comment.id);
@@ -180,12 +185,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingBottom: 9,
     backgroundColor: COLORS.White,
-  },
-  selectedItem: {
-    backgroundColor: "Gray",
-    borderRadius: 15,
-    borderColor: "red",
-    borderWidth: 1,
   },
 
   seeAllCommentsContainer: {
