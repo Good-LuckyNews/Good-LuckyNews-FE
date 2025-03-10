@@ -12,37 +12,8 @@ import {
 import RoundButton from "../../components/RoundButton";
 import { LikeComponent, ScrapButton } from "../../components";
 import { useNavigation } from "@react-navigation/native";
-
-const feedtest = [
-  {
-    id: 1,
-    category: "기부",
-    title: "펫푸드 기업 ‘우리와’, 유기동물 보호단체에 사료 기부",
-    date: "2025.02.10",
-    bookmarked: true,
-  },
-  {
-    id: 2,
-    category: "기부",
-    title: "이웃돕기 후원금 300만원 익명 기부",
-    date: "2025.02.10",
-    bookmarked: false,
-  },
-  {
-    id: 3,
-    category: "기부",
-    title: "자녀들이 준 용돈 모아 1천만원 기부한 90대 할머니",
-    date: "2025.02.06",
-    bookmarked: false,
-  },
-  {
-    id: 4,
-    category: "기부",
-    title: "자녀들이 준 용돈 모아 1천만원 기부한 90대 할머니",
-    date: "2025.02.06",
-    bookmarked: false,
-  },
-];
+import * as SecureStore from "expo-secure-store";
+import api from "../../utils/common";
 
 const newstest = [
   {
@@ -66,13 +37,32 @@ const newstest = [
 const Search = () => {
   const [text, setText] = useState("");
   const [searched, setSearched] = useState(false);
-  const [feedResult, setResult] = useState(feedtest);
+  const [feedResult, setFeedResult] = useState([]);
   const [newsResult, setNewsResult] = useState(newstest);
   const navigation = useNavigation();
 
   const handleSearch = async () => {
     if (!text) return;
     setSearched(true);
+
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+      const response = await api.post(
+        `/article/search?page=0&size=5`,
+        { searchQuery: text },
+        {
+          headers: { Authorization: token },
+        }
+      );
+      console.log(response.data.result);
+      setFeedResult(response.data.result);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -152,13 +142,15 @@ const FeedListComponent = ({ feedResult }) => {
                 }}
               >
                 <RoundButton
-                  text={feed.category}
+                  text={feed.keywords}
                   style={{ paddingHorizontal: 22, alignSelf: "flex-start" }}
                 />
                 <ScrapButton isScrapped={feed.bookmarked} onPress={() => {}} />
               </View>
               <Text style={styles.feedTitle}>{feed.title}</Text>
-              <Text style={styles.feedDate}>{feed.date}</Text>
+              <Text style={styles.feedDate}>
+                {feed.originalDate.split("T")[0].replace(/-/g, ".")}
+              </Text>
             </View>
           ))}
           {!seeMore && (
