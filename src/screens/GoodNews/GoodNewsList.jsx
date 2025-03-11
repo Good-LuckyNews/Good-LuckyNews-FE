@@ -43,7 +43,7 @@ const GoodNewsList = ({
       <View style={styles.container}>
         <FlatList
           data={timeline}
-          keyExtractor={(item) => item.commentId}
+          keyExtractor={(item) => item.postId}
           ListHeaderComponent={
             <MakePlaceButton
               type="희소식"

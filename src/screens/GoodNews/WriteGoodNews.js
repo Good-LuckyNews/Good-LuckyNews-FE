@@ -89,7 +89,6 @@ const WriteGoodNews = ({ navigation, route }) => {
             "Content-Type": "multipart/form-data",
           });
 
-          navigation.setParams({ refresh: true });
           navigation.goBack();
         } catch (error) {
           if (error.response) {

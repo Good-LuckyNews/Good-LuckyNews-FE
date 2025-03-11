@@ -54,7 +54,7 @@ const GoodNews = ({ route }) => {
           onPress={() => setSort("my")}
         />
       </View>
-      <PlaceList placeList={placeList} sort={sort} />
+      <PlaceList placeList={placeList} sort={sort} fetchData={fetchData} />
     </View>
   );
 };
