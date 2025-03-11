@@ -6,9 +6,10 @@ import PlaceList from "./PlaceList";
 import api from "../../utils/common";
 import * as SecureStore from "expo-secure-store";
 
-const GoodNews = ({ route }) => {
+const GoodNews = ({ route, navigation }) => {
   const [sort, setSort] = useState("all");
   const [placeList, setPlaceList] = useState([]);
+  const [myPlaceList, setMyPlaceList] = useState([]);
 
   const fetchData = async () => {
     try {
@@ -18,24 +19,31 @@ const GoodNews = ({ route }) => {
         return;
       }
 
-      const response = await api.get(`/api/place`, {
+      const response1 = await api.get(`/api/place`, {
         headers: { Authorization: token },
-        params: { page: 0, size: 10 },
+        params: { page: 0, size: 100 },
       });
-      setPlaceList(response.data.result.content);
-      console.log(response.data.result.content);
+      setPlaceList(response1.data.result.content);
+
+      const response2 = await api.get(`/api/place/mypage`, {
+        headers: { Authorization: token },
+      });
+      setMyPlaceList(response2.data.result);
+      console.log("야호~~~~", response2);
     } catch (e) {
       console.log(e);
     }
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    const unsubscribe = navigation.addListener("focus", () => {
+      // focus될 때마다 데이터를 새로 고침
+      fetchData();
+    });
 
-  useEffect(() => {
-    if (route.params?.refresh) fetchData();
-  }, [route.params]);
+    // cleanup
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <View style={styles.cotainer}>
@@ -54,7 +62,11 @@ const GoodNews = ({ route }) => {
           onPress={() => setSort("my")}
         />
       </View>
-      <PlaceList placeList={placeList} sort={sort} fetchData={fetchData} />
+      <PlaceList
+        placeList={sort === "all" ? placeList : myPlaceList}
+        sort={sort}
+        fetchData={fetchData}
+      />
     </View>
   );
 };
