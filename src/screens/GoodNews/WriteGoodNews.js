@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -9,15 +9,17 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Pressable,
-  Button,
+  Text,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
+import * as SecureStore from "expo-secure-store";
+import api from "../../utils/common";
 
-const WriteGoodNews = () => {
+const WriteGoodNews = ({ navigation, route }) => {
   const [text, setText] = useState("");
   const [imageSrc, setImageSrc] = useState(null);
   const [permissionStatus, setPermissionStatus] = useState(null);
+  const { placeId } = route.params;
 
   // 권한 요청 함수
   const requestPermission = async () => {
@@ -54,32 +56,76 @@ const WriteGoodNews = () => {
     }
   };
 
-  // 이미지 업로드 함수
-  const uploadImage = async (uri) => {
-    const fileName = uri.split("/").pop(); // 파일 이름 추출
-    const formData = new FormData();
-
-    formData.append("image", {
-      uri,
-      name: fileName,
-      type: "image/jpeg", // 이미지 MIME 타입 (필요에 따라 변경)
-    });
-
+  // axios 연동
+  const handleComplete = async () => {
     try {
-      const response = await fetch("YOUR_SERVER_URL", {
-        method: "POST",
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        body: formData,
-      });
+      // 토큰 조회
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+      // axios 연동
+      async function WriteGoodNewsAxios() {
+        try {
+          const formData = new FormData();
+          if (imageSrc) {
+            const fileName = imageSrc.split("/").pop();
+            const fileType = fileName.split(".").pop();
+            const mimeType = `image/${fileType}`;
 
-      const responseData = await response.json();
-      console.log("Upload response: ", responseData);
-    } catch (error) {
-      console.error("Upload error: ", error);
+            const imageUrl = {
+              uri: imageSrc,
+              name: fileName,
+              type: mimeType,
+            };
+            formData.append("image", imageUrl);
+          } else formData.append("image", "");
+          formData.append("content", text);
+          formData.append("placeId", placeId);
+
+          const response = await api.post(`/api/posts`, formData, {
+            headers: { Authorization: token },
+            "Content-Type": "multipart/form-data",
+          });
+
+          navigation.setParams({ refresh: true });
+          navigation.goBack();
+        } catch (error) {
+          if (error.response) {
+            // 서버 응답이 있는 경우
+            console.error("Response error:", error.response);
+            console.log("\n");
+            console.error("Status code:", error.response.status);
+            console.log("\n");
+            console.error("Error data:", error.response.data);
+          } else if (error.request) {
+            // 요청은 보내졌으나 응답을 받지 못한 경우
+            console.error("Request error:", error.request);
+          } else {
+            // 에러 메시지
+            console.error("Error message:", error);
+          }
+        }
+      }
+
+      WriteGoodNewsAxios();
+    } catch (e) {
+      console.log(e);
+    } finally {
     }
   };
+
+  useEffect(() => {
+    // 화면이 렌더링 될 때 navigation 옵션을 설정
+    navigation.setOptions({
+      headerRight: () => (
+        <Pressable onPress={handleComplete}>
+          <Text style={styles.completeText}>완료</Text>
+        </Pressable>
+      ),
+    });
+  }, [navigation]);
 
   return (
     <KeyboardAvoidingView
@@ -172,5 +218,13 @@ const styles = StyleSheet.create({
     height: 88,
     resizeMode: "cover",
     borderRadius: 10,
+  },
+
+  completeText: {
+    color: "#A9A9A9",
+    fontFamily: "FontM",
+    fontWeight: 400,
+    lineHeight: 22,
+    letterSpacing: -0.408,
   },
 });

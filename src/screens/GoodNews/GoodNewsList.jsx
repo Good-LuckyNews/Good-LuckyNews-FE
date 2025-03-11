@@ -18,6 +18,7 @@ const GoodNewsList = ({
   selectedCommentId,
   setSelectedCommentId,
   placeName,
+  placeId,
 }) => {
   const navigation = useNavigation();
 
@@ -42,12 +43,13 @@ const GoodNewsList = ({
       <View style={styles.container}>
         <FlatList
           data={timeline}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.commentId}
           ListHeaderComponent={
             <MakePlaceButton
               type="희소식"
               style={{ marginVertical: 30, marginBottom: 7 }}
               title={placeName}
+              placeId={placeId}
             />
           }
           renderItem={({ item }) => (
@@ -63,26 +65,26 @@ const GoodNewsList = ({
                 onPress={() =>
                   navigation.navigate("SeeCommentDetail", {
                     title: placeName,
-                    commentId: item.id,
+                    commentId: item.postId,
                   })
                 }
                 onLongPress={(e) => {
                   e.stopPropagation();
-                  handleDelete(item.id);
+                  handleDelete(item.postId);
                 }}
                 delayLongPress={500}
               >
                 <GoodNewsComponent
-                  username={item.username}
-                  time={item.time}
+                  username={String(item.userId)} // 수정 필요
+                  time={item.createdAt.split("T")[0].replace(/-/g, ".")}
                   content={item.content}
                   image={item.image}
                   likeCount={item.likeCount}
-                  liked={item.liked}
-                  commentCount={item.comment.length}
+                  liked={item.liked} // 수정 필요
+                  commentCount={item.commentCount}
                 />
               </Pressable>
-              {item.comment.length > 0 && (
+              {item.commentCount > 0 && (
                 <CommentList
                   commentList={item.comment}
                   selectedCommentId={selectedCommentId}
