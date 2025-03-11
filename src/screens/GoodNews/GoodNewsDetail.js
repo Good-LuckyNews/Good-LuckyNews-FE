@@ -26,7 +26,7 @@ const GoodNewsDetail = ({ route, navigation }) => {
         return;
       }
 
-      const response = await api.get(`/api/posts`, {
+      const response = await api.get(`/api/posts/place/${placeId}`, {
         headers: { Authorization: `${token}` },
       });
       console.log(response.data);
@@ -35,10 +35,6 @@ const GoodNewsDetail = ({ route, navigation }) => {
       console.error(e);
     }
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
