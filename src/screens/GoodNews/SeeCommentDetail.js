@@ -1,4 +1,3 @@
-import { useRoute } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
   Image,
@@ -60,11 +59,9 @@ const commentList = [
   },
 ];
 
-const SeeCommentDetail = () => {
-  const route = useRoute();
-  //   const commentId = route.params?.commentId || 0;
-  const commentId = 5;
+const SeeCommentDetail = ({ route }) => {
   const [selectedId, setSelectedId] = useState(null);
+  const { title, commentId } = route.params;
 
   const deleteComment = () => {
     // axios 연동

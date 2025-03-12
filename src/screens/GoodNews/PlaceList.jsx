@@ -12,45 +12,57 @@ import MakePlaceButton from "./MakePlaceButton";
 import { useNavigation } from "@react-navigation/native";
 import { LikeComponent } from "../../components";
 import DeleteModal from "../../components/News/DeleteModal";
+import api from "../../utils/common";
+import * as SecureStore from "expo-secure-store";
 
-const PlaceList = ({ placeList, sort }) => {
+const PlaceList = ({ placeList, sort, fetchData }) => {
   const [selectedId, setSelectedId] = useState(null);
   const navigation = useNavigation();
+  console.log(placeList);
+  const moveToDetail = (item) => {
+    // console.log(item);
+    navigation.navigate("GoodNewsDetail", {
+      placeName: item.placeName,
+      placeDetails: item.placeDetails,
+      placeImage: item.placeImg,
+      placeLikeCount: item.likeCount,
+      placeLiked: item.liked,
+      placeId: item.placeId,
+    });
+  };
 
-  const moveToDetail = () => navigation.navigate("GoodNewsDetail");
-
-  const deletePlace = (id) => {
+  const deletePlace = async (id) => {
     // axios 연동
+    // try {
+    //   const response = api.delete(`/api/place/${id}`);
+    //   setSelectedId(null);
+    //   fetchData();
+    //   console.log(response);
+    // } catch (e) {
+    //   console.error(e);
+    // }
+  };
 
-    setSelectedId(null);
+  const toggleLike = async (id) => {
+    console.log(id);
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+      console.log(token);
+      const response = await api.post(`/api/place/${id}/bookmark`, null, {
+        headers: { Authorization: token },
+      });
+      console.log("response", response);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
     <View style={styles.container}>
-      {/* <SwipeListView
-        data={placeList}
-        keyExtractor={(item) => item.id}
-        ListHeaderComponent={
-          sort === "my" && <MakePlaceButton type="플레이스" />
-        }
-        renderItem={({ item }) => (
-          <Pressable style={styles.placeContainer} onPress={moveToDetail}>
-            <View>
-              <Text style={styles.placeTitle}>{item.title}</Text>
-              <Text style={styles.placeContent}>{item.content}</Text>
-              <LikeComponent likeCount={item.likeCount} liked={item.liked} />
-            </View>
-            <Image
-              source={require("../../../assets/icon.png")}
-              style={styles.placeImage}
-            />
-          </Pressable>
-        )}
-        renderHiddenItem={({ item }) => <DeleteButton idx={item.id} />}
-        rightOpenValue={-82}
-        stopLeftSwipe={15}
-        stopRightSwipe={-100}
-      /> */}
       <DeleteModal
         visible={!!selectedId}
         text="플레이스를 삭제하시겠습니까?"
@@ -65,14 +77,18 @@ const PlaceList = ({ placeList, sort }) => {
         renderItem={({ item }) => (
           <Pressable
             style={styles.placeContainer}
-            onPress={moveToDetail}
+            onPress={() => moveToDetail(item)}
             onLongPress={() => setSelectedId(item.placeId)}
             delayLongPress={500}
           >
             <View>
               <Text style={styles.placeTitle}>{item.placeName}</Text>
               <Text style={styles.placeContent}>{item.placeDetails}</Text>
-              <LikeComponent likeCount={item.likeCount} liked={item.liked} />
+              <LikeComponent
+                likeCount={item.likeCount}
+                liked={item.liked}
+                onPress={() => toggleLike(item.placeId)}
+              />
             </View>
             <Image
               source={
