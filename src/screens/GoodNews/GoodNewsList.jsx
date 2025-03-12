@@ -79,10 +79,10 @@ const GoodNewsList = ({
                   image={item.image}
                   likeCount={item.likeCount}
                   liked={item.liked}
-                  commentCount={item.comment.length}
+                  commentCount={item.commentCount}
                 />
               </Pressable>
-              {item.comment.length > 0 && (
+              {item.commentCount > 0 && (
                 <CommentList
                   commentList={item.comment}
                   selectedCommentId={selectedCommentId}
@@ -137,7 +137,7 @@ const CommentList = ({ commentList, selectedCommentId, handleDelete }) => {
               image={comment.image}
               likeCount={comment.likeCount}
               liked={comment.liked}
-              commentCount={comment.comment.length}
+              commentCount={comment.commentCount}
               style={{ marginTop: 28 }}
             />
           </Pressable>
@@ -162,7 +162,7 @@ const CommentList = ({ commentList, selectedCommentId, handleDelete }) => {
             image={commentList[lastCommentIdx].image}
             likeCount={commentList[lastCommentIdx].likeCount}
             liked={commentList[lastCommentIdx].liked}
-            commentCount={commentList[lastCommentIdx].comment.length}
+            commentCount={commentList[lastCommentIdx].commentCount}
             style={{ marginTop: 28, marginBottom: 22 }}
           />
         </Pressable>

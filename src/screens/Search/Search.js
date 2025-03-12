@@ -207,7 +207,7 @@ const GoodNewsComponent = ({ newsResult }) => {
                 style={{
                   width: 72,
                   height: 72,
-                  borderRadius: "100%",
+                  borderRadius: 50,
                   position: "absolute",
                   right: 6.5,
                 }}

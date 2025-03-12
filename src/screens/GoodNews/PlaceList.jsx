@@ -17,7 +17,7 @@ const PlaceList = ({ placeList, sort }) => {
   const [selectedId, setSelectedId] = useState(null);
   const navigation = useNavigation();
 
-  const moveToDetail = () => navigation.navigate("GoodNewsDetail");
+  const moveToDetail = (id) => navigation.navigate("GoodNewsDetail", { id: id });
 
   const deletePlace = (id) => {
     // axios 연동
@@ -65,7 +65,7 @@ const PlaceList = ({ placeList, sort }) => {
         renderItem={({ item }) => (
           <Pressable
             style={styles.placeContainer}
-            onPress={moveToDetail}
+            onPress={() => moveToDetail(item.placeId)}
             onLongPress={() => setSelectedId(item.placeId)}
             delayLongPress={500}
           >

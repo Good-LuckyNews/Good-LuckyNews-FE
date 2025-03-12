@@ -20,7 +20,7 @@ const GoodNews = ({ route }) => {
 
       const response = await api.get(`/api/place`, {
         headers: { Authorization: token },
-        params: { page: 0, size: 10 },
+        params: { page: 0, size: 20 },
       });
       setPlaceList(response.data.result.content);
       console.log(response.data.result.content);
@@ -29,12 +29,39 @@ const GoodNews = ({ route }) => {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const fetchMyData = async () => {
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+
+      const response = await api.get(`/api/place/mypage`, {
+        headers: { Authorization: token },
+        params: { page: 0, size: 20 },
+      });
+      setPlaceList(response.data.result.content);
+      console.log("my",response.data.result.content);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   useEffect(() => {
-    if (route.params?.refresh) fetchData();
+    if (sort === 'all') {
+      fetchData();
+    } else {
+      fetchMyData();
+    }
+  }, [sort]);
+
+  useEffect(() => {
+    if (sort === 'all') {
+      if (route.params?.refresh) fetchData();
+    } else {
+      if (route.params?.refresh) fetchMyData();
+    }
   }, [route.params]);
 
   return (
