@@ -25,7 +25,8 @@ const MyCommentedNews = () => {
             'Authorization': `${token}`
           },
         });
-        setNews(response.data);
+        setNews(response.data.result);
+        console.log(response.data.result);
       } else {
         console.log('No token found');
       }

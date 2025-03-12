@@ -30,7 +30,7 @@ const GoodFeed = () => {
             },
             params: {
               page: 0,
-              size: 10,
+              size: 20,
             }
           });
           setPosts(response.data.result);

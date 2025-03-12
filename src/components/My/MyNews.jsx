@@ -26,6 +26,7 @@ const MyNews = () => {
           },
         });
         setNews(response.data);
+        console.log(response.data);
       } else {
         console.log('No token found');
       }

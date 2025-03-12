@@ -1,154 +1,149 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Button, Platform, Alert, FlatList, Image } from 'react-native';
-// import * as Notifications from 'expo-notifications';
-// import * as Permissions from 'expo-permissions';
-import Constants from 'expo-constants';
+import React, { useEffect } from 'react';
+import { View, Text, Button, FlatList, Image, Pressable } from 'react-native';
+import * as Notifications from 'expo-notifications';
 import { useNavigation } from '@react-navigation/native';
 import styled from 'styled-components/native';
 import { COLORS } from '../../theme/color';
+import { useNotification } from '../../contexts';
+import * as SecureStore from 'expo-secure-store';
+import api from '../../utils/common';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// 알림 핸들러 설정
-// Notifications.setNotificationHandler({
-//     handleNotification: async () => ({
-//         shouldShowAlert: true,
-//         shouldPlaySound: true,
-//         shouldSetBadge: true,
-//     }),
-// });
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+    }),
+});
 
 export default function Notification() {
     const navigation = useNavigation();
-    const [expoPushToken, setExpoPushToken] = useState(null);
-    const [notificationList, setNotificationList] = useState([]);
-    const notificationListener = React.useRef();
-    const responseListener = React.useRef();
+    const { notificationList, markAsRead, clearNotifications, addNotification } = useNotification();
 
-    // 푸시 알림 권한 요청 및 Expo Push Token 가져오기
+    const imageMap = {
+        "comment": require("../../../assets/images/news/comment_logo.png"),
+        "like": require("../../../assets/images/likeButton/unlike.png"),
+        "logo": require("../../../assets/icon.png"),
+    }
+
+    const fetchReplyAlarms = async () => {
+        try {
+            const token = await SecureStore.getItemAsync('userToken');
+            if (token) {
+                const response = await api.get("/api/comments/myalarm", {
+                    headers: {
+                        'Authorization': `${token}`
+                    }
+                });
+
+                const newAlarms = response.data.result;
+
+                if (newAlarms && Array.isArray(newAlarms) && newAlarms.length > 0) {
+                    const sortedAlarms = newAlarms.sort(
+                        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+                    );
+
+                    const storedAlarms = await AsyncStorage.getItem("storedAlarmIds");
+                    const previousAlarmIds = storedAlarms ? JSON.parse(storedAlarms) : [];
+
+                    const newUniqueAlarms = sortedAlarms.filter(alarm => !previousAlarmIds.includes(alarm.id));
+
+                    if (newUniqueAlarms.length > 0) {
+                        for (let i = 0; i < newUniqueAlarms.length; i++) {
+                            setTimeout(() => {
+                                sendPushNotification(addNotification, "소확행", "희소식에 새로운 답글이 달렸어요 :)", "comment");
+                            }, i * 2000);
+                        }
+
+                        const updatedAlarmIds = [...previousAlarmIds, ...newUniqueAlarms.map(alarm => alarm.id)];
+                        await AsyncStorage.setItem("storedAlarmIds", JSON.stringify(updatedAlarmIds));
+                    } else {
+                        console.log("새로운 대댓글 알림 없음");
+                    }
+                } else {
+                    console.log("새로운 대댓글 알림 없음");
+                }
+            } else {
+                console.log('No token found');
+            }
+        } catch (error) {
+            console.error("대댓글 알림 조회 실패:", error);
+        }
+    };
+
     useEffect(() => {
-        scheduleDailyNotification();
-
-        const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-            console.log("알림 클릭됨:", response);
-            navigation.navigate('Home'); // 홈 화면으로 이동
-        });
-
-        registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
-
-        // 알림 리스너 설정
-        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-            setNotificationList(prevList => [
-                {
-                    id: Date.now().toString(),
-                    title: notification.request.content.title,
-                    body: notification.request.content.body
-                },
-                ...prevList
-            ]);
-        });
-
-        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-            console.log(response);
-        });
-
-        return () => {
-            Notifications.removeNotificationSubscription(notificationListener.current);
-            Notifications.removeNotificationSubscription(responseListener.current);
-            Notifications.removeNotificationSubscription(subscription);
-        };
+        fetchReplyAlarms();
     }, []);
 
+    const handlePress = (id) => {
+        markAsRead(id);
+    }
+
     return (
-        <View style={{flex:1, paddingBottom: 80}}>
+        <View style={{ flex: 1, paddingBottom: 80 }}>
             <FlatList
                 data={notificationList}
                 keyExtractor={item => item.id}
                 renderItem={({ item }) => (
-                    <AlarmContainer>
-                        <Image 
-                        source={require('../../../assets/icon.png')}
-                        style={{
-                            backgroundColor: COLORS.White,
-                            borderRadius: 50,
-                            width: 40,
-                            height: 40,
-                            marginRight: 10,
-                        }}
-                         />
-                        <View>
-                            <AlarmTitle>{item.title}</AlarmTitle>
-                            <AlarmText>{item.body}</AlarmText>
-                        </View>
-                    </AlarmContainer>
+                    <Pressable onPress={() => handlePress(item.id)}>
+                        <AlarmContainer read={item.read}>
+                            <Image
+                                source={imageMap[item.imageType] || imageMap.logo}
+                                style={{
+                                    backgroundColor: COLORS.White,
+                                    borderRadius: 50,
+                                    width: 40,
+                                    height: 40,
+                                    marginRight: 10,
+                                }}
+                            />
+                            <View>
+                                <AlarmTitle>{item.title}</AlarmTitle>
+                                <AlarmText>{item.body}</AlarmText>
+                            </View>
+                        </AlarmContainer>
+                    </Pressable>
                 )}
             />
 
-            <Button
-                title="푸시 알림 테스트"
-                onPress={() => sendPushNotification("테스트 알림", "이것은 테스트 푸시 알림입니다.")}
+            {/* <Button
+                title="답글 알림 테스트"
+                onPress={() => fetchReplyAlarms()}
             />
+            <Button
+                title="플레이스 알림 테스트"
+                onPress={() => sendPushNotification(addNotification, "웃음 한 스푼", "플레이스에 새로운 좋아요를 받았어요 :)", "like")}
+            />
+            <Button title="알림 기록 삭제" onPress={clearNotifications} />
+            <Button title='갯수 삭제' onPress={() => AsyncStorage.removeItem("storedAlarmIds")} /> */}
         </View>
     );
 }
 
-// ✅ 알림 권한 요청 및 Expo Push Token 가져오기
-async function registerForPushNotificationsAsync() {
-    let token;
+async function sendPushNotification(addNotification, title, body, imageType) {
+    try {
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title,
+                body,
+                sound: 'default',
+                badge: 1,
+                priority: "max",
+                data: { imageType },
+            },
+            trigger: null,
+        });
 
-    if (Constants.isDevice) {
-        const { status: existingStatus } = await Notifications.getPermissionsAsync();
-        let finalStatus = existingStatus;
-        if (existingStatus !== 'granted') {
-            const { status } = await Notifications.requestPermissionsAsync();
-            finalStatus = status;
-        }
-        if (finalStatus !== 'granted') {
-            alert('푸시 알림 권한이 거부되었습니다.');
-            return;
-        }
-        token = (await Notifications.getExpoPushTokenAsync()).data;
-        console.log('Expo Push Token:', token);
-    } else {
-        // ⚠️ 에뮬레이터에서는 푸시 토큰을 가져올 수 없음
-        console.log("에뮬레이터에서는 푸시 토큰이 필요 없음");
+        addNotification(title, body, imageType);
+    } catch (error) {
+        console.error("푸시 알림 생성 실패:", error);
     }
-
-    return token;
-}
-
-async function sendPushNotification(title, body) {
-    await Notifications.scheduleNotificationAsync({
-        content: { title, body, sound: 'default', badge: 1 },
-        trigger: null, // 즉시 발송
-    });
-}
-
-// ✅ 푸시 알림 보내기 (로컬 테스트)
-async function scheduleDailyNotification() {
-    const trigger = new Date();
-    trigger.setHours(8); // 오전 8시
-    trigger.setMinutes(0);
-    trigger.setSeconds(0);
-
-    await Notifications.scheduleNotificationAsync({
-        content: {
-            title: "희소식",
-            body: "지금 지치셨다면, 잠깐 오늘의 따뜻한 뉴스를 확인해 보세요!",
-            sound: 'default',
-            badge: 1,
-        },
-        trigger: {
-            hour: trigger.getHours(),
-            minute: trigger.getMinutes(),
-            repeats: true, // 🔄 매일 반복
-        },
-    });
-
-    Alert.alert("푸시 알림 설정 완료", "매일 오전 8시에 알림이 발송됩니다.");
 }
 
 const AlarmContainer = styled.View`
     width: 100%;
-    background-color: rgba(245, 245, 245, 0.50);
+    background-color: ${({ read }) => (read ? "rgba(245, 245, 245, 0.50)" : "#FFFFFF")};
     padding: 15px 10px;
     flex-direction: row;
     align-items: center;

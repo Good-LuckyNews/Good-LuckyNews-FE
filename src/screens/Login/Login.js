@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
+  Alert,
   Image,
   Pressable,
   StyleSheet,
@@ -12,12 +13,23 @@ import { COLORS } from "../../theme/color";
 import { CustomAlert } from "../../components";
 import api from "../../utils/common";
 import * as SecureStore from 'expo-secure-store';
+import * as Notifications from 'expo-notifications';
+import { useNotification } from "../../contexts";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [alert, setAlert] = useState("");
   const navigation = useNavigation();
+  const { addNotification } = useNotification();
 
   const handleLogin = () => {
     if (!email && !password) {
@@ -35,6 +47,7 @@ const Login = () => {
           const token = response.data.result;
           SecureStore.setItemAsync('userToken', token, { keychainAccessible: SecureStore.WHEN_UNLOCKED });
           navigation.replace('Main');
+          scheduleDailyNotification(addNotification);
         } catch (error) {
           if (error.response) {
             // 서버 응답이 있는 경우
@@ -106,6 +119,29 @@ const Login = () => {
     </View>
   );
 };
+
+async function scheduleDailyNotification(addNotification) {
+  const trigger = new Date();
+  trigger.setHours(8);
+  trigger.setMinutes(0);
+  trigger.setSeconds(0);
+
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "희소식",
+      body: "지금 지치셨다면, 잠깐 오늘의 따뜻한 뉴스를 확인해 보세요!",
+      sound: 'default',
+      badge: 1,
+    },
+    trigger: {
+      hour: trigger.getHours(),
+      minute: trigger.getMinutes(),
+      repeats: true,
+    },
+  });
+
+  addNotification("희소식", "지금 지치셨다면, 잠깐 오늘의 따뜻한 뉴스를 확인해 보세요!", "logo");
+}
 
 export default Login;
 
