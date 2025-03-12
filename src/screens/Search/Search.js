@@ -15,30 +15,11 @@ import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import api from "../../utils/common";
 
-const newstest = [
-  {
-    id: 1,
-    placeName: "기부 발자국",
-    placeInfo: "작은 나눔이 큰 변화를 만들어요 :)",
-    likeCount: 7,
-    liked: true,
-    imageSrc: "",
-  },
-  {
-    id: 2,
-    placeName: "기부 발자국",
-    placeInfo: "작은 나눔이 큰 변화를 만들어요 :)",
-    likeCount: 7,
-    liked: true,
-    imageSrc: "",
-  },
-];
-
 const Search = () => {
   const [text, setText] = useState("");
   const [searched, setSearched] = useState(false);
   const [feedResult, setFeedResult] = useState([]);
-  const [newsResult, setNewsResult] = useState(newstest);
+  const [newsResult, setNewsResult] = useState([]);
   const navigation = useNavigation();
 
   const handleSearch = async () => {
@@ -46,20 +27,26 @@ const Search = () => {
     setSearched(true);
 
     try {
+      // 토큰 발급
       const token = await SecureStore.getItemAsync("userToken");
       if (!token) {
         console.log("No token found");
         return;
       }
-      const response = await api.post(
+
+      // 기사 검색
+      const response1 = await api.post(
         `/article/search?page=0&size=5`,
         { searchQuery: text },
-        {
-          headers: { Authorization: token },
-        }
+        { headers: { Authorization: token } }
       );
-      console.log(response.data.result);
-      setFeedResult(response.data.result);
+      setFeedResult(response1.data.result);
+
+      // 희소식 검색
+      const response2 = await api.get(`/api/posts/search?query=${text}`, {
+        headers: { Authorization: token },
+      });
+      setNewsResult(response2.data);
     } catch (e) {
       console.error(e);
     }
@@ -196,14 +183,14 @@ const GoodNewsComponent = ({ newsResult }) => {
               }}
             >
               <Text style={styles.newsName}>{news.placeName}</Text>
-              <Text style={styles.newsInfo}>{news.placeInfo}</Text>
+              <Text style={styles.newsInfo}>{news.content}</Text>
               <LikeComponent
                 likeCount={news.likeCount}
                 liked={news.liked}
                 onPress={() => {}}
               />
               <Image
-                source={require("../../../assets/images/uploadImage/default_goodNews_image.png")}
+                source={{ uri: news.image }}
                 style={{
                   width: 72,
                   height: 72,

@@ -6,9 +6,10 @@ import PlaceList from "./PlaceList";
 import api from "../../utils/common";
 import * as SecureStore from "expo-secure-store";
 
-const GoodNews = ({ route }) => {
+const GoodNews = ({ route, navigation }) => {
   const [sort, setSort] = useState("all");
   const [placeList, setPlaceList] = useState([]);
+  const [myPlaceList, setMyPlaceList] = useState([]);
 
   const fetchData = async () => {
     try {
@@ -18,12 +19,16 @@ const GoodNews = ({ route }) => {
         return;
       }
 
-      const response = await api.get(`/api/place`, {
+      const response1 = await api.get(`/api/place`, {
         headers: { Authorization: token },
-        params: { page: 0, size: 20 },
+        params: { page: 0, size: 100 },
       });
-      setPlaceList(response.data.result.content);
-      console.log(response.data.result.content);
+      setPlaceList(response1.data.result.content);
+
+      const response2 = await api.get(`/api/place/mypage`, {
+        headers: { Authorization: token },
+      });
+      setMyPlaceList(response2.data.result);
     } catch (e) {
       console.log(e);
     }
@@ -81,7 +86,11 @@ const GoodNews = ({ route }) => {
           onPress={() => setSort("my")}
         />
       </View>
-      <PlaceList placeList={placeList} sort={sort} />
+      <PlaceList
+        placeList={sort === "all" ? placeList : myPlaceList}
+        sort={sort}
+        fetchData={fetchData}
+      />
     </View>
   );
 };

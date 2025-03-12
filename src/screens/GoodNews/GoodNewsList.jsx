@@ -18,6 +18,7 @@ const GoodNewsList = ({
   selectedCommentId,
   setSelectedCommentId,
   placeName,
+  placeId,
 }) => {
   const navigation = useNavigation();
 
@@ -42,12 +43,13 @@ const GoodNewsList = ({
       <View style={styles.container}>
         <FlatList
           data={timeline}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.postId}
           ListHeaderComponent={
             <MakePlaceButton
               type="희소식"
               style={{ marginVertical: 30, marginBottom: 7 }}
               title={placeName}
+              placeId={placeId}
             />
           }
           renderItem={({ item }) => (
@@ -63,18 +65,18 @@ const GoodNewsList = ({
                 onPress={() =>
                   navigation.navigate("SeeCommentDetail", {
                     title: placeName,
-                    commentId: item.id,
+                    commentId: item.postId,
                   })
                 }
                 onLongPress={(e) => {
                   e.stopPropagation();
-                  handleDelete(item.id);
+                  handleDelete(item.postId);
                 }}
                 delayLongPress={500}
               >
                 <GoodNewsComponent
-                  username={item.username}
-                  time={item.time}
+                  username={String(item.userId)} // 수정 필요
+                  time={item.createdAt.split("T")[0].replace(/-/g, ".")}
                   content={item.content}
                   image={item.image}
                   likeCount={item.likeCount}
@@ -97,7 +99,7 @@ const GoodNewsList = ({
   );
 };
 
-const CommentList = ({ commentList, selectedCommentId, handleDelete }) => {
+const CommentList = ({ commentList = [], selectedCommentId, handleDelete }) => {
   const [seeAllComment, setSeeAllComment] = useState(false);
   const commentListLength = commentList.length;
   const [seeAllButton, setSeeAllButton] = useState(commentListLength > 1);

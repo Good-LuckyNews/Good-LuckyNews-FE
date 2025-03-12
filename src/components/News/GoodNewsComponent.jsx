@@ -9,7 +9,7 @@ const GoodNewsComponent = ({
   username,
   time,
   content,
-  image,
+  imageSrc,
   likeCount,
   liked = false,
   commentCount = 0,
@@ -58,7 +58,7 @@ const GoodNewsComponent = ({
         >
           {content}
         </Text>
-        {!!image && <StyledImage />}
+        {!!imageSrc && <StyledImage imageSrc={imageSrc} />}
         <View
           style={{
             flexDirection: "row",
@@ -86,11 +86,11 @@ GoodNewsComponent.propTypes = {
   type: PropTypes.string,
 };
 
-const StyledImage = () => {
+const StyledImage = ({ imageSrc }) => {
   return (
     <Pressable>
       <Image
-        source={require("../../../assets/images/uploadImage/default_goodNews_image.png")}
+        source={{ uri: imageSrc }}
         style={{
           width: 280,
           height: 151,
