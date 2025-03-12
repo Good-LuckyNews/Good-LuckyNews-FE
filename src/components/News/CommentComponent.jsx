@@ -24,7 +24,7 @@ const CommentComponent = ({ count }) => {
           letterSpacing: -0.408,
         }}
       >
-        {count}
+        2
       </Text>
     </View>
   );

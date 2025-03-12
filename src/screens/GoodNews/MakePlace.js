@@ -90,7 +90,10 @@ const MakePlace = () => {
           formData.append("placeDetails", placeIntro);
 
           const response = await api.post(`/api/place`, formData, {
-            headers: { Authorization: token },
+            headers: { Authorization: token,
+              "Content-Type": "multipart/form-data",
+             },
+            
           });
           navigation.replace("GoodNews", { refresh: true });
         } catch (error) {
@@ -230,7 +233,7 @@ const styles = StyleSheet.create({
   imagePreview: {
     width: 91,
     height: 91,
-    borderRadius: "100%",
+    borderRadius: 50,
   },
   uploadImageButton: {
     width: 19,

@@ -80,19 +80,17 @@ const GoodNewsList = ({
                   content={item.content}
                   image={item.image}
                   likeCount={item.likeCount}
-                  liked={item.liked} // 수정 필요
+                  liked={item.liked}
                   commentCount={item.commentCount}
                 />
               </Pressable>
-              {item.comment &&
-                item.commentCount > 0 &&
-                item.comment.length > 0 && (
-                  <CommentList
-                    commentList={item.comment}
-                    selectedCommentId={selectedCommentId}
-                    handleDelete={handleDelete}
-                  />
-                )}
+              {item.commentCount > 0 && (
+                <CommentList
+                  commentList={item.comment}
+                  selectedCommentId={selectedCommentId}
+                  handleDelete={handleDelete}
+                />
+              )}
             </View>
           )}
         />
@@ -141,7 +139,7 @@ const CommentList = ({ commentList = [], selectedCommentId, handleDelete }) => {
               image={comment.image}
               likeCount={comment.likeCount}
               liked={comment.liked}
-              commentCount={comment.comment.length}
+              commentCount={comment.commentCount}
               style={{ marginTop: 28 }}
             />
           </Pressable>
@@ -166,7 +164,7 @@ const CommentList = ({ commentList = [], selectedCommentId, handleDelete }) => {
             image={commentList[lastCommentIdx].image}
             likeCount={commentList[lastCommentIdx].likeCount}
             liked={commentList[lastCommentIdx].liked}
-            commentCount={commentList[lastCommentIdx].comment.length}
+            commentCount={commentList[lastCommentIdx].commentCount}
             style={{ marginTop: 28, marginBottom: 22 }}
           />
         </Pressable>

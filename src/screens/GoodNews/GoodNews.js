@@ -34,15 +34,40 @@ const GoodNews = ({ route, navigation }) => {
     }
   };
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      // focus될 때마다 데이터를 새로 고침
-      fetchData();
-    });
+  const fetchMyData = async () => {
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
 
-    // cleanup
-    return unsubscribe;
-  }, [navigation]);
+      const response = await api.get(`/api/place/mypage`, {
+        headers: { Authorization: token },
+        params: { page: 0, size: 20 },
+      });
+      setPlaceList(response.data.result.content);
+      console.log("my",response.data.result.content);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    if (sort === 'all') {
+      fetchData();
+    } else {
+      fetchMyData();
+    }
+  }, [sort]);
+
+  useEffect(() => {
+    if (sort === 'all') {
+      if (route.params?.refresh) fetchData();
+    } else {
+      if (route.params?.refresh) fetchMyData();
+    }
+  }, [route.params]);
 
   return (
     <View style={styles.cotainer}>

@@ -22,6 +22,7 @@ const PlaceList = ({ placeList, sort, fetchData }) => {
   const moveToDetail = (item) => {
     // console.log(item);
     navigation.navigate("GoodNewsDetail", {
+      id: item.placeId,
       placeName: item.placeName,
       placeDetails: item.placeDetails,
       placeImage: item.placeImg,
@@ -31,7 +32,7 @@ const PlaceList = ({ placeList, sort, fetchData }) => {
     });
   };
 
-  const deletePlace = async (id) => {
+  const deletePlace = (id) => {
     // axios 연동
     // try {
     //   const response = api.delete(`/api/place/${id}`);
