@@ -1,6 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import { GoodFeedDetail, MyPage, Notification, ProfileEdit, Search } from '../../screens';
+import { GoodFeedDetail, GoodNewsDetail, MyPage, Notification, ProfileEdit, Search, SeeCommentDetail } from '../../screens';
 import { Image, Pressable, View } from 'react-native';
 import { AlarmActiveIcon, AlarmInActiveIcon, SearchActiveIcon, SearchInActiveIcon } from '../../utils/icons';
 import { COLORS } from '../../theme/color';
@@ -80,6 +80,14 @@ const MyPageStack = () => {
             <Stack.Screen name="MyPage" component={MyPage} />
             <Stack.Screen name="ProfileEdit" component={ProfileEdit} />
             <Stack.Screen name="GoodFeedDetail" component={GoodFeedDetail} />
+            <Stack.Screen name="GoodNewsDetail" component={GoodNewsDetail} />
+            <Stack.Screen
+                name="SeeCommentDetail"
+                component={SeeCommentDetail}
+                options={({ route }) => ({
+                    headerTitle: route.params?.title || "댓글 보기",
+                })}
+            />
             <Stack.Screen name='Notification' component={Notification} />
             <Stack.Screen
                 name="Search"

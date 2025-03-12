@@ -86,7 +86,6 @@ const GoodNewsStack = () => {
         },
       }}
     >
-      <Stack.Screen name='Notification' component={Notification} />
       <Stack.Screen name="GoodNews" component={GoodNews} />
       <Stack.Screen name="MakePlace" component={MakePlace} />
       <Stack.Screen name="GoodNewsDetail" component={GoodNewsDetail} />
@@ -104,6 +103,7 @@ const GoodNewsStack = () => {
           headerTitle: route.params?.title || "댓글 보기",
         })}
       />
+      <Stack.Screen name='Notification' component={Notification} />
       <Stack.Screen
         name="Search"
         component={Search}

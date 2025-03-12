@@ -2,24 +2,20 @@ import React, { createContext, useState, useEffect, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 
-// 1️⃣ Notification Context 생성
 export const NotificationContext = createContext();
 
 export const useNotification = () => {
     return useContext(NotificationContext);
 };
 
-// 2️⃣ Provider 컴포넌트 생성
 export const NotificationProvider = ({ children }) => {
     const [notificationList, setNotificationList] = useState([]);
 
-    // ✅ 앱 실행 시 저장된 알림 불러오기
     useEffect(() => {
         loadNotifications();
         registerForPushNotificationsAsync();
     }, []);
 
-    // ✅ AsyncStorage에서 알림 불러오기
     const loadNotifications = async () => {
         try {
             const savedNotifications = await AsyncStorage.getItem("notifications");
@@ -31,7 +27,6 @@ export const NotificationProvider = ({ children }) => {
         }
     };
 
-    // ✅ AsyncStorage에 알림 저장
     const saveNotifications = async (notifications) => {
         try {
             await AsyncStorage.setItem("notifications", JSON.stringify(notifications));
@@ -41,7 +36,6 @@ export const NotificationProvider = ({ children }) => {
         }
     };
 
-    // ✅ 새로운 알림 추가 (푸시 알림이 올 때)
     const addNotification = (title, body, imageType = "logo") => {
         const newNotification = {
             id: Date.now().toString(),
@@ -50,27 +44,31 @@ export const NotificationProvider = ({ children }) => {
             imageType,
             read: false,
         };
-        const updatedList = [newNotification, ...notificationList];
-        saveNotifications(updatedList);
+
+        // ✅ 이전 상태를 안전하게 유지하면서 새로운 알림 추가
+        setNotificationList((prevNotifications) => {
+            const updatedList = [newNotification, ...prevNotifications];
+            saveNotifications(updatedList);
+            return updatedList;
+        });
     };
 
-    // ✅ 알림 읽음 처리
     const markAsRead = (id) => {
-        const updatedList = notificationList.map((item) =>
-            item.id === id ? { ...item, read: true } : item
-        );
-        saveNotifications(updatedList);
+        setNotificationList((prevNotifications) => {
+            const updatedList = prevNotifications.map((item) =>
+                item.id === id ? { ...item, read: true } : item
+            );
+            saveNotifications(updatedList);
+            return updatedList;
+        });
     };
 
-    // ✅ 모든 알림 삭제
     const clearNotifications = async () => {
         await AsyncStorage.removeItem("notifications");
         setNotificationList([]);
     };
 
-    // ✅ 푸시 알림 등록 (권한 요청)
     async function registerForPushNotificationsAsync() {
-        if (!Constants.isDevice) return;
         const { status: existingStatus } = await Notifications.getPermissionsAsync();
         let finalStatus = existingStatus;
 

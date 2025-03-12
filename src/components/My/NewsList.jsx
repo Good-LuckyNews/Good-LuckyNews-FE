@@ -1,50 +1,66 @@
 import React, { useState } from 'react';
 import styled from 'styled-components/native';
-import { CommentIcon, HeartActiveIcon, HeartInActiveIcon, ProfileIcon } from '../../utils/icons';
+import { CommentIcon, HeartActiveIcon, HeartInActiveIcon } from '../../utils/icons';
 import { COLORS } from '../../theme/color';
 import { Pressable } from 'react-native';
 import { getTimeDifference } from '../../hooks';
 import * as Notifications from 'expo-notifications';
+import { useNotification } from '../../contexts';
+import { useNavigation } from '@react-navigation/native';
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+    }),
+});
 
 const NewsList = ({ item }) => {
+    const navigation = useNavigation();
     const [isHearted, setIsHearted] = useState(false);
+    const { addNotification } = useNotification();
 
     const toggleHeart = async () => {
         setIsHearted(!isHearted);
 
         if (!isHearted) {
-            await sendLikeNotification();
+            await sendPushNotification(addNotification, "웃음 한 스푼", "희소식에 새로운 좋아요를 받았어요 :)", "like");
         }
     };
 
     return (
         <NewsListContainer>
             <NewsListInnerContainer>
-                <NewsTopContainer>
-                    <TopLeftContainer>
-                        <LeftTopArea>
-                            <NameText>{item.title}</NameText>
-                            <DateText>{getTimeDifference(item.updatedAt)}</DateText>
-                        </LeftTopArea>
-                        <LeftContentArea>
-                            <ContentText>{item.content}</ContentText>
-                        </LeftContentArea>
-                    </TopLeftContainer>
-                    <TopRightContainer>
-                        {item.image ? <ProfileImage source={{ uri: item.image }} /> : <ProfileImage source={require("../../../assets/images/logo/logo.png")} />}
-                    </TopRightContainer>
-                </NewsTopContainer>
+                <Pressable onPress={() => navigation.navigate("GoodNewsDetail", {id: item.placeId})}>
+                    <NewsTopContainer>
+                        <TopLeftContainer>
+                            <LeftTopArea>
+                                <NameText>{item.placeName}</NameText>
+                                <DateText>{getTimeDifference(item.updatedAt)}</DateText>
+                            </LeftTopArea>
+                            <LeftContentArea>
+                                <ContentText>{item.content}</ContentText>
+                            </LeftContentArea>
+                        </TopLeftContainer>
+                        <TopRightContainer>
+                            {item.image ? <ProfileImage source={{ uri: item.image }} /> : <ProfileImage source={require("../../../assets/images/logo/logo.png")} />}
+                        </TopRightContainer>
+                    </NewsTopContainer>
+                </Pressable>
                 <NewsBottomContainer>
                     <HeartArea>
                         <Pressable onPress={toggleHeart}>
                             {isHearted ? <HeartActiveIcon /> : <HeartInActiveIcon />}
                         </Pressable>
-                        {/* <CountText isHearted={isHearted}>{item.heart}</CountText> */}
                         <CountText isHearted={isHearted}>{item.likeCount}</CountText>
                     </HeartArea>
                     <CommentArea>
-                        <CommentIcon />
-                        {/* <CountText>{item.comment}</CountText> */}
+                        <Pressable onPress={() =>
+                            navigation.navigate("SeeCommentDetail")
+                        }>
+                            <CommentIcon />
+                        </Pressable>
                         <CountText>{item.commentCount}</CountText>
                     </CommentArea>
                 </NewsBottomContainer>
@@ -53,18 +69,13 @@ const NewsList = ({ item }) => {
     )
 }
 
-async function sendLikeNotification() {
+async function sendPushNotification(addNotification, title, body, imageType) {
     await Notifications.scheduleNotificationAsync({
-        content: {
-            title: "웃음 한 스푼 😊",
-            body: "희소식에 새로운 좋아요를 받았어요! 🙂",
-            sound: 'default',
-            badge: 1,
-        },
-        trigger: null, // 즉시 발송
+        content: { title, body, sound: 'default', badge: 1, data: { imageType } },
+        trigger: null,
     });
 
-    Alert.alert("푸시 알림 전송됨", "좋아요 알림이 전송되었습니다!");
+    addNotification(title, body, imageType);
 }
 
 const NewsListContainer = styled.View`

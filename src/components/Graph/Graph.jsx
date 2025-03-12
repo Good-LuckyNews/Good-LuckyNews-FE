@@ -14,11 +14,13 @@ const graphHeight = 130;
 const Graph = () => {
     const [selectedTab, setSelectedTab] = useState("이번 주");
     const [emotionData, setEmotionData] = useState({
-        "이번 주": [0, 0, 0, 0, 0, 0, 0],
-        "지난 달": [0, 0, 0, 0, 0, 0, 0],
-        "최근 6개월": [0, 0, 0, 0, 0, 0, 0],
-        "전체": [0, 0, 0, 0, 0, 0, 0],
+        "이번 주": [],
+        "지난 달": [],
+        "최근 6개월": [],
+        "전체": [],
     });
+
+    const [animatedHeights, setAnimatedHeights] = useState([]);
 
     const getApiUrl = (tab) => {
         switch (tab) {
@@ -40,31 +42,34 @@ const Graph = () => {
 
             const apiUrl = getApiUrl(selectedTab);
             const response = await api.get(apiUrl, {
-                headers: {
-                    'Authorization': `${token}`
-                }
+                headers: { 'Authorization': `${token}` }
             });
 
             if (response.data.isSuccess) {
-                const result = response.data.result;
+                let result = response.data.result;
 
-                const values = Object.values(result);
+                let filteredValues = Object.values(result).filter(value => value !== null);
 
-                const maxValue = Math.max(...values);
+                if (filteredValues.length === 0) {
+                    setEmotionData((prev) => ({ ...prev, [selectedTab]: [] }));
+                    setAnimatedHeights([]);
+                    return;
+                }
 
+                const maxValue = Math.max(...filteredValues);
                 const formattedData = maxValue === 0
-                    ? values.map(() => 0)
-                    : values.map(value => (value / maxValue) * 100);
+                    ? filteredValues.map(() => 0)
+                    : filteredValues.map(value => (value / maxValue) * 100);
 
                 setEmotionData((prevData) => ({
                     ...prevData,
                     [selectedTab]: formattedData,
                 }));
 
-                setAnimatedHeights(formattedData.map((value) => new Animated.Value(value)));
+                setAnimatedHeights(formattedData.map(() => new Animated.Value(0)));
             }
         } catch (error) {
-            console.error(`데이터 가져오기 실패 (${selectedTab}):`, error);
+            console.error(error);
         }
     };
 
@@ -74,23 +79,26 @@ const Graph = () => {
         }, [selectedTab])
     );
 
-    const [animatedHeights, setAnimatedHeights] = useState(
-        emotionData[selectedTab].map((value) => new Animated.Value(value))
-    );
-
     useEffect(() => {
-        const newHeights = emotionData[selectedTab];
+        if (!emotionData[selectedTab] || emotionData[selectedTab].length === 0) {
+            return;
+        }
+
+        if (animatedHeights.length !== emotionData[selectedTab].length) {
+            setAnimatedHeights(emotionData[selectedTab].map(() => new Animated.Value(0)));
+            return;
+        }
 
         Animated.parallel(
-            newHeights.map((value, index) =>
-                Animated.timing(animatedHeights[index], {
-                    toValue: value + 30,
+            animatedHeights.map((animatedValue, index) =>
+                Animated.timing(animatedValue, {
+                    toValue: emotionData[selectedTab][index] + 30,
                     duration: 500,
                     useNativeDriver: false,
                 })
             )
         ).start();
-    }, [selectedTab]);
+    }, [selectedTab, emotionData]);
 
     return (
         <GraphContainer>
@@ -101,7 +109,10 @@ const Graph = () => {
                 </GraphTextArea>
                 <GraphArea>
                     {animatedHeights.map((animatedValue, index) => (
-                        <View key={index} style={{ alignItems: "center" }}>
+                        <View key={index} style={{
+                            alignItems: "center",
+                            marginRight: index !== animatedHeights.length - 1 ? 20 : 0,
+                        }}>
                             <BarContainer>
                                 <Animated.View style={{ height: animatedValue }}>
                                     <Bar />
@@ -167,7 +178,7 @@ const DateText = styled.Text`
 
 const GraphArea = styled.View`
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: center;
     align-items: flex-end;
     height: ${graphHeight}px;
     margin-top: 10px;
