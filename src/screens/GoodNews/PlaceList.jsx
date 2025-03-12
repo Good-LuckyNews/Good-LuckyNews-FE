@@ -13,11 +13,12 @@ import { useNavigation } from "@react-navigation/native";
 import { LikeComponent } from "../../components";
 import DeleteModal from "../../components/News/DeleteModal";
 import api from "../../utils/common";
+import * as SecureStore from "expo-secure-store";
 
 const PlaceList = ({ placeList, sort, fetchData }) => {
   const [selectedId, setSelectedId] = useState(null);
   const navigation = useNavigation();
-
+  console.log(placeList);
   const moveToDetail = (item) => {
     // console.log(item);
     navigation.navigate("GoodNewsDetail", {
@@ -40,6 +41,24 @@ const PlaceList = ({ placeList, sort, fetchData }) => {
     // } catch (e) {
     //   console.error(e);
     // }
+  };
+
+  const toggleLike = async (id) => {
+    console.log(id);
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+      console.log(token);
+      const response = await api.post(`/api/place/${id}/bookmark`, null, {
+        headers: { Authorization: token },
+      });
+      console.log("response", response);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -65,7 +84,11 @@ const PlaceList = ({ placeList, sort, fetchData }) => {
             <View>
               <Text style={styles.placeTitle}>{item.placeName}</Text>
               <Text style={styles.placeContent}>{item.placeDetails}</Text>
-              <LikeComponent likeCount={item.likeCount} liked={item.liked} />
+              <LikeComponent
+                likeCount={item.likeCount}
+                liked={item.liked}
+                onPress={() => toggleLike(item.placeId)}
+              />
             </View>
             <Image
               source={

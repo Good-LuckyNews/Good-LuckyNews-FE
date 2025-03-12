@@ -29,7 +29,6 @@ const GoodNews = ({ route, navigation }) => {
         headers: { Authorization: token },
       });
       setMyPlaceList(response2.data.result);
-      console.log("야호~~~~", response2);
     } catch (e) {
       console.log(e);
     }

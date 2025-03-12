@@ -84,13 +84,15 @@ const GoodNewsList = ({
                   commentCount={item.commentCount}
                 />
               </Pressable>
-              {item.commentCount > 0 && (
-                <CommentList
-                  commentList={item.comment}
-                  selectedCommentId={selectedCommentId}
-                  handleDelete={handleDelete}
-                />
-              )}
+              {item.comment &&
+                item.commentCount > 0 &&
+                item.comment.length > 0 && (
+                  <CommentList
+                    commentList={item.comment}
+                    selectedCommentId={selectedCommentId}
+                    handleDelete={handleDelete}
+                  />
+                )}
             </View>
           )}
         />
@@ -99,7 +101,7 @@ const GoodNewsList = ({
   );
 };
 
-const CommentList = ({ commentList, selectedCommentId, handleDelete }) => {
+const CommentList = ({ commentList = [], selectedCommentId, handleDelete }) => {
   const [seeAllComment, setSeeAllComment] = useState(false);
   const commentListLength = commentList.length;
   const [seeAllButton, setSeeAllButton] = useState(commentListLength > 1);
