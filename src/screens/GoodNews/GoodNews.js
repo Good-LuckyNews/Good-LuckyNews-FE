@@ -47,7 +47,6 @@ const GoodNews = ({ route, navigation }) => {
         params: { page: 0, size: 20 },
       });
       setPlaceList(response.data.result.content);
-      console.log("my",response.data.result.content);
     } catch (e) {
       console.log(e);
     }

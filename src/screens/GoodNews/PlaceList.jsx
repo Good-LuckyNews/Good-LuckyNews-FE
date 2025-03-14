@@ -18,7 +18,6 @@ import * as SecureStore from "expo-secure-store";
 const PlaceList = ({ placeList, sort, fetchData }) => {
   const [selectedId, setSelectedId] = useState(null);
   const navigation = useNavigation();
-  console.log(placeList);
   const moveToDetail = (item) => {
     // console.log(item);
     navigation.navigate("GoodNewsDetail", {
