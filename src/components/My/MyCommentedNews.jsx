@@ -26,7 +26,6 @@ const MyCommentedNews = () => {
           },
         });
         setNews(response.data.result);
-        console.log(response.data.result);
       } else {
         console.log('No token found');
       }

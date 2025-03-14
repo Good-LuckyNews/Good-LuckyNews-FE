@@ -40,7 +40,6 @@ const WriteGoodNews = ({ navigation, route }) => {
         aspect: [4, 3],
         quality: 1,
       });
-      console.log(result);
       if (!result.canceled) {
         const imageUri = result.assets[0].uri;
         setImageSrc(imageUri); // 이미지 URI 상태에 저장
@@ -80,13 +79,16 @@ const WriteGoodNews = ({ navigation, route }) => {
               type: mimeType,
             };
             formData.append("image", imageUrl);
-          } else formData.append("image", "");
+          }
           formData.append("content", text);
           formData.append("placeId", placeId);
 
           const response = await api.post(`/api/posts`, formData, {
-            headers: { Authorization: token },
-            "Content-Type": "multipart/form-data",
+            headers: {
+              Authorization: token,
+              "Content-Type": "multipart/form-data"
+            },
+
           });
 
           navigation.goBack();
@@ -137,7 +139,7 @@ const WriteGoodNews = ({ navigation, route }) => {
             <TextInput
               placeholder="플레이스에 공유하고 싶은 희소식을 작성해보세요!"
               value={text}
-              onChangeText={setText}
+              onChangeText={(text) => setText(text)}
               multiline={true}
               style={styles.textInput}
             />

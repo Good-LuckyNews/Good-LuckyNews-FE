@@ -118,8 +118,6 @@ const GoodNewsDetail = () => {
     }
   };
 
-  console.log(placeList);
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -184,6 +182,7 @@ const GoodNewsDetail = () => {
         selectedCommentId={selectedCommentId}
         setSelectedCommentId={setSelectedCommentId}
         placeName={placeList.placeName}
+        placeId={placeList[0]?.placeId}
       />
     </View>
   );
