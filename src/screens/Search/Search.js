@@ -14,6 +14,7 @@ import { LikeComponent, ScrapButton } from "../../components";
 import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import api from "../../utils/common";
+import { COLORS } from "../../theme/color";
 
 const Search = () => {
   const [text, setText] = useState("");
@@ -46,14 +47,15 @@ const Search = () => {
       const response2 = await api.get(`/api/posts/search?query=${text}`, {
         headers: { Authorization: token },
       });
-      setNewsResult(response2.data);
+      setNewsResult(response2.data.result); // 수정사항: result만 저장해야함
     } catch (e) {
       console.error(e);
     }
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    // 수정 사항: 배경 색 설정, search 페이지에만 statusbar 바 적용이 안돼서 임시로 paddingTop 적용 중
+    <SafeAreaView style={{ flex: 1, backgroundColor: `${COLORS.White}`, paddingTop: 35 }}>
       <View style={styles.textInputContainer}>
         <Pressable onPress={() => navigation.goBack()}>
           <Image
@@ -77,7 +79,7 @@ const Search = () => {
         <ScrollView style={styles.mainContainer}>
           <View style={{ marginBottom: 40 }}>
             <Text style={styles.titleText}>긍정 피드</Text>
-            <FeedListComponent feedResult={feedResult} />
+            <FeedListComponent feedResult={feedResult} navigation={navigation} />
           </View>
 
           <View>
@@ -104,10 +106,11 @@ const NoResultComponent = () => {
   );
 };
 
-const FeedListComponent = ({ feedResult }) => {
+const FeedListComponent = ({ feedResult, navigation }) => {
   const [seeMore, setSeeMore] = useState(false);
   const list = seeMore ? feedResult : feedResult.slice(0, 3);
   const lastIdx = list.length - 1;
+  console.log(navigation.getState());
 
   return (
     <>
@@ -132,7 +135,7 @@ const FeedListComponent = ({ feedResult }) => {
                   text={feed.keywords}
                   style={{ paddingHorizontal: 22, alignSelf: "flex-start" }}
                 />
-                <ScrapButton isScrapped={feed.bookmarked} onPress={() => {}} />
+                <ScrapButton isScrapped={feed.bookmarked} onPress={() => { }} />
               </View>
               <Text style={styles.feedTitle}>{feed.title}</Text>
               <Text style={styles.feedDate}>
@@ -142,7 +145,12 @@ const FeedListComponent = ({ feedResult }) => {
           ))}
           {!seeMore && (
             <Pressable
-              onPress={() => setSeeMore(true)}
+              onPress={() => navigation.navigate("Main", {
+                screen: "긍정 피드",
+                params: {
+                  screen: "GoodFeed",
+                },
+              })}
               style={styles.seeMoreComponent}
             >
               <Text
@@ -157,7 +165,7 @@ const FeedListComponent = ({ feedResult }) => {
               </Text>
             </Pressable>
           )}
-        </View>
+        </View >
       ) : (
         <NoResultComponent />
       )}
@@ -187,7 +195,7 @@ const GoodNewsComponent = ({ newsResult }) => {
               <LikeComponent
                 likeCount={news.likeCount}
                 liked={news.liked}
-                onPress={() => {}}
+                onPress={() => { }}
               />
               <Image
                 source={{ uri: news.image }}

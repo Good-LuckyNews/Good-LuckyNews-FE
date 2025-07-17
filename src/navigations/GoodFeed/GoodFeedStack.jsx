@@ -1,6 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import { GoodFeed, GoodFeedDetail, Notification, Search } from '../../screens';
+import { GoodFeed, GoodFeedDetail, Notification } from '../../screens';
 import { Image, Pressable, View } from 'react-native';
 import { AlarmActiveIcon, AlarmInActiveIcon, SearchActiveIcon, SearchInActiveIcon } from '../../utils/icons';
 import { COLORS } from '../../theme/color';
@@ -77,11 +77,6 @@ const GoodFeedStack = () => {
             <Stack.Screen name="GoodFeed" component={GoodFeed} />
             <Stack.Screen name="GoodFeedDetail" component={GoodFeedDetail} />
             <Stack.Screen name='Notification' component={Notification} />
-            <Stack.Screen
-                name="Search"
-                component={Search}
-                options={{ headerShown: false }}
-            />
         </Stack.Navigator>
     );
 };

@@ -13,7 +13,6 @@ import {
   GoodNewsDetail,
   MakePlace,
   Notification,
-  Search,
   SeeCommentDetail,
   WriteGoodNews,
 } from "../../screens";
@@ -104,11 +103,6 @@ const GoodNewsStack = () => {
         })}
       />
       <Stack.Screen name='Notification' component={Notification} />
-      <Stack.Screen
-        name="Search"
-        component={Search}
-        options={{ headerShown: false }}
-      />
     </Stack.Navigator>
   );
 };

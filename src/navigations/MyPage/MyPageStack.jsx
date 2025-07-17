@@ -1,6 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import { GoodFeedDetail, GoodNewsDetail, MyPage, Notification, ProfileEdit, Search, SeeCommentDetail } from '../../screens';
+import { GoodFeedDetail, GoodNewsDetail, MyPage, Notification, ProfileEdit, SeeCommentDetail } from '../../screens';
 import { Image, Pressable, View } from 'react-native';
 import { AlarmActiveIcon, AlarmInActiveIcon, SearchActiveIcon, SearchInActiveIcon } from '../../utils/icons';
 import { COLORS } from '../../theme/color';
@@ -89,11 +89,6 @@ const MyPageStack = () => {
                 })}
             />
             <Stack.Screen name='Notification' component={Notification} />
-            <Stack.Screen
-                name="Search"
-                component={Search}
-                options={{ headerShown: false }}
-            />
         </Stack.Navigator>
     );
 };

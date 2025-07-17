@@ -4,6 +4,7 @@ import MainTab from "./MainTab";
 import LoginStack from "./Login/LoginStack";
 import * as SecureStore from 'expo-secure-store';
 import { ActivityIndicator, View } from "react-native";
+import { Search } from "../screens";
 
 const Stack = createStackNavigator();
 
@@ -43,6 +44,10 @@ const MainStack = () => {
         >
           <Stack.Screen name="Main" component={MainTab} />
           <Stack.Screen name="LoginStack" component={LoginStack} />
+          <Stack.Screen
+            name="Search"
+            component={Search}
+          />
         </Stack.Navigator>
       )
       :
