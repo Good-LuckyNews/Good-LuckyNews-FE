@@ -1,6 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import { Home, Notification, Search } from '../../screens';
+import { Home, Notification } from '../../screens';
 import { Image, Pressable, View } from 'react-native';
 import { AlarmActiveIcon, AlarmInActiveIcon, SearchActiveIcon, SearchInActiveIcon } from '../../utils/icons';
 import { COLORS } from '../../theme/color';
@@ -76,11 +76,6 @@ const HomeStack = () => {
         >
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name='Notification' component={Notification} />
-            <Stack.Screen
-                name="Search"
-                component={Search}
-                options={{ headerShown: false }}
-            />
         </Stack.Navigator>
     );
 };
