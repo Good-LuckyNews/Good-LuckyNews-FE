@@ -110,7 +110,6 @@ const FeedListComponent = ({ feedResult, navigation }) => {
   const [seeMore, setSeeMore] = useState(false);
   const list = seeMore ? feedResult : feedResult.slice(0, 3);
   const lastIdx = list.length - 1;
-  console.log(navigation.getState());
 
   return (
     <>
