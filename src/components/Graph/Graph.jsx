@@ -19,6 +19,12 @@ const Graph = () => {
         "최근 6개월": [],
         "전체": [],
     });
+    const [collectDate, setCollectDate] = useState({
+        "이번 주": { from: null, to: null },
+        "지난 달": { from: null, to: null },
+        "최근 6개월": { from: null, to: null },
+        "전체": { from: null, to: null },
+    });
 
     const [animatedHeights, setAnimatedHeights] = useState([]);
 
@@ -30,6 +36,15 @@ const Graph = () => {
             case "전체": return "/user/articles/completed/alldays";
             default: return "/user/articles/completed/week";
         }
+    };
+
+    const formatDate = (dateString) => {
+        if (!dateString) return null;
+        const date = new Date(dateString);
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, "0");
+        const dd = String(date.getDate()).padStart(2, "0");
+        return `${yyyy}.${mm}.${dd}`;
     };
 
     const fetchEmotionData = async () => {
@@ -48,7 +63,7 @@ const Graph = () => {
             if (response.data.isSuccess) {
                 let result = response.data.result;
 
-                let filteredValues = Object.values(result).filter(value => value !== null);
+                let filteredValues = Object.values(result).filter((value) => typeof value === "number" && value !== null);
 
                 if (filteredValues.length === 0) {
                     setEmotionData((prev) => ({ ...prev, [selectedTab]: [] }));
@@ -64,6 +79,14 @@ const Graph = () => {
                 setEmotionData((prevData) => ({
                     ...prevData,
                     [selectedTab]: formattedData,
+                }));
+
+                setCollectDate((prevDate) => ({
+                    ...prevDate,
+                    [selectedTab]: {
+                        from: formatDate(result.firstCompletedAt),
+                        to: formatDate(result.lastCompletedAt),
+                    },
                 }));
 
                 setAnimatedHeights(formattedData.map(() => new Animated.Value(0)));
@@ -105,7 +128,14 @@ const Graph = () => {
             <GraphYellowContainer>
                 <GraphTextArea>
                     <TitleText>나의 감정 그래프</TitleText>
-                    <DateText>2025.02.09 ~ 2025.02.15</DateText>
+                    {
+                        collectDate[selectedTab]?.from &&
+                        collectDate[selectedTab]?.to && (
+                            <DateText>
+                                {collectDate[selectedTab].from} ~ {collectDate[selectedTab].to}
+                            </DateText>
+                        )
+                    }
                 </GraphTextArea>
                 <GraphArea>
                     {animatedHeights.map((animatedValue, index) => (
