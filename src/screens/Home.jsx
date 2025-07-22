@@ -1,19 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, Dimensions, Image, PanResponder, View } from 'react-native';
+import { ActivityIndicator, Animated, Image, PanResponder, View } from 'react-native';
 import styled from 'styled-components/native';
 import { COLORS } from '../theme/color';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { CustomAlert, Feed } from '../components';
 import * as SecureStore from 'expo-secure-store';
 import api from '../utils/common';
 
-const { width } = Dimensions.get("window");
-const SLIDER_WIDTH = width - 40;
-const MAX_VALUE = 100;
-const MIN_VALUE = 0;
-
 const Home = () => {
-    const navigation = useNavigation();
     const [toastVisible, setToastVisible] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [isExpanded, setIsExpanded] = useState(false);
