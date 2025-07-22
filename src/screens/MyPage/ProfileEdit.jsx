@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { COLORS } from '../../theme/color';
 import { ActivityIndicator, Alert, Image, Keyboard, TouchableWithoutFeedback, View } from 'react-native';

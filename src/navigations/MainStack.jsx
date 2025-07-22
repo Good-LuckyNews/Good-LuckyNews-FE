@@ -1,5 +1,5 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import MainTab from "./MainTab";
 import LoginStack from "./Login/LoginStack";
 import * as SecureStore from 'expo-secure-store';

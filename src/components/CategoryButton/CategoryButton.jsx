@@ -1,7 +1,5 @@
-import React from 'react';
 import styled from 'styled-components/native';
 import { COLORS } from '../../theme/color';
-import { theme } from '../../theme/theme';
 
 const CategoryButton = ({ clicked, disabled, onPress, category }) => {
     return (

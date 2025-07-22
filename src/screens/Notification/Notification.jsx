@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, Text, Button, FlatList, Image, Pressable } from 'react-native';
+import { useEffect } from 'react';
+import { View, FlatList, Image, Pressable } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { useNavigation } from '@react-navigation/native';
 import styled from 'styled-components/native';

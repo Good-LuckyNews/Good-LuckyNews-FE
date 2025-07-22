@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { ActivityIndicator, FlatList, RefreshControl, View } from 'react-native'
 import styled from 'styled-components/native';
 import NewsList from './NewsList';
