@@ -12,8 +12,8 @@ import {
 import { COLORS } from "../../theme/color";
 import { CustomAlert } from "../../components";
 import api from "../../utils/common";
-import * as SecureStore from 'expo-secure-store';
-import * as Notifications from 'expo-notifications';
+import * as SecureStore from "expo-secure-store";
+import * as Notifications from "expo-notifications";
 import { useNotification } from "../../contexts";
 
 Notifications.setNotificationHandler({
@@ -45,25 +45,27 @@ const Login = () => {
           );
           console.log("로그인 완료");
           const token = response.data.result;
-          SecureStore.setItemAsync('userToken', token, { keychainAccessible: SecureStore.WHEN_UNLOCKED });
-          navigation.replace('Main');
+          SecureStore.setItemAsync("userToken", token, {
+            keychainAccessible: SecureStore.WHEN_UNLOCKED,
+          });
+          navigation.replace("Main");
           scheduleDailyNotification(addNotification);
         } catch (error) {
           if (error.response) {
             // 서버 응답이 있는 경우
-            console.error("Response error:", error.response);
-            console.log("\n");
-            console.error("Status code:", error.response.status);
-            console.log("\n");
-            console.error("Error data:", error.response.data);
+            // console.error("Response error:", error.response);
+            // console.error("Status code:", error.response.status);
+            console.log("Error data:", error.response.data);
+            setAlert("해당하는 사용자를 찾을 수 없습니다.");
           } else if (error.request) {
             // 요청은 보내졌으나 응답을 받지 못한 경우
-            console.error("Request error:", error.request);
+            console.log("Request error:", error.request);
+            setAlert("로그인에 실패하였습니다.");
           } else {
             // 에러 메시지
-            console.error("Error message:", error.message);
+            console.log("Error message:", error.message);
+            setAlert("로그인에 실패하였습니다.");
           }
-          setAlert("로그인에 실패하였습니다.");
         }
       }
       loginAxios();
@@ -130,7 +132,7 @@ async function scheduleDailyNotification(addNotification) {
     content: {
       title: "희소식",
       body: "지금 지치셨다면, 잠깐 오늘의 따뜻한 뉴스를 확인해 보세요!",
-      sound: 'default',
+      sound: "default",
       badge: 1,
     },
     trigger: {
@@ -140,7 +142,11 @@ async function scheduleDailyNotification(addNotification) {
     },
   });
 
-  addNotification("희소식", "지금 지치셨다면, 잠깐 오늘의 따뜻한 뉴스를 확인해 보세요!", "logo");
+  addNotification(
+    "희소식",
+    "지금 지치셨다면, 잠깐 오늘의 따뜻한 뉴스를 확인해 보세요!",
+    "logo"
+  );
 }
 
 export default Login;
