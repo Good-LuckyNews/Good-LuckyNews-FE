@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -13,7 +13,6 @@ import { CustomAlert, NextStepButton } from "../../components";
 import TermsAgree from "./TermsAgree";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-
 
 const initialTerms = [
   {
@@ -65,50 +64,44 @@ const SignUp = () => {
   const allChecked = termsAgree.every((term) => term.checked);
   const [imageUri, setImageUri] = useState(null);
 
-
   const handleNextButton = () => {
-    if (!username && !email && !password && !passwordCheck) {
-      setAlert("필수 입력 항목을 모두 작성해주세요!");
-    } else if (!email.includes("@") || !email.includes(".")) {
-      setAlert("이메일 형식이 잘못되었습니다.");
-    } else if (password.length < 8) {
-      setAlert("비밀번호는 8~12자 이내로 작성해주시기 바랍니다.");
-    } else if (password !== passwordCheck) {
-      setAlert("비밀번호가 일치하지 않습니다.");
-    } else {
+    if (validateSignupInputs()) {
       setButtonClicked(true);
-      if (imageUri) {
-        const fileName = imageUri.split('/').pop();
-        const fileType = fileName.split('.').pop();
-        const mimeType = `image/${fileType}`;
 
-        const imageUrl = {
-          uri: imageUri,
-          name: fileName,
-          type: mimeType,
-        };
-
-        navigation.navigate("SignUpPreference", {
-          email,
-          password,
-          name: username,
-          image: imageUrl,
-        });
-      } else {
-        navigation.navigate("SignUpPreference", {
-          email,
-          password,
-          name: username,
-          profileImage: null,
-        });
-      }
+      navigation.navigate("SignUpPreference", {
+        email,
+        password,
+        name: username,
+        image: imageUri,
+      });
     }
+  };
+
+  const validateSignupInputs = () => {
+    let alertMessage = "";
+
+    if (!username && !email && !password && !passwordCheck)
+      alertMessage = "필수 입력 항목을 모두 작성해주세요!";
+    else if (!email.includes("@") || !email.includes("."))
+      alertMessage = "이메일 형식이 잘못되었습니다.";
+    else if (password.length < 8)
+      alertMessage = "비밀번호는 8~12자 이내로 작성해주시기 바랍니다.";
+    else if (password !== passwordCheck)
+      alertMessage = "비밀번호가 일치하지 않습니다.";
+
+    if (alertMessage) {
+      setAlert(alertMessage);
+      return false;
+    } else return true;
   };
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("권한 필요", "이미지를 선택하려면 갤러리 접근 권한이 필요합니다.");
+      Alert.alert(
+        "권한 필요",
+        "이미지를 선택하려면 갤러리 접근 권한이 필요합니다."
+      );
       return;
     }
 
@@ -119,9 +112,7 @@ const SignUp = () => {
       quality: 1,
     });
 
-    if (!result.canceled) {
-      setImageUri(result.assets[0].uri);
-    }
+    if (!result.canceled) setImageUri(result.assets[0].uri);
   };
 
   return (
@@ -134,20 +125,18 @@ const SignUp = () => {
       />
 
       <View style={styles.container}>
-        <Pressable
-          style={styles.uploadImageContainer}
-          onPress={() => console.log("object")}
-        >
-          {imageUri ?
+        <Pressable style={styles.uploadImageContainer} onPress={pickImage}>
+          {imageUri ? (
             <Image
               source={{ uri: imageUri }}
               style={styles.uploadImagePreview}
-            /> :
+            />
+          ) : (
             <Image
               source={require("../../../assets/images/uploadImage/default_profile_image.png")}
               style={styles.uploadImagePreview}
             />
-          }
+          )}
           <Pressable onPress={pickImage}>
             <Image
               source={require("../../../assets/images/uploadImage/upload_image_button.png")}
@@ -283,7 +272,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 27,
   },
 
-  uploadImageContainer: { width: 77, alignSelf: "center", marginBottom: 30 },
+  uploadImageContainer: {
+    width: 77,
+    alignSelf: "center",
+    marginBottom: 30,
+    borderRadius: 50,
+  },
   uploadImagePreview: { width: 77, height: 77, borderRadius: 50 },
   uploadImageButton: {
     width: 17,
