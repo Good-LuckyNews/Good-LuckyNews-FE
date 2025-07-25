@@ -1,6 +1,4 @@
-import React from 'react'
 import styled from 'styled-components/native'
-import { theme } from '../../theme/theme';
 import { COLORS } from '../../theme/color';
 
 const TimeButton = ({ number, clicked, onPress }) => {
