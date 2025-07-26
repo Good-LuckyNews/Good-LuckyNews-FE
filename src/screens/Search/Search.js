@@ -84,7 +84,8 @@ const Search = () => {
 
           <View>
             <Text style={styles.titleText}>희소식</Text>
-            <GoodNewsComponent newsResult={newsResult} />
+            {/* 수정사항: key 지정 */}
+            <GoodNewsComponent newsResult={newsResult} key={`${newsResult.placeId}-${newsResult.postId}`} />
           </View>
         </ScrollView>
       )}
