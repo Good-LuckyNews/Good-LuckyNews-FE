@@ -12,6 +12,10 @@ import MakePlaceButton from "./MakePlaceButton";
 import { useNavigation } from "@react-navigation/native";
 import { GoodNewsComponent } from "../../components";
 import DeleteModal from "../../components/News/DeleteModal";
+import api from "../../utils/common";
+import * as SecureStore from 'expo-secure-store';
+
+// 새로고침 필요해보임 - 삭제가 화면에 바로바로 업데이트 안됨
 
 const GoodNewsList = ({
   timeline,
@@ -27,9 +31,23 @@ const GoodNewsList = ({
     setSelectedCommentId(id);
   };
 
-  const deleteGoodNews = () => {
+  const deleteGoodNews = async (id) => {
     // 희소식 삭제하기 axios
     setSelectedCommentId(null);
+    // 희소식 삭제 코드 임시 추가
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+      const response = api.delete(`/api/posts/${id}`, {
+        headers: { Authorization: token }
+      })
+      alert("삭제 성공");
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -38,7 +56,8 @@ const GoodNewsList = ({
         visible={!!selectedCommentId}
         text="희소식을 삭제하시겠습니까?"
         onCancel={() => setSelectedCommentId(null)}
-        onDelete={deleteGoodNews}
+        // 삭제 코드에 포스트 id전달해야함
+        onDelete={() => deleteGoodNews(selectedCommentId)}
       />
       <View style={styles.container}>
         <FlatList
@@ -78,7 +97,8 @@ const GoodNewsList = ({
                   username={String(item.userId)} // 수정 필요
                   time={item.createdAt.split("T")[0].replace(/-/g, ".")}
                   content={item.content}
-                  image={item.image}
+                  // 수정사항: imageSrc로 받도록 설정되어 있어서 보내줄때도 imageSrc로 보내야함
+                  imageSrc={item.image}
                   likeCount={item.likeCount}
                   liked={item.liked}
                   commentCount={item.commentCount}

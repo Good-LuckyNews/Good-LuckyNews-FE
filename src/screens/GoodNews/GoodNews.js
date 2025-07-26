@@ -25,10 +25,11 @@ const GoodNews = ({ route, navigation }) => {
       });
       setPlaceList(response1.data.result.content);
 
-      const response2 = await api.get(`/api/place/mypage`, {
-        headers: { Authorization: token },
-      });
-      setMyPlaceList(response2.data.result);
+      // 필요없음
+      // const response2 = await api.get(`/api/place/mypage`, {
+      //   headers: { Authorization: token },
+      // });
+      // setMyPlaceList(response2.data.result);
     } catch (e) {
       console.log(e);
     }
@@ -46,7 +47,8 @@ const GoodNews = ({ route, navigation }) => {
         headers: { Authorization: token },
         params: { page: 0, size: 20 },
       });
-      setPlaceList(response.data.result.content);
+      // myplacelist 저장으로 변경
+      setMyPlaceList(response.data.result.content);
     } catch (e) {
       console.log(e);
     }
