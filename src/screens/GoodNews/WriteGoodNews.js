@@ -17,7 +17,7 @@ import api from "../../utils/common";
 
 const WriteGoodNews = ({ navigation, route }) => {
   const [text, setText] = useState("");
-  const [imageSrc, setImageSrc] = useState(null);
+  const [imageSrc, setImageSrc] = useState("");
   const [permissionStatus, setPermissionStatus] = useState(null);
   const { placeId } = route.params;
 
@@ -82,10 +82,11 @@ const WriteGoodNews = ({ navigation, route }) => {
           }
           formData.append("content", text);
           formData.append("placeId", placeId);
+          console.log("formData", formData);
 
           const response = await api.post(`/api/posts`, formData, {
             headers: {
-              Authorization: token,
+              "Authorization": `${token}`,
               "Content-Type": "multipart/form-data"
             },
 
@@ -126,7 +127,8 @@ const WriteGoodNews = ({ navigation, route }) => {
         </Pressable>
       ),
     });
-  }, [navigation]);
+    // 수정사항: text, imageSrc가 최신 상태로 업데이트 필요 - 업데이트 안된 상태에서 axios요청 가는 경우 발생 
+  }, [navigation, text, imageSrc]);
 
   return (
     <KeyboardAvoidingView
