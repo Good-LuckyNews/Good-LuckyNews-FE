@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { COLORS } from "../../theme/color";
 import { StyleSheet, Text, View } from "react-native";
 import RoundButton from "../../components/RoundButton";
@@ -6,7 +6,7 @@ import PlaceList from "./PlaceList";
 import api from "../../utils/common";
 import * as SecureStore from "expo-secure-store";
 
-const GoodNews = ({ route, navigation }) => {
+const GoodNews = ({ route }) => {
   const [sort, setSort] = useState("all");
   const [placeList, setPlaceList] = useState([]);
   const [myPlaceList, setMyPlaceList] = useState([]);
@@ -19,10 +19,10 @@ const GoodNews = ({ route, navigation }) => {
         return;
       }
 
-      const response1 = await api.get(`/api/place`, {
+      const response = await api.get(`/api/place`, {
         headers: { Authorization: token },
       });
-      setPlaceList(response1.data.result.content);
+      setPlaceList(response.data.result.content);
     } catch (e) {
       console.log(e);
     }
