@@ -22,12 +22,6 @@ const PlaceList = ({ placeList, sort, fetchData }) => {
     // console.log(item);
     navigation.navigate("GoodNewsDetail", {
       id: item.placeId,
-      placeName: item.placeName,
-      placeDetails: item.placeDetails,
-      placeImage: item.placeImg,
-      placeLikeCount: item.likeCount,
-      placeLiked: item.liked,
-      placeId: item.placeId,
     });
   };
 

@@ -21,15 +21,8 @@ const GoodNews = ({ route, navigation }) => {
 
       const response1 = await api.get(`/api/place`, {
         headers: { Authorization: token },
-        params: { page: 0, size: 100 },
       });
       setPlaceList(response1.data.result.content);
-
-      // 필요없음
-      // const response2 = await api.get(`/api/place/mypage`, {
-      //   headers: { Authorization: token },
-      // });
-      // setMyPlaceList(response2.data.result);
     } catch (e) {
       console.log(e);
     }
@@ -45,17 +38,24 @@ const GoodNews = ({ route, navigation }) => {
 
       const response = await api.get(`/api/place/mypage`, {
         headers: { Authorization: token },
-        params: { page: 0, size: 20 },
       });
-      // myplacelist 저장으로 변경
-      setMyPlaceList(response.data.result.content);
+      if (
+        response.data.isSuccess === false &&
+        response.data.code === "PAGE4002"
+      ) {
+        // 조회된 페이지가 없을 때 빈 배열로 처리
+        setMyPlaceList([]);
+      } else {
+        setMyPlaceList(response.data.result.content);
+      }
     } catch (e) {
-      console.log(e);
+      // 네트워크 오류 등 다른 에러 시에도 빈 배열 처리
+      setMyPlaceList([]);
     }
   };
 
   useEffect(() => {
-    if (sort === 'all') {
+    if (sort === "all") {
       fetchData();
     } else {
       fetchMyData();
@@ -63,7 +63,7 @@ const GoodNews = ({ route, navigation }) => {
   }, [sort]);
 
   useEffect(() => {
-    if (sort === 'all') {
+    if (sort === "all") {
       if (route.params?.refresh) fetchData();
     } else {
       if (route.params?.refresh) fetchMyData();
