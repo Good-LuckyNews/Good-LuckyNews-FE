@@ -26,27 +26,28 @@ const GoodNewsList = ({
   };
 
   const deleteGoodNews = async (id) => {
-    // 희소식 삭제하기 axios
-    setSelectedCommentId(null);
-    // 희소식 삭제 코드 임시 추가
     try {
       const token = await SecureStore.getItemAsync("userToken");
       if (!token) {
         console.log("No token found");
         return;
       }
-      const response = api.delete(`/api/posts/${id}`, {
+      await api.delete(`/api/posts/${id}`, {
         headers: { Authorization: token },
       });
       alert("삭제 성공");
     } catch (e) {
-      console.log(e);
+      if (e.status === 403) {
+        alert("권한이 없습니다.");
+      }
+    } finally {
+      setSelectedCommentId(null);
     }
   };
 
   useFocusEffect(
     useCallback(() => {
-      fetchPostData(); // 새로 데이터를 불러오는 함수
+      fetchPostData();
     }, [])
   );
 
@@ -56,7 +57,6 @@ const GoodNewsList = ({
         visible={!!selectedCommentId}
         text="희소식을 삭제하시겠습니까?"
         onCancel={() => setSelectedCommentId(null)}
-        // 삭제 코드에 포스트 id전달해야함
         onDelete={() => deleteGoodNews(selectedCommentId)}
       />
       <View style={styles.container}>
@@ -94,7 +94,7 @@ const GoodNewsList = ({
                 delayLongPress={500}
               >
                 <GoodNewsComponent
-                  username={item.writer.name} // 수정 필요
+                  username={item.writer.name}
                   profileImage={item.writer.profileImage}
                   time={item.createdAt.split("T")[0].replace(/-/g, ".")}
                   content={item.content}
