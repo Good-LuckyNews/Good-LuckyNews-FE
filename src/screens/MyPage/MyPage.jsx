@@ -141,9 +141,11 @@ const ProfileContainer = styled.View`
 const ProfileInnerContainer = styled.View`
     flex: 1;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     padding-top: 30px;
+    padding-left: 45px;
+    padding-right: 45px;
 `;
 
 const ProfileLeftArea = styled.View`
