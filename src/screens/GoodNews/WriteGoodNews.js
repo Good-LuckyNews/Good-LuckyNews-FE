@@ -43,7 +43,6 @@ const WriteGoodNews = ({ navigation, route }) => {
       if (!result.canceled) {
         const imageUri = result.assets[0].uri;
         setImageSrc(imageUri); // 이미지 URI 상태에 저장
-        console.log("Image URI:", imageUri);
 
         // 서버로 이미지 전송
         // await uploadImage(imageUri);
@@ -82,7 +81,6 @@ const WriteGoodNews = ({ navigation, route }) => {
           }
           formData.append("content", text);
           formData.append("placeId", placeId);
-          console.log("formData", formData);
 
           const response = await api.post(`/api/posts`, formData, {
             headers: {

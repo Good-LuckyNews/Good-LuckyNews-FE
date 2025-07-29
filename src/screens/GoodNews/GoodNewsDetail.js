@@ -107,7 +107,6 @@ const GoodNewsDetail = () => {
         headers: { Authorization: token },
         params: { page: 0, size: 10 },
       });
-      console.log(response.data.result);
       // 배열 확인 - 응답 구조 변경
       if (Array.isArray(response.data.result.content)) { // 응답이 배열인지 확인
         const filteredData = response.data.result.content.filter(place => place.placeId === id);
@@ -139,7 +138,6 @@ const GoodNewsDetail = () => {
           },
           params: { page: 0, size: 50 },
         });
-        console.log(response.data.result);
         // 배열 확인 - 응답 구조 변경
         if (Array.isArray(response.data.result)) { // 응답이 배열인지 확인
           const filteredData = response.data.result.filter(place => place.placeId === id);
