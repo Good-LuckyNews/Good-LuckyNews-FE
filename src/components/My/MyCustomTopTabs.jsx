@@ -53,7 +53,7 @@ const MyCustomTopTabs = ({ handleShowToast }) => {
                         onPress={() => setSelectedTab(index)}
                         selected={selectedTab === index}
                     >
-                        <Text style={{ color: selectedTab === index ? COLORS.MainYellow : COLORS.Gray, fontWeight: 400 }}>
+                        <Text style={{ color: selectedTab === index ? "#FFC738" : COLORS.Gray, fontWeight: 400 }}>
                             {tab}
                         </Text>
                     </CustomTabButton>

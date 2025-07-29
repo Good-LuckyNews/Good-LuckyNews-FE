@@ -184,7 +184,7 @@ const GraphYellowContainer = styled.View.attrs({
     width: 100%;
     height: 200px;
     padding: 15px 20px 25px 20px;
-    background-color: ${COLORS.MainYellow};
+    background-color: rgba(255, 198, 50, 0.97);
     border-radius: 25px;
 `;
 
@@ -251,7 +251,7 @@ const GraphTabArea = styled.View`
 const TabText = styled.Text`
     font-size: 17px;
     padding: 0 16px;
-    color: ${(props) => (props.selected ? COLORS.MainYellow : "#8A8888")};
+    color: ${(props) => (props.selected ? "#FFC738" : "#8A8888")};
     border-right-color: #8a8888;
     font-family: ${(props) => props.theme.fonts.medium};
 `;

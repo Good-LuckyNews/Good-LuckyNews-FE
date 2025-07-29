@@ -24,7 +24,8 @@ const CommentComponent = ({ count }) => {
           letterSpacing: -0.408,
         }}
       >
-        2
+        {/* 수정사항: 데이터 연동 */}
+        {count}
       </Text>
     </View>
   );

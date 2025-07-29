@@ -7,6 +7,8 @@ import PropTypes from "prop-types";
 
 const GoodNewsComponent = ({
   username,
+  // 수정사항: 프로필이미지 추가
+  profileImage,
   time,
   content,
   imageSrc,
@@ -36,7 +38,12 @@ const GoodNewsComponent = ({
           styles.profileImage,
           type === "comment" && { width: 37, height: 37 },
         ]}
-        source={require("../../../assets/images/uploadImage/default_profile_image.png")}
+        // 수정사항: 조건부 렌더링 추가
+        source={
+          profileImage
+            ? { uri: profileImage }
+            : require("../../../assets/images/uploadImage/default_profile_image.png")
+        }
       />
       <View style={{ marginLeft: 12 }}>
         <View style={{ flexDirection: "row", gap: 6 }}>
@@ -110,6 +117,9 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 50,
+    // 수정사항: 프로필이미지 테두리 추가
+    borderWidth: 1,
+    borderColor: '#d9d9d9',
   },
   usernameText: {
     fontFamily: "FontM",

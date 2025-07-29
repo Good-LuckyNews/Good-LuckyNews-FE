@@ -94,7 +94,8 @@ const GoodNewsList = ({
                 delayLongPress={500}
               >
                 <GoodNewsComponent
-                  username={String(item.userId)} // 수정 필요
+                  username={item.writer.name} // 수정 필요
+                  profileImage={item.writer.profileImage}
                   time={item.createdAt.split("T")[0].replace(/-/g, ".")}
                   content={item.content}
                   // 수정사항: imageSrc로 받도록 설정되어 있어서 보내줄때도 imageSrc로 보내야함
