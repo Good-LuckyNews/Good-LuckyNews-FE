@@ -139,16 +139,11 @@ const GoodNewsDetail = () => {
           },
           params: { page: 0, size: 50 },
         });
-        console.log(response.data);
+        console.log(response.data.result);
         // 배열 확인 - 응답 구조 변경
         if (Array.isArray(response.data.result)) { // 응답이 배열인지 확인
           const filteredData = response.data.result.filter(place => place.placeId === id);
           setGoodNewInfo(filteredData); // 필터링된 데이터 저장
-          const updatedData = filteredData.map((item, index) => ({
-            ...item,
-            username: index === 0 ? "김소식" : "하늘"
-        }));
-          setGoodNewInfo(updatedData);
         } else {
           console.error("예상과 다른 응답 형식:", response.data);
         }
