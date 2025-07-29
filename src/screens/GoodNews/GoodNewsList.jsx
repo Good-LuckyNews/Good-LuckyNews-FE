@@ -1,19 +1,12 @@
-import React, { useState } from "react";
-import {
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import React, { useCallback, useState } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../../theme/color";
 import MakePlaceButton from "./MakePlaceButton";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { GoodNewsComponent } from "../../components";
 import DeleteModal from "../../components/News/DeleteModal";
 import api from "../../utils/common";
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from "expo-secure-store";
 
 // 새로고침 필요해보임 - 삭제가 화면에 바로바로 업데이트 안됨
 
@@ -23,6 +16,7 @@ const GoodNewsList = ({
   setSelectedCommentId,
   placeName,
   placeId,
+  fetchPostData,
 }) => {
   const navigation = useNavigation();
 
@@ -42,13 +36,19 @@ const GoodNewsList = ({
         return;
       }
       const response = api.delete(`/api/posts/${id}`, {
-        headers: { Authorization: token }
-      })
+        headers: { Authorization: token },
+      });
       alert("삭제 성공");
     } catch (e) {
       console.log(e);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchPostData(); // 새로 데이터를 불러오는 함수
+    }, [])
+  );
 
   return (
     <View style={{ flex: 1 }}>

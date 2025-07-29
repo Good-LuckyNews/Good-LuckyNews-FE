@@ -101,6 +101,7 @@ const GoodNewsDetail = () => {
         setSelectedCommentId={setSelectedCommentId}
         placeName={placeInfo.placeName}
         placeId={placeInfo.placeId}
+        fetchPostData={fetchPostData}
       />
     </View>
   );
