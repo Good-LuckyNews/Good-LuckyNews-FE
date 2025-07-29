@@ -41,11 +41,9 @@ const MakePlace = () => {
         aspect: [1, 1],
         quality: 1,
       });
-      console.log(result);
       if (!result.canceled) {
         const imageUri = result.assets[0].uri;
         setImageSrc(imageUri); // 이미지 URI 상태에 저장
-        console.log("Image URI:", imageUri);
       } else {
         console.log("failure");
       }
