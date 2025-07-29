@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   FlatList,
   Image,
@@ -19,22 +19,30 @@ const PlaceList = ({ placeList, sort, fetchData }) => {
   const [selectedId, setSelectedId] = useState(null);
   const navigation = useNavigation();
   const moveToDetail = (item) => {
-    // console.log(item);
     navigation.navigate("GoodNewsDetail", {
       id: item.placeId,
     });
   };
 
-  const deletePlace = (id) => {
-    // axios 연동
-    // try {
-    //   const response = api.delete(`/api/place/${id}`);
-    //   setSelectedId(null);
-    //   fetchData();
-    //   console.log(response);
-    // } catch (e) {
-    //   console.error(e);
-    // }
+  const deletePlace = async (id) => {
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+      await api.delete(`/api/place/${id}`, {
+        headers: { Authorization: token },
+      });
+      setSelectedId(null);
+      fetchData();
+    } catch (e) {
+      console.error(JSON.stringify(e, null, 2));
+      if (e.status === 403) {
+        alert("권한이 없습니다.");
+        setSelectedId(null);
+      }
+    }
   };
 
   const toggleLike = async (id) => {
