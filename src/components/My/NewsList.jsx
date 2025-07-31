@@ -44,7 +44,7 @@ const NewsList = ({ item }) => {
                             </LeftContentArea>
                         </TopLeftContainer>
                         <TopRightContainer>
-                            {item.image ? <ProfileImage source={{ uri: item.placeImg }} /> : <ProfileImage source={require("../../../assets/images/logo/logo.png")} />}
+                            {item.placeImg ? <ProfileImage source={{ uri: item.placeImg }} /> : <ProfileImage source={require("../../../assets/images/logo/logo.png")} />}
                         </TopRightContainer>
                     </NewsTopContainer>
                 </Pressable>
