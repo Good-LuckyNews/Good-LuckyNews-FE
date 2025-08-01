@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FlatList,
   Image,
@@ -17,6 +17,7 @@ import * as SecureStore from "expo-secure-store";
 
 const PlaceList = ({ placeList, sort, fetchData }) => {
   const [selectedId, setSelectedId] = useState(null);
+  const [refresh, setRefresh] = useState(false);
   const navigation = useNavigation();
   const moveToDetail = (item) => {
     navigation.navigate("GoodNewsDetail", {
@@ -35,7 +36,7 @@ const PlaceList = ({ placeList, sort, fetchData }) => {
         headers: { Authorization: token },
       });
       setSelectedId(null);
-      fetchData();
+      setRefresh(!refresh);
     } catch (e) {
       console.error(JSON.stringify(e, null, 2));
       if (e.status === 403) {
@@ -46,22 +47,25 @@ const PlaceList = ({ placeList, sort, fetchData }) => {
   };
 
   const toggleLike = async (id) => {
-    console.log(id);
     try {
       const token = await SecureStore.getItemAsync("userToken");
       if (!token) {
         console.log("No token found");
         return;
       }
-      console.log(token);
       const response = await api.post(`/api/place/${id}/bookmark`, null, {
         headers: { Authorization: token },
       });
-      console.log("response", response);
+      setRefresh(!refresh);
     } catch (e) {
       console.error(e);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+    setRefresh(false);
+  }, [refresh]);
 
   return (
     <View style={styles.container}>
@@ -88,7 +92,7 @@ const PlaceList = ({ placeList, sort, fetchData }) => {
               <Text style={styles.placeContent}>{item.placeDetails}</Text>
               <LikeComponent
                 likeCount={item.likeCount}
-                liked={item.liked}
+                liked={item.bookmark}
                 onPress={() => toggleLike(item.placeId)}
               />
             </View>
