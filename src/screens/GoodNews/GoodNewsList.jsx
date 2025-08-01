@@ -98,6 +98,7 @@ const GoodNewsList = ({
                 delayLongPress={500}
               >
                 <GoodNewsComponent
+                  id={item.postId}
                   username={item.writer.name}
                   profileImage={item.writer.profileImage}
                   time={item.createdAt.split("T")[0].replace(/-/g, ".")}
@@ -107,6 +108,7 @@ const GoodNewsList = ({
                   likeCount={item.likeCount}
                   liked={item.liked}
                   commentCount={item.commentCount}
+                  setRefresh={setRefresh}
                 />
               </Pressable>
               {item.commentCount > 0 && (

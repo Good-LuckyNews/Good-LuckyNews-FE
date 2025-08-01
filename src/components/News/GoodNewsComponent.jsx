@@ -1,11 +1,13 @@
-import React from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import CommentComponent from "./CommentComponent";
 import LikeComponent from "./LikeComponent";
 import { COLORS } from "../../theme/color";
 import PropTypes from "prop-types";
+import * as SecureStore from "expo-secure-store";
+import api from "../../utils/common";
 
 const GoodNewsComponent = ({
+  id,
   username,
   // 수정사항: 프로필이미지 추가
   profileImage,
@@ -17,7 +19,24 @@ const GoodNewsComponent = ({
   commentCount = 0,
   style,
   type = "",
+  setRefresh = () => {},
 }) => {
+  const toggleLike = async () => {
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+      await api.post(`/api/posts/${id}/like`, null, {
+        headers: { Authorization: token },
+      });
+      setRefresh((refresh) => !refresh);
+    } catch (e) {
+      console.error("좋아요 토글 실패:", e);
+    }
+  };
+
   return (
     <View style={[{ width: 340, flexDirection: "row" }, style]}>
       {type === "comment" && (
@@ -73,7 +92,11 @@ const GoodNewsComponent = ({
             marginTop: 20,
           }}
         >
-          <LikeComponent likeCount={likeCount} liked={liked} />
+          <LikeComponent
+            likeCount={likeCount}
+            liked={liked}
+            onPress={toggleLike}
+          />
           <CommentComponent count={commentCount} />
         </View>
       </View>
@@ -119,7 +142,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     // 수정사항: 프로필이미지 테두리 추가
     borderWidth: 1,
-    borderColor: '#d9d9d9',
+    borderColor: "#d9d9d9",
   },
   usernameText: {
     fontFamily: "FontM",
