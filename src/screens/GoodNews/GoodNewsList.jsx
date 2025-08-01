@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../../theme/color";
 import MakePlaceButton from "./MakePlaceButton";
@@ -7,8 +7,6 @@ import { GoodNewsComponent } from "../../components";
 import DeleteModal from "../../components/News/DeleteModal";
 import api from "../../utils/common";
 import * as SecureStore from "expo-secure-store";
-
-// 새로고침 필요해보임 - 삭제가 화면에 바로바로 업데이트 안됨
 
 const GoodNewsList = ({
   timeline,
@@ -19,11 +17,11 @@ const GoodNewsList = ({
   fetchPostData,
 }) => {
   const navigation = useNavigation();
+  const [refresh, setRefresh] = useState(false);
 
-  const handleDelete = (id) => {
+  const handleDelete = (id) =>
     // 데이터 삭제
     setSelectedCommentId(id);
-  };
 
   const deleteGoodNews = async (id) => {
     try {
@@ -36,6 +34,7 @@ const GoodNewsList = ({
         headers: { Authorization: token },
       });
       alert("삭제 성공");
+      setRefresh(!refresh);
     } catch (e) {
       if (e.status === 403) {
         alert("권한이 없습니다.");
@@ -50,6 +49,11 @@ const GoodNewsList = ({
       fetchPostData();
     }, [])
   );
+
+  useEffect(() => {
+    fetchPostData();
+    setRefresh(false);
+  }, [refresh]);
 
   return (
     <View style={{ flex: 1 }}>
