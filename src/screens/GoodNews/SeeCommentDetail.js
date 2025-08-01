@@ -7,9 +7,9 @@ import {
   TextInput,
   View,
 } from "react-native";
-import GoodNewsComponent from "../../components/News/GoodNewsComponent";
 import { COLORS } from "../../theme/color";
 import DeleteModal from "../../components/News/DeleteModal";
+import { GoodNewsComponent } from "../../components";
 
 const commentList = [
   {
