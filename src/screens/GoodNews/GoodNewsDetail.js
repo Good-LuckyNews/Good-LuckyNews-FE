@@ -12,7 +12,7 @@ const GoodNewsDetail = () => {
   const { id } = route.params;
   const [selectedCommentId, setSelectedCommentId] = useState(null);
   const [placeInfo, setPlaceList] = useState({});
-  const [goodNewInfo, setGoodNewInfo] = useState([]); // 상태 변수
+  const [goodNewInfo, setGoodNewInfo] = useState([]);
 
   const fetchPlaceData = async () => {
     try {
@@ -22,12 +22,15 @@ const GoodNewsDetail = () => {
         return;
       }
 
-      const response = await api.get(`/api/place/${id}`, {
+      // /api/place/{id} 경로가 안 불러와져서 전체에서 조회하는 걸로 수정
+      const response = await api.get(`/api/place`, {
         headers: { Authorization: token },
       });
-      setPlaceList(response.data.result);
+      const places = response.data?.result?.content || [];
+      const place = places.find((p) => p.placeId === id);
+      setPlaceList(place);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
@@ -35,12 +38,13 @@ const GoodNewsDetail = () => {
     try {
       const token = await SecureStore.getItemAsync("userToken");
       if (token) {
-        const response = await api.get("/api/posts", {
+        const response = await api.get(`/api/posts/place/${id}`, {
           headers: {
             Authorization: `${token}`,
           },
           params: { page: 0, size: 50 },
         });
+        console.log(response.data.result);
         savePostData(response.data.result);
       } else {
         console.log("No token found");
@@ -65,6 +69,25 @@ const GoodNewsDetail = () => {
     }
   };
 
+  // 오류 - 플레이스 북마크
+  const placeLikeToggle = async () => {
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+
+      const response = await api.post(`/api/place/${id}/bookmark`, null, {
+        headers: { Authorization: token },
+      });
+      console.log("response", response.data);
+      fetchPlaceData();
+    } catch (e) {
+      console.error(e.code);
+    }
+  };
+
   useEffect(() => {
     fetchPlaceData();
     fetchPostData();
@@ -82,7 +105,8 @@ const GoodNewsDetail = () => {
           <Text style={styles.placeDetails}>{placeInfo.placeDetails}</Text>
           <LikeComponent
             likeCount={placeInfo.likeCount}
-            liked={placeInfo.liked}
+            liked={placeInfo.bookmark}
+            onPress={placeLikeToggle}
           />
         </View>
         <Image
