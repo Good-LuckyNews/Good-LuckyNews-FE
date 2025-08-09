@@ -43,7 +43,6 @@ const WriteGoodNews = ({ navigation, route }) => {
       if (!result.canceled) {
         const imageUri = result.assets[0].uri;
         setImageSrc(imageUri); // 이미지 URI 상태에 저장
-
         // 서버로 이미지 전송
         // await uploadImage(imageUri);
       } else {
@@ -84,10 +83,9 @@ const WriteGoodNews = ({ navigation, route }) => {
 
           const response = await api.post(`/api/posts`, formData, {
             headers: {
-              "Authorization": `${token}`,
-              "Content-Type": "multipart/form-data"
+              Authorization: `${token}`,
+              "Content-Type": "multipart/form-data",
             },
-
           });
 
           navigation.goBack();
@@ -125,7 +123,7 @@ const WriteGoodNews = ({ navigation, route }) => {
         </Pressable>
       ),
     });
-    // 수정사항: text, imageSrc가 최신 상태로 업데이트 필요 - 업데이트 안된 상태에서 axios요청 가는 경우 발생 
+    // 수정사항: text, imageSrc가 최신 상태로 업데이트 필요 - 업데이트 안된 상태에서 axios요청 가는 경우 발생
   }, [navigation, text, imageSrc]);
 
   return (
