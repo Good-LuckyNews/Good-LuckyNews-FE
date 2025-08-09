@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Image,
   Pressable,
+  ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   View,
 } from "react-native";
@@ -16,6 +16,7 @@ import api from "../../utils/common";
 const SeeCommentDetail = ({ route }) => {
   const [commentList, setCommentList] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
+  const [refresh, setRefresh] = useState(false);
   const { title, postInfo, postId } = route.params;
 
   const fetchCommentData = async () => {
@@ -28,7 +29,6 @@ const SeeCommentDetail = ({ route }) => {
           },
           params: { page: 0, size: 10 },
         });
-        console.log(response.data.result);
         setCommentList(response.data.result);
       } else {
         console.log("No token found");
@@ -40,7 +40,8 @@ const SeeCommentDetail = ({ route }) => {
 
   useEffect(() => {
     fetchCommentData();
-  }, []);
+    setRefresh(false);
+  }, [refresh]);
 
   const deleteComment = () => {
     // axios 연동
@@ -101,11 +102,20 @@ const SeeCommentDetail = ({ route }) => {
         )}
       </View>
 
-      <View style={{ marginLeft: 25, marginRight: 28, marginTop: 19, gap: 23 }}>
+      <ScrollView
+        style={{
+          marginLeft: 25,
+          marginRight: 28,
+          marginTop: 19,
+          marginBottom: 160,
+        }}
+        contentContainerStyle={{ gap: 23 }}
+        showsVerticalScrollIndicator={false}
+      >
         {commentList.length > 0 &&
           commentList.map((comment, idx) => (
             <Pressable
-              key={comment.id}
+              key={comment.commentId}
               onLongPress={() => setSelectedId(comment.id)}
               delayLongPress={500}
               style={
@@ -118,8 +128,8 @@ const SeeCommentDetail = ({ route }) => {
             >
               <GoodNewsComponent
                 username={comment.writer.name}
-                profileImage={postInfo.writer.profileImage}
-                time={postInfo.createdAt.split("T")[0].replace(/-/g, ".")}
+                profileImage={comment.writer.profileImage}
+                time={comment.createdAt.split("T")[0].replace(/-/g, ".")}
                 content={comment.content}
                 imageSrc={comment.image}
                 likeCount={comment.likeCount}
@@ -129,48 +139,66 @@ const SeeCommentDetail = ({ route }) => {
               />
             </Pressable>
           ))}
-      </View>
+      </ScrollView>
 
-      <SendComment />
+      <SendComment postId={postId} setRefresh={setRefresh} />
     </View>
   );
 };
 
-const PrevComment = ({ username, content, image, style }) => {
-  return (
-    <Pressable
-      style={[
-        {
-          flexDirection: "row",
-          gap: 12,
-          alignItems: "center",
-          marginBottom: 17,
-        },
-        style,
-      ]}
-    >
-      <Image
-        source={require("../../../assets/images/uploadImage/default_profile_image.png")}
-        style={{ width: 25, height: 25, borderRadius: 50 }}
-      />
-      <Text style={styles.prevText}>{username}</Text>
-      <Text
-        style={[styles.prevText, { width: 260, color: "#8A8888" }]}
-        numberOfLines={1}
-        ellipsizeMode="tail"
-      >
-        {content}
-      </Text>
-    </Pressable>
-  );
-};
+// const PrevComment = ({ username, content, image, style }) => {
+//   return (
+//     <Pressable
+//       style={[
+//         {
+//           flexDirection: "row",
+//           gap: 12,
+//           alignItems: "center",
+//           marginBottom: 17,
+//         },
+//         style,
+//       ]}
+//     >
+//       <Image
+//         source={require("../../../assets/images/uploadImage/default_profile_image.png")}
+//         style={{ width: 25, height: 25, borderRadius: 50 }}
+//       />
+//       <Text style={styles.prevText}>{username}</Text>
+//       <Text
+//         style={[styles.prevText, { width: 260, color: "#8A8888" }]}
+//         numberOfLines={1}
+//         ellipsizeMode="tail"
+//       >
+//         {content}
+//       </Text>
+//     </Pressable>
+//   );
+// };
 
-const SendComment = () => {
+const SendComment = ({ postId, setRefresh }) => {
   const [comment, setComment] = useState("");
 
-  const sendComment = () => {
+  const sendComment = async () => {
     if (!comment) return;
     // axios 연동
+
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+      await api.post(
+        `/api/posts/${postId}/comments`,
+        { content: comment },
+        {
+          headers: { Authorization: token },
+        }
+      );
+      setRefresh((refresh) => !refresh);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -229,7 +257,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
     paddingHorizontal: 19,
-
+    backgroundColor: "white",
     borderColor: "#ECECEC",
     borderWidth: 2,
     borderBottomWidth: 0,
