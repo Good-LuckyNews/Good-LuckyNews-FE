@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   Pressable,
@@ -10,58 +10,37 @@ import {
 import { COLORS } from "../../theme/color";
 import DeleteModal from "../../components/News/DeleteModal";
 import { GoodNewsComponent } from "../../components";
-
-const commentList = [
-  {
-    id: 4,
-    profileImage: "",
-    username: "김소식",
-    time: "3일 전",
-    content:
-      "오늘 도시락을 열었더니 엄마가 제가 좋아하는 반찬을 챙겨주셨더라고요. 바쁜 하루였지만 도시락을 열었을 때 엄마의 마음이 느껴져셔 따뜻한 하루였어요.",
-    image: null,
-    likeCount: 2,
-    liked: false,
-    commentCount: 3,
-  },
-  {
-    id: 5,
-    profileImage: "",
-    username: "미소1",
-    time: "1일 전",
-    content: "1도시락 속 따뜻한 마음이라니, 저도 미소가 나는 것 같아요~",
-    image: null,
-    likeCount: 0,
-    liked: false,
-    commentCount: 2,
-  },
-  {
-    id: 6,
-    profileImage: "",
-    username: "미소2",
-    time: "1일 전",
-    content: "2도시락 속 따뜻한 마음이라니, 저도 미소가 나는 것 같아요~",
-    image: null,
-    likeCount: 0,
-    liked: false,
-    commentCount: 1,
-  },
-  {
-    id: 7,
-    profileImage: "",
-    username: "미소3",
-    time: "1일 전",
-    content: "3도시락 속 따뜻한 마음이라니, 저도 미소가 나는 것 같아요~",
-    image: null,
-    likeCount: 0,
-    liked: false,
-    commentCount: 0,
-  },
-];
+import * as SecureStore from "expo-secure-store";
+import api from "../../utils/common";
 
 const SeeCommentDetail = ({ route }) => {
+  const [commentList, setCommentList] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
-  const { title, commentId } = route.params;
+  const { title, postInfo, postId } = route.params;
+
+  const fetchCommentData = async () => {
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (token) {
+        const response = await api.get(`/api/posts/${postId}/comments`, {
+          headers: {
+            Authorization: token,
+          },
+          params: { page: 0, size: 10 },
+        });
+        console.log(response.data.result);
+        setCommentList(response.data.result);
+      } else {
+        console.log("No token found");
+      }
+    } catch (error) {
+      console.error("데이터 가져오기 실패:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCommentData();
+  }, []);
 
   const deleteComment = () => {
     // axios 연동
@@ -89,7 +68,7 @@ const SeeCommentDetail = ({ route }) => {
         }}
       >
         {/* prevComment 있는 버전 */}
-        <PrevComment
+        {/* <PrevComment
           username={commentList[0].username}
           content={commentList[0].content}
           image="" // 프사용
@@ -105,32 +84,26 @@ const SeeCommentDetail = ({ route }) => {
           commentCount={commentList[1].commentCount}
           type="comment"
           style={{ marginLeft: -12 }}
-        />
-
-        {/* 이거만 있으면 prevComment 없는 버전
-        <GoodNewsComponent
-          username={commentList[1].username}
-          time={commentList[1].time}
-          content={commentList[1].content}
-          image=""
-          likeCount={commentList[1].likeCount}
-          liked={commentList[1].liked}
-          commentCount={commentList[1].commentCount}
         /> */}
+
+        {postInfo && (
+          <GoodNewsComponent
+            username={postInfo.writer.name}
+            profileImage={postInfo.writer.profileImage}
+            time={postInfo.createdAt.split("T")[0].replace(/-/g, ".")}
+            content={postInfo.content}
+            image={postInfo.writer.profileImage}
+            likeCount={postInfo.likeCount}
+            liked={postInfo.liked}
+            commentCount={postInfo.commentCount}
+            imageSrc={postInfo.image}
+          />
+        )}
       </View>
 
-      {/* 밑에 댓글 하나도 없으면 밑에 띄우지 말고 이거만 띄워
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>가장 먼저 답글을 남겨보세요</Text>
-        <Image
-          style={{ width: "20", height: "14" }}
-          source={require("../../../assets/icon.png")}
-        />
-      </View> */}
-
       <View style={{ marginLeft: 25, marginRight: 28, marginTop: 19, gap: 23 }}>
-        {commentList.length > 2 &&
-          commentList.slice(2).map((comment, idx) => (
+        {commentList.length > 0 &&
+          commentList.map((comment, idx) => (
             <Pressable
               key={comment.id}
               onLongPress={() => setSelectedId(comment.id)}
@@ -144,14 +117,15 @@ const SeeCommentDetail = ({ route }) => {
               }
             >
               <GoodNewsComponent
-                username={comment.username}
-                time={comment.time}
+                username={comment.writer.name}
+                profileImage={postInfo.writer.profileImage}
+                time={postInfo.createdAt.split("T")[0].replace(/-/g, ".")}
                 content={comment.content}
-                image=""
+                imageSrc={comment.image}
                 likeCount={comment.likeCount}
                 liked={comment.liked}
                 commentCount={comment.commentCount}
-                type={idx >= 1 ? "comment" : null}
+                type="comment"
               />
             </Pressable>
           ))}
