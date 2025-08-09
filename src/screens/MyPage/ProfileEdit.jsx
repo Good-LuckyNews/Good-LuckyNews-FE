@@ -202,7 +202,12 @@ const ProfileEdit = () => {
                             <TitleText>닉네임</TitleText>
                             <TitleDesc>* 필수 입력 항목입니다.</TitleDesc>
                         </NameArea>
-                        <NameInput value={profile.name} onChange={(value) => setProfile({ name: value })} />
+                        <NameInput
+                            value={profile.name}
+                            onChangeText={(text) =>
+                                setProfile((prev) => ({ ...prev, name: text }))
+                            }
+                        />
                     </NameEditContainer>
                     <BoxEditContainer>
                         <TitleText style={{ paddingBottom: 10 }}>긍정적으로 느껴지는 키워드를 선택해주세요.</TitleText>

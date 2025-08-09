@@ -25,7 +25,7 @@ const MyNews = () => {
             'Authorization': `${token}`
           },
         });
-        setNews(response.data);
+        setNews(response.data.result);
       } else {
         console.log('No token found');
       }
