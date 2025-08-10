@@ -9,7 +9,7 @@ import api from "../../utils/common";
 import * as SecureStore from "expo-secure-store";
 
 const GoodNewsList = ({
-  timeline,
+  timeline = [],
   selectedCommentId,
   setSelectedCommentId,
   placeName,
@@ -19,9 +19,9 @@ const GoodNewsList = ({
   const navigation = useNavigation();
   const [refresh, setRefresh] = useState(false);
 
-  const handleDelete = (id) =>
-    // 데이터 삭제
-    setSelectedCommentId(id);
+  const [commentsByPost, setCommentsByPost] = useState({});
+
+  const handleDelete = (id) => setSelectedCommentId(id);
 
   const deleteGoodNews = async (id) => {
     try {
@@ -34,9 +34,9 @@ const GoodNewsList = ({
         headers: { Authorization: token },
       });
       alert("삭제 성공");
-      setRefresh(!refresh);
+      setRefresh((prev) => !prev);
     } catch (e) {
-      if (e.status === 403) {
+      if (e?.status === 403) {
         alert("권한이 없습니다.");
       }
     } finally {
@@ -44,16 +44,53 @@ const GoodNewsList = ({
     }
   };
 
+  const fetchComments = async (postId) => {
+    if (!postId) return;
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+      const response = await api.get(`/api/posts/${postId}/comments`, {
+        headers: { Authorization: token },
+        params: { page: 0, size: 10 },
+      });
+
+      const list = Array.isArray(response.data?.result)
+        ? response.data.result
+        : [];
+
+      setCommentsByPost((prev) => ({
+        ...prev,
+        [postId]: list,
+      }));
+    } catch (error) {
+      console.error("댓글 가져오기 실패:", error);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
-      fetchPostData();
+      fetchPostData?.();
     }, [])
   );
 
   useEffect(() => {
-    fetchPostData();
+    fetchPostData?.();
     setRefresh(false);
   }, [refresh]);
+
+  useEffect(() => {
+    if (!Array.isArray(timeline)) return;
+    timeline.forEach((item) => {
+      const postId = item?.postId;
+      if (!postId) return;
+      if (item.commentCount > 0 && !commentsByPost[postId]) {
+        fetchComments(postId);
+      }
+    });
+  }, [timeline]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -63,10 +100,11 @@ const GoodNewsList = ({
         onCancel={() => setSelectedCommentId(null)}
         onDelete={() => deleteGoodNews(selectedCommentId)}
       />
+
       <View style={styles.container}>
         <FlatList
-          data={timeline}
-          keyExtractor={(item) => item.postId}
+          data={Array.isArray(timeline) ? timeline : []}
+          keyExtractor={(item, idx) => String(item?.postId ?? idx)}
           ListHeaderComponent={
             <MakePlaceButton
               type="희소식"
@@ -75,131 +113,133 @@ const GoodNewsList = ({
               placeId={placeId}
             />
           }
-          renderItem={({ item }) => (
-            <View
-              style={{
-                borderBottomWidth: 1,
-                borderColor: "#D9D9D9",
-                position: "relative",
-              }}
-            >
-              <Pressable
-                style={styles.goodNewsContainer}
-                onPress={() =>
-                  navigation.navigate("SeeCommentDetail", {
-                    title: placeName,
-                    postInfo: item,
-                    postId: item.postId,
-                  })
-                }
-                onLongPress={(e) => {
-                  e.stopPropagation();
-                  handleDelete(item.postId);
+          renderItem={({ item }) => {
+            if (!item) return null;
+
+            const postId = item.postId;
+            const comments = commentsByPost[postId] || [];
+            const showComments = (item.commentCount ?? 0) > 0;
+
+            return (
+              <View
+                style={{
+                  borderBottomWidth: 1,
+                  borderColor: "#D9D9D9",
+                  position: "relative",
                 }}
-                delayLongPress={500}
               >
-                <GoodNewsComponent
-                  id={item.postId}
-                  username={item.writer.name}
-                  profileImage={item.writer.profileImage}
-                  time={item.createdAt.split("T")[0].replace(/-/g, ".")}
-                  content={item.content}
-                  // 수정사항: imageSrc로 받도록 설정되어 있어서 보내줄때도 imageSrc로 보내야함
-                  imageSrc={item.image}
-                  likeCount={item.likeCount}
-                  liked={item.liked}
-                  commentCount={item.commentCount}
-                  setRefresh={setRefresh}
-                />
-              </Pressable>
-              {/* {item.commentCount > 0 && (
-                <CommentList
-                  commentList={item.comment}
-                  selectedCommentId={selectedCommentId}
-                  handleDelete={handleDelete}
-                />
-              )} */}
-            </View>
-          )}
+                <Pressable
+                  style={styles.goodNewsContainer}
+                  onPress={() =>
+                    navigation.navigate("SeeCommentDetail", {
+                      title: placeName,
+                      postInfo: item,
+                      postId: postId,
+                    })
+                  }
+                  onLongPress={(e) => {
+                    e.stopPropagation();
+                    handleDelete(postId);
+                  }}
+                  delayLongPress={500}
+                >
+                  <GoodNewsComponent
+                    id={postId}
+                    username={item?.writer?.name ?? ""}
+                    profileImage={item?.writer?.profileImage}
+                    time={
+                      item?.createdAt
+                        ? item.createdAt.split("T")[0].replace(/-/g, ".")
+                        : ""
+                    }
+                    content={item?.content ?? ""}
+                    imageSrc={item?.image ?? null}
+                    likeCount={item?.likeCount ?? 0}
+                    liked={item?.liked ?? false}
+                    commentCount={item?.commentCount ?? 0}
+                    setRefresh={setRefresh}
+                  />
+                </Pressable>
+
+                {showComments && (
+                  <CommentList
+                    postId={postId}
+                    comments={comments}
+                    selectedCommentId={selectedCommentId}
+                    handleDelete={handleDelete}
+                    fetchComments={fetchComments}
+                    placeName={placeName}
+                    postItem={item}
+                  />
+                )}
+              </View>
+            );
+          }}
         />
       </View>
     </View>
   );
 };
 
-// const CommentList = ({ commentList = [], selectedCommentId, handleDelete }) => {
-//   const [seeAllComment, setSeeAllComment] = useState(false);
-//   const commentListLength = commentList.length;
-//   const [seeAllButton, setSeeAllButton] = useState(commentListLength > 1);
-//   const lastCommentIdx = commentListLength - 1;
+const CommentList = ({
+  postId,
+  comments = [],
+  selectedCommentId,
+  handleDelete,
+  placeName,
+  postItem, 
+}) => {
+  const navigation = useNavigation();
 
-//   return (
-//     <>
-//       <Pressable
-//         style={[
-//           styles.seeAllCommentsContainer,
-//           !seeAllButton && { display: "none" },
-//         ]}
-//         onPress={() => {
-//           setSeeAllComment(true);
-//           setSeeAllButton(false);
-//         }}
-//       >
-//         <Text style={styles.seeAllCommentsText}>전체보기</Text>
-//       </Pressable>
-//       {commentListLength > 1 && seeAllComment ? (
-//         commentList.map((comment) => (
-//           <Pressable
-//             key={comment.id}
-//             style={{ marginBottom: 22 }}
-//             onLongPress={(e) => {
-//               e.stopPropagation();
-//               handleDelete(comment.id);
-//             }}
-//             delayLongPress={500}
-//           >
-//             <GoodNewsComponent
-//               type="comment"
-//               key={comment.id}
-//               username={comment.username}
-//               time={comment.time}
-//               content={comment.content}
-//               image={comment.image}
-//               likeCount={comment.likeCount}
-//               liked={comment.liked}
-//               commentCount={comment.commentCount}
-//               style={{ marginTop: 28 }}
-//             />
-//           </Pressable>
-//         ))
-//       ) : (
-//         <Pressable
-//           style={
-//             selectedCommentId === commentList[lastCommentIdx].id &&
-//             styles.selectedItem
-//           }
-//           onLongPress={(e) => {
-//             e.stopPropagation();
-//             handleDelete(commentList[lastCommentIdx].id);
-//           }}
-//           delayLongPress={500}
-//         >
-//           <GoodNewsComponent
-//             type="comment"
-//             username={commentList[lastCommentIdx].username}
-//             time={commentList[lastCommentIdx].time}
-//             content={commentList[lastCommentIdx].content}
-//             image={commentList[lastCommentIdx].image}
-//             likeCount={commentList[lastCommentIdx].likeCount}
-//             liked={commentList[lastCommentIdx].liked}
-//             commentCount={commentList[lastCommentIdx].commentCount}
-//             style={{ marginTop: 28, marginBottom: 22 }}
-//           />
-//         </Pressable>
-//       )}
-//     </>
-//   );
-// };
+  const list = Array.isArray(comments) ? comments : [];
+  const count = list.length;
+  if (count === 0) return null;
+
+  const last = list[count - 1];
+  const showSeeAllButton = count > 1;
+
+  return (
+    <>
+      {showSeeAllButton && (
+        <Pressable
+          style={styles.seeAllCommentsContainer}
+          onPress={() =>
+            navigation.navigate("SeeCommentDetail", {
+              title: placeName,
+              postInfo: postItem,
+              postId,
+            })
+          }
+        >
+          <Text style={styles.seeAllCommentsText}>전체보기</Text>
+        </Pressable>
+      )}
+
+      {/* 리스트는 그대로: 댓글 1개만 미리 보여주기 */}
+      <Pressable
+        style={selectedCommentId === last?.id ? styles.selectedItem : undefined}
+        onLongPress={(e) => {
+          e.stopPropagation();
+          if (last?.id) handleDelete(last.id);
+        }}
+        delayLongPress={500}
+      >
+        <GoodNewsComponent
+          type="comment"
+          username={last?.writer?.name ?? ""}
+          profileImage={last?.writer?.profileImage ?? ""}
+          time={last?.time ?? ""}
+          content={last?.content ?? ""}
+          image={last?.image ?? null}
+          likeCount={last?.likeCount ?? 0}
+          liked={last?.liked ?? false}
+          commentCount={last?.commentCount ?? 0}
+          style={{ marginTop: 28, marginBottom: 22 }}
+        />
+      </Pressable>
+    </>
+  );
+};
 
 export default GoodNewsList;
 
@@ -214,9 +254,7 @@ const styles = StyleSheet.create({
     paddingTop: 22,
     paddingHorizontal: 10,
     paddingBottom: 9,
-    backgroundColor: COLORS.White,
   },
-
   seeAllCommentsContainer: {
     marginTop: 15,
     marginLeft: 42,
@@ -225,6 +263,9 @@ const styles = StyleSheet.create({
     color: "#8A8888",
     fontFamily: "FontM",
     fontSize: 13,
-    fontWeight: 400,
+    fontWeight: "400",
+  },
+  selectedItem: {
+    backgroundColor: "rgba(0,0,0,0.04)",
   },
 });

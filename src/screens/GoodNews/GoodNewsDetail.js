@@ -44,7 +44,6 @@ const GoodNewsDetail = () => {
           },
           params: { page: 0, size: 50 },
         });
-        console.log(response.data.result);
         savePostData(response.data.result);
       } else {
         console.log("No token found");
@@ -61,7 +60,6 @@ const GoodNewsDetail = () => {
       setGoodNewInfo(filteredData); // 필터링된 데이터 저장
       const updatedData = filteredData.map((item, index) => ({
         ...item,
-        username: index === 0 ? "김소식" : "하늘",
       }));
       setGoodNewInfo(updatedData);
     } else {
