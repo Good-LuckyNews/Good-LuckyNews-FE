@@ -10,17 +10,25 @@ const MyCommentedNews = () => {
   const [news, setNews] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [post, setPost] = useState([]);
 
-  const renderItem = ({ item }) => (
-    <NewsList item={item} />
-  );
+  const renderItem = ({ item }) => {
+    const matchedPost = post.find(p => p.postId === item.postId);
+
+    return (
+      <NewsList
+        item={item}
+        post={matchedPost}
+      />
+    );
+  };
 
   const fetchMyCommentedNews = async () => {
     setLoading(true);
     try {
       const token = await SecureStore.getItemAsync('userToken');
       if (token) {
-        const response = await api.get(`/api/comments/mypage`, {
+        const response = await api.get(`/api/mypage/comments`, {
           headers: {
             'Authorization': `${token}`
           },
@@ -36,9 +44,28 @@ const MyCommentedNews = () => {
     }
   }
 
+  const fetchPostData = async () => {
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (token) {
+        const response = await api.get(`/api/posts`, {
+          headers: {
+            Authorization: `${token}`,
+          },
+        });
+        setPost(response.data.result);
+      } else {
+        console.log("No token found");
+      }
+    } catch (error) {
+      console.error("데이터 가져오기 실패:", error);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       fetchMyCommentedNews();
+      fetchPostData();
     }, [])
   );
 

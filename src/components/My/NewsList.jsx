@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { CommentIcon, HeartActiveIcon, HeartInActiveIcon } from '../../utils/icons';
 import { COLORS } from '../../theme/color';
@@ -16,7 +16,7 @@ Notifications.setNotificationHandler({
     }),
 });
 
-const NewsList = ({ item }) => {
+const NewsList = ({ item, post }) => {
     const navigation = useNavigation();
     const [isHearted, setIsHearted] = useState(false);
     const { addNotification } = useNotification();
@@ -32,12 +32,20 @@ const NewsList = ({ item }) => {
     return (
         <NewsListContainer>
             <NewsListInnerContainer>
-                <Pressable onPress={() => navigation.navigate("GoodNewsDetail", {id: item.placeId})}>
+                <Pressable onPress={() => {
+                    item.commentId ?
+                        navigation.navigate("SeeCommentDetail", {
+                            title: item.placeName,
+                            postInfo: post,
+                            postId: item.postId,
+                        }) :
+                        navigation.navigate("GoodNewsDetail", { id: item.placeId })
+                }}>
                     <NewsTopContainer>
                         <TopLeftContainer>
                             <LeftTopArea>
                                 <NameText>{item.placeName}</NameText>
-                                <DateText>{getTimeDifference(item.updatedAt)}</DateText>
+                                <DateText>{item.updatedAt ? getTimeDifference(item.updatedAt) : getTimeDifference(item.createdAt)}</DateText>
                             </LeftTopArea>
                             <LeftContentArea>
                                 <ContentText>{item.content}</ContentText>
@@ -65,7 +73,7 @@ const NewsList = ({ item }) => {
                     </CommentArea>
                 </NewsBottomContainer>
             </NewsListInnerContainer>
-        </NewsListContainer>
+        </NewsListContainer >
     )
 }
 
