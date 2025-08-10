@@ -195,6 +195,7 @@ const SendComment = ({ postId, setRefresh }) => {
           headers: { Authorization: token },
         }
       );
+      setComment("");
       setRefresh((refresh) => !refresh);
     } catch (e) {
       console.error(e);
