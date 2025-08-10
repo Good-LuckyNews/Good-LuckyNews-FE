@@ -87,7 +87,7 @@ const MyCommentedNews = () => {
     <Container>
       <FlatList
         data={news}
-        keyExtractor={(item) => item.postId}
+        keyExtractor={(item) => item.commentId}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 80, }}
