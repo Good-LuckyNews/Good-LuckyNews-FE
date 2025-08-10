@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FlatList,
   Image,
@@ -17,49 +17,55 @@ import * as SecureStore from "expo-secure-store";
 
 const PlaceList = ({ placeList, sort, fetchData }) => {
   const [selectedId, setSelectedId] = useState(null);
+  const [refresh, setRefresh] = useState(false);
   const navigation = useNavigation();
   const moveToDetail = (item) => {
-    // console.log(item);
     navigation.navigate("GoodNewsDetail", {
       id: item.placeId,
-      placeName: item.placeName,
-      placeDetails: item.placeDetails,
-      placeImage: item.placeImg,
-      placeLikeCount: item.likeCount,
-      placeLiked: item.liked,
-      placeId: item.placeId,
     });
   };
 
-  const deletePlace = (id) => {
-    // axios 연동
-    // try {
-    //   const response = api.delete(`/api/place/${id}`);
-    //   setSelectedId(null);
-    //   fetchData();
-    //   console.log(response);
-    // } catch (e) {
-    //   console.error(e);
-    // }
-  };
-
-  const toggleLike = async (id) => {
-    console.log(id);
+  const deletePlace = async (id) => {
     try {
       const token = await SecureStore.getItemAsync("userToken");
       if (!token) {
         console.log("No token found");
         return;
       }
-      console.log(token);
+      await api.delete(`/api/place/${id}`, {
+        headers: { Authorization: token },
+      });
+      setSelectedId(null);
+      setRefresh(!refresh);
+    } catch (e) {
+      console.error(JSON.stringify(e, null, 2));
+      if (e.status === 403) {
+        alert("권한이 없습니다.");
+        setSelectedId(null);
+      }
+    }
+  };
+
+  const toggleLike = async (id) => {
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
       const response = await api.post(`/api/place/${id}/bookmark`, null, {
         headers: { Authorization: token },
       });
-      console.log("response", response);
+      setRefresh(!refresh);
     } catch (e) {
       console.error(e);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+    setRefresh(false);
+  }, [refresh]);
 
   return (
     <View style={styles.container}>
@@ -86,7 +92,7 @@ const PlaceList = ({ placeList, sort, fetchData }) => {
               <Text style={styles.placeContent}>{item.placeDetails}</Text>
               <LikeComponent
                 likeCount={item.likeCount}
-                liked={item.liked}
+                liked={item.bookmark}
                 onPress={() => toggleLike(item.placeId)}
               />
             </View>
