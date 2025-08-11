@@ -38,22 +38,39 @@ const SeeCommentDetail = ({ route }) => {
     }
   };
 
+  const deleteComment = async (id) => {
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+      await api.delete(`/api/posts/${postId}/comments/${id}`, {
+        headers: { Authorization: token },
+      });
+      alert("삭제 성공");
+      setRefresh((prev) => !prev);
+    } catch (e) {
+      if (e?.status === 403 || e?.status === 404) {
+        alert("권한이 없습니다.");
+      } else {
+        console.error("댓글 삭제 실패:", e);
+      }
+    } finally {
+      setSelectedId(null);
+    }
+  };
+
   useEffect(() => {
     fetchCommentData();
     setRefresh(false);
   }, [refresh]);
 
-  const deleteComment = () => {
-    // axios 연동
-
-    setSelectedId(null);
-  };
-
   return (
     <View style={{ flex: 1 }}>
       <DeleteModal
         visible={!!selectedId}
-        text="답글을 삭제하시겠습니까?"
+        text="댓글을 삭제하시겠습니까?"
         onCancel={() => setSelectedId(null)}
         onDelete={() => deleteComment(selectedId)}
       />
@@ -118,7 +135,7 @@ const SeeCommentDetail = ({ route }) => {
           commentList.map((comment) => (
             <Pressable
               key={comment.commentId}
-              onLongPress={() => setSelectedId(comment.id)}
+              onLongPress={() => setSelectedId(comment.commentId)}
               delayLongPress={500}
               style={
                 commentList.length === 3 && {
