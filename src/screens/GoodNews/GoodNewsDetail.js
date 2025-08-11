@@ -10,7 +10,6 @@ import * as SecureStore from "expo-secure-store";
 const GoodNewsDetail = () => {
   const route = useRoute();
   const { id } = route.params;
-  const [selectedCommentId, setSelectedCommentId] = useState(null);
   const [placeInfo, setPlaceList] = useState({});
   const [goodNewInfo, setGoodNewInfo] = useState([]);
 
@@ -119,8 +118,6 @@ const GoodNewsDetail = () => {
 
       <GoodNewsList
         timeline={goodNewInfo}
-        selectedCommentId={selectedCommentId}
-        setSelectedCommentId={setSelectedCommentId}
         placeName={placeInfo.placeName}
         placeId={placeInfo.placeId}
         fetchPostData={fetchPostData}

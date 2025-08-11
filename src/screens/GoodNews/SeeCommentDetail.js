@@ -38,22 +38,39 @@ const SeeCommentDetail = ({ route }) => {
     }
   };
 
+  const deleteComment = async (id) => {
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+      await api.delete(`/api/posts/${postId}/comments/${id}`, {
+        headers: { Authorization: token },
+      });
+      alert("삭제 성공");
+      setRefresh((prev) => !prev);
+    } catch (e) {
+      if (e?.status === 403 || e?.status === 404) {
+        alert("권한이 없습니다.");
+      } else {
+        console.error("댓글 삭제 실패:", e);
+      }
+    } finally {
+      setSelectedId(null);
+    }
+  };
+
   useEffect(() => {
     fetchCommentData();
     setRefresh(false);
   }, [refresh]);
 
-  const deleteComment = () => {
-    // axios 연동
-
-    setSelectedId(null);
-  };
-
   return (
     <View style={{ flex: 1 }}>
       <DeleteModal
         visible={!!selectedId}
-        text="답글을 삭제하시겠습니까?"
+        text="댓글을 삭제하시겠습니까?"
         onCancel={() => setSelectedId(null)}
         onDelete={() => deleteComment(selectedId)}
       />
@@ -89,6 +106,7 @@ const SeeCommentDetail = ({ route }) => {
 
         {postInfo && (
           <GoodNewsComponent
+            id={postId}
             username={postInfo.writer.name}
             profileImage={postInfo.writer.profileImage}
             time={postInfo.createdAt.split("T")[0].replace(/-/g, ".")}
@@ -98,6 +116,7 @@ const SeeCommentDetail = ({ route }) => {
             liked={postInfo.liked}
             commentCount={postInfo.commentCount}
             imageSrc={postInfo.image}
+            setRefresh={setRefresh}
           />
         )}
       </View>
@@ -113,10 +132,10 @@ const SeeCommentDetail = ({ route }) => {
         showsVerticalScrollIndicator={false}
       >
         {commentList.length > 0 &&
-          commentList.map((comment, idx) => (
+          commentList.map((comment) => (
             <Pressable
               key={comment.commentId}
-              onLongPress={() => setSelectedId(comment.id)}
+              onLongPress={() => setSelectedId(comment.commentId)}
               delayLongPress={500}
               style={
                 commentList.length === 3 && {
@@ -127,6 +146,8 @@ const SeeCommentDetail = ({ route }) => {
               }
             >
               <GoodNewsComponent
+                postId={postId}
+                id={comment.commentId}
                 username={comment.writer.name}
                 profileImage={comment.writer.profileImage}
                 time={comment.createdAt.split("T")[0].replace(/-/g, ".")}
