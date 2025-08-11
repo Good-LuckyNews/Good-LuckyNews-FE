@@ -8,20 +8,15 @@ import DeleteModal from "../../components/News/DeleteModal";
 import api from "../../utils/common";
 import * as SecureStore from "expo-secure-store";
 
-const GoodNewsList = ({
-  timeline = [],
-  selectedCommentId,
-  setSelectedCommentId,
-  placeName,
-  placeId,
-  fetchPostData,
-}) => {
+const GoodNewsList = ({ timeline = [], placeName, placeId, fetchPostData }) => {
   const navigation = useNavigation();
   const [refresh, setRefresh] = useState(false);
-
+  const [selectedPostId, setSelectedPostId] = useState(null);
+  const [selectedCommentId, setSelectedCommentId] = useState({
+    postId: null,
+    commentId: null,
+  });
   const [commentsByPost, setCommentsByPost] = useState({});
-
-  const handleDelete = (id) => setSelectedCommentId(id);
 
   const deleteGoodNews = async (id) => {
     try {
@@ -36,11 +31,39 @@ const GoodNewsList = ({
       alert("삭제 성공");
       setRefresh((prev) => !prev);
     } catch (e) {
-      if (e?.status === 403) {
+      if (e?.status === 403 || e?.status === 404) {
         alert("권한이 없습니다.");
+      } else {
+        console.error("희소식 삭제 실패:", e);
       }
     } finally {
-      setSelectedCommentId(null);
+      setSelectedPostId(null);
+    }
+  };
+
+  const deleteComment = async (object) => {
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+      await api.delete(
+        `/api/posts/${object.postId}/comments/${object.commentId}`,
+        {
+          headers: { Authorization: token },
+        }
+      );
+      alert("삭제 성공");
+      await fetchComments(object.postId);
+    } catch (e) {
+      if (e?.status === 403 || e?.status === 404) {
+        alert("권한이 없습니다.");
+      } else {
+        console.error("댓글 삭제 실패:", e);
+      }
+    } finally {
+      setSelectedCommentId({ postId: null, commentId: null });
     }
   };
 
@@ -95,10 +118,16 @@ const GoodNewsList = ({
   return (
     <View style={{ flex: 1 }}>
       <DeleteModal
-        visible={!!selectedCommentId}
+        visible={!!selectedPostId}
         text="희소식을 삭제하시겠습니까?"
-        onCancel={() => setSelectedCommentId(null)}
-        onDelete={() => deleteGoodNews(selectedCommentId)}
+        onCancel={() => setSelectedPostId(null)}
+        onDelete={() => deleteGoodNews(selectedPostId)}
+      />
+      <DeleteModal
+        visible={!!selectedCommentId.commentId}
+        text="댓글을 삭제하시겠습니까?"
+        onCancel={() => setSelectedCommentId({ postId: null, commentId: null })}
+        onDelete={() => deleteComment(selectedCommentId)}
       />
 
       <View style={styles.container}>
@@ -139,7 +168,7 @@ const GoodNewsList = ({
                   }
                   onLongPress={(e) => {
                     e.stopPropagation();
-                    handleDelete(postId);
+                    setSelectedPostId(postId);
                   }}
                   delayLongPress={500}
                 >
@@ -166,7 +195,7 @@ const GoodNewsList = ({
                     postId={postId}
                     comments={comments}
                     selectedCommentId={selectedCommentId}
-                    handleDelete={handleDelete}
+                    setSelectedCommentId={setSelectedCommentId}
                     fetchComments={fetchComments}
                     placeName={placeName}
                     postItem={item}
@@ -185,9 +214,9 @@ const CommentList = ({
   postId,
   comments = [],
   selectedCommentId,
-  handleDelete,
+  setSelectedCommentId,
   placeName,
-  postItem, 
+  postItem,
 }) => {
   const navigation = useNavigation();
 
@@ -220,7 +249,8 @@ const CommentList = ({
         style={selectedCommentId === last?.id ? styles.selectedItem : undefined}
         onLongPress={(e) => {
           e.stopPropagation();
-          if (last?.id) handleDelete(last.id);
+          if (last?.commentId)
+            setSelectedCommentId({ postId: postId, commentId: last.commentId });
         }}
         delayLongPress={500}
       >
