@@ -97,7 +97,7 @@ const GoodNewsComponent = ({
             liked={liked}
             onPress={toggleLike}
           />
-          <CommentComponent count={commentCount} />
+          {type !== "comment" && <CommentComponent count={commentCount} />}
         </View>
       </View>
     </View>
