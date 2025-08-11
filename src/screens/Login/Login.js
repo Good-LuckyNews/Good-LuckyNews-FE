@@ -16,20 +16,20 @@ import * as SecureStore from "expo-secure-store";
 import * as Notifications from "expo-notifications";
 import { useNotification } from "../../contexts";
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
+// Notifications.setNotificationHandler({
+//   handleNotification: async () => ({
+//     shouldShowAlert: true,
+//     shouldPlaySound: true,
+//     shouldSetBadge: true,
+//   }),
+// });
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [alert, setAlert] = useState("");
   const navigation = useNavigation();
-  const { addNotification } = useNotification();
+  // const { addNotification } = useNotification();
 
   const handleLogin = () => {
     if (!email && !password) {
@@ -58,7 +58,7 @@ const Login = () => {
           );
           console.log(createNews.data.result);
           navigation.replace("Main");
-          scheduleDailyNotification(addNotification);
+          // scheduleDailyNotification(addNotification);
         } catch (error) {
           if (error.response) {
             // 서버 응답이 있는 경우

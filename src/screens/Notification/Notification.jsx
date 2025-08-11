@@ -9,13 +9,13 @@ import * as SecureStore from 'expo-secure-store';
 import api from '../../utils/common';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
-    }),
-});
+// Notifications.setNotificationHandler({
+//     handleNotification: async () => ({
+//         shouldShowAlert: true,
+//         shouldPlaySound: true,
+//         shouldSetBadge: true,
+//     }),
+// });
 
 export default function Notification() {
     const navigation = useNavigation();
@@ -27,54 +27,54 @@ export default function Notification() {
         "logo": require("../../../assets/icon.png"),
     }
 
-    const fetchReplyAlarms = async () => {
-        try {
-            const token = await SecureStore.getItemAsync('userToken');
-            if (token) {
-                const response = await api.get("/api/comments/myalarm", {
-                    headers: {
-                        'Authorization': `${token}`
-                    }
-                });
+    // const fetchReplyAlarms = async () => {
+    //     try {
+    //         const token = await SecureStore.getItemAsync('userToken');
+    //         if (token) {
+    //             const response = await api.get("/api/comments/myalarm", {
+    //                 headers: {
+    //                     'Authorization': `${token}`
+    //                 }
+    //             });
 
-                const newAlarms = response.data.result;
+    //             const newAlarms = response.data.result;
 
-                if (newAlarms && Array.isArray(newAlarms) && newAlarms.length > 0) {
-                    const sortedAlarms = newAlarms.sort(
-                        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-                    );
+    //             if (newAlarms && Array.isArray(newAlarms) && newAlarms.length > 0) {
+    //                 const sortedAlarms = newAlarms.sort(
+    //                     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    //                 );
 
-                    const storedAlarms = await AsyncStorage.getItem("storedAlarmIds");
-                    const previousAlarmIds = storedAlarms ? JSON.parse(storedAlarms) : [];
+    //                 const storedAlarms = await AsyncStorage.getItem("storedAlarmIds");
+    //                 const previousAlarmIds = storedAlarms ? JSON.parse(storedAlarms) : [];
 
-                    const newUniqueAlarms = sortedAlarms.filter(alarm => !previousAlarmIds.includes(alarm.id));
+    //                 const newUniqueAlarms = sortedAlarms.filter(alarm => !previousAlarmIds.includes(alarm.id));
 
-                    if (newUniqueAlarms.length > 0) {
-                        for (let i = 0; i < newUniqueAlarms.length; i++) {
-                            setTimeout(() => {
-                                sendPushNotification(addNotification, "소확행", "희소식에 새로운 답글이 달렸어요 :)", "comment");
-                            }, i * 2000);
-                        }
+    //                 if (newUniqueAlarms.length > 0) {
+    //                     for (let i = 0; i < newUniqueAlarms.length; i++) {
+    //                         setTimeout(() => {
+    //                             sendPushNotification(addNotification, "소확행", "희소식에 새로운 답글이 달렸어요 :)", "comment");
+    //                         }, i * 2000);
+    //                     }
 
-                        const updatedAlarmIds = [...previousAlarmIds, ...newUniqueAlarms.map(alarm => alarm.id)];
-                        await AsyncStorage.setItem("storedAlarmIds", JSON.stringify(updatedAlarmIds));
-                    } else {
-                        console.log("새로운 대댓글 알림 없음");
-                    }
-                } else {
-                    console.log("새로운 대댓글 알림 없음");
-                }
-            } else {
-                console.log('No token found');
-            }
-        } catch (error) {
-            console.error("대댓글 알림 조회 실패:", error);
-        }
-    };
+    //                     const updatedAlarmIds = [...previousAlarmIds, ...newUniqueAlarms.map(alarm => alarm.id)];
+    //                     await AsyncStorage.setItem("storedAlarmIds", JSON.stringify(updatedAlarmIds));
+    //                 } else {
+    //                     console.log("새로운 대댓글 알림 없음");
+    //                 }
+    //             } else {
+    //                 console.log("새로운 대댓글 알림 없음");
+    //             }
+    //         } else {
+    //             console.log('No token found');
+    //         }
+    //     } catch (error) {
+    //         console.error("대댓글 알림 조회 실패:", error);
+    //     }
+    // };
 
-    useEffect(() => {
-        fetchReplyAlarms();
-    }, []);
+    // useEffect(() => {
+    //     fetchReplyAlarms();
+    // }, []);
 
     const handlePress = (id) => {
         markAsRead(id);
@@ -121,25 +121,25 @@ export default function Notification() {
     );
 }
 
-async function sendPushNotification(addNotification, title, body, imageType) {
-    try {
-        await Notifications.scheduleNotificationAsync({
-            content: {
-                title,
-                body,
-                sound: 'default',
-                badge: 1,
-                priority: "max",
-                data: { imageType },
-            },
-            trigger: null,
-        });
+// async function sendPushNotification(addNotification, title, body, imageType) {
+//     try {
+//         await Notifications.scheduleNotificationAsync({
+//             content: {
+//                 title,
+//                 body,
+//                 sound: 'default',
+//                 badge: 1,
+//                 priority: "max",
+//                 data: { imageType },
+//             },
+//             trigger: null,
+//         });
 
-        addNotification(title, body, imageType);
-    } catch (error) {
-        console.error("푸시 알림 생성 실패:", error);
-    }
-}
+//         addNotification(title, body, imageType);
+//     } catch (error) {
+//         console.error("푸시 알림 생성 실패:", error);
+//     }
+// }
 
 const AlarmContainer = styled.View`
     width: 100%;
