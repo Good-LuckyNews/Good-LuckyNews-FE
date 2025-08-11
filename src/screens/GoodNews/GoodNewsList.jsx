@@ -258,13 +258,15 @@ const CommentList = ({
           type="comment"
           username={last?.writer?.name ?? ""}
           profileImage={last?.writer?.profileImage ?? ""}
-          time={last?.time ?? ""}
+          time={(last?.createdAt ?? "").split("T")[0]}
           content={last?.content ?? ""}
           image={last?.image ?? null}
           likeCount={last?.likeCount ?? 0}
           liked={last?.liked ?? false}
           commentCount={last?.commentCount ?? 0}
           style={{ marginTop: 28, marginBottom: 22 }}
+          postId={last?.postId}
+          id={last?.commentId}
         />
       </Pressable>
     </>

@@ -29,6 +29,7 @@ const SeeCommentDetail = ({ route }) => {
           },
           params: { page: 0, size: 10 },
         });
+        console.log(response.data.result);
         setCommentList(response.data.result);
       } else {
         console.log("No token found");

@@ -29,9 +29,10 @@ const GoodNewsComponent = ({
         console.log("No token found");
         return;
       }
-      await api.post(`/api/posts/${id}/like`, null, {
+      const response = await api.post(`/api/posts/${id}/like`, null, {
         headers: { Authorization: token },
       });
+      console.log(response.data);
       setRefresh((refresh) => !refresh);
     } catch (e) {
       console.error("좋아요 토글 실패:", e);
