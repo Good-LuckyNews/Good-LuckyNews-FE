@@ -89,6 +89,7 @@ const SeeCommentDetail = ({ route }) => {
 
         {postInfo && (
           <GoodNewsComponent
+            id={postId}
             username={postInfo.writer.name}
             profileImage={postInfo.writer.profileImage}
             time={postInfo.createdAt.split("T")[0].replace(/-/g, ".")}
@@ -98,6 +99,7 @@ const SeeCommentDetail = ({ route }) => {
             liked={postInfo.liked}
             commentCount={postInfo.commentCount}
             imageSrc={postInfo.image}
+            setRefresh={setRefresh}
           />
         )}
       </View>
@@ -113,7 +115,7 @@ const SeeCommentDetail = ({ route }) => {
         showsVerticalScrollIndicator={false}
       >
         {commentList.length > 0 &&
-          commentList.map((comment, idx) => (
+          commentList.map((comment) => (
             <Pressable
               key={comment.commentId}
               onLongPress={() => setSelectedId(comment.id)}
@@ -127,6 +129,8 @@ const SeeCommentDetail = ({ route }) => {
               }
             >
               <GoodNewsComponent
+                postId={postId}
+                id={comment.commentId}
                 username={comment.writer.name}
                 profileImage={comment.writer.profileImage}
                 time={comment.createdAt.split("T")[0].replace(/-/g, ".")}

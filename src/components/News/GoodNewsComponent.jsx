@@ -7,6 +7,7 @@ import * as SecureStore from "expo-secure-store";
 import api from "../../utils/common";
 
 const GoodNewsComponent = ({
+  postId,
   id,
   username,
   // 수정사항: 프로필이미지 추가
@@ -21,7 +22,7 @@ const GoodNewsComponent = ({
   type = "",
   setRefresh = () => {},
 }) => {
-  const toggleLike = async () => {
+  const toggleGoodNewsLike = async () => {
     try {
       const token = await SecureStore.getItemAsync("userToken");
       if (!token) {
@@ -34,6 +35,22 @@ const GoodNewsComponent = ({
       setRefresh((refresh) => !refresh);
     } catch (e) {
       console.error("좋아요 토글 실패:", e);
+    }
+  };
+
+  const toggleCommentLike = async () => {
+    try {
+      const token = await SecureStore.getItemAsync("userToken");
+      if (!token) {
+        console.log("No token found");
+        return;
+      }
+      await api.post(`/api/posts/${postId}/comments/${id}/like`, null, {
+        headers: { Authorization: token },
+      });
+      setRefresh((refresh) => !refresh);
+    } catch (e) {
+      console.error("댓글 좋아요 토글 실패:", e);
     }
   };
 
@@ -95,7 +112,9 @@ const GoodNewsComponent = ({
           <LikeComponent
             likeCount={likeCount}
             liked={liked}
-            onPress={toggleLike}
+            onPress={
+              type !== "comment" ? toggleGoodNewsLike : toggleCommentLike
+            }
           />
           {type !== "comment" && <CommentComponent count={commentCount} />}
         </View>
