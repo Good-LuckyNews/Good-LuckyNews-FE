@@ -48,6 +48,15 @@ const Login = () => {
           SecureStore.setItemAsync("userToken", token, {
             keychainAccessible: SecureStore.WHEN_UNLOCKED,
           });
+
+          const createNews = await api.get(
+            `/fetch-news`, {
+              headers: {
+                "Authorization": `${token}`
+              }
+            }
+          );
+          console.log(createNews.data.result);
           navigation.replace("Main");
           scheduleDailyNotification(addNotification);
         } catch (error) {
