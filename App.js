@@ -12,17 +12,20 @@ export default function App() {
 
   useEffect(() => {
     async function loadFonts() {
-      await Font.loadAsync({
-        FontL: require("./assets/fonts/YiSunSinDotumL.ttf"),
-        FontM: require("./assets/fonts/YiSunSinDotumM.ttf"),
-        FontB: require("./assets/fonts/YiSunSinDotumB.ttf"),
-      });
-      setFontsLoaded(true);
+      try {
+        await Font.loadAsync({
+          FontL: require("./assets/fonts/YiSunSinDotumL.ttf"),
+          FontM: require("./assets/fonts/YiSunSinDotumM.ttf"),
+          FontB: require("./assets/fonts/YiSunSinDotumB.ttf"),
+        });
+      } catch (e) {
+        console.warn("Font load failed:", e);
+      } finally {
+        setFontsLoaded(true);
+      }
     }
     loadFonts();
   }, []);
-
-  if (!fontsLoaded) return null;
 
   return (
     <NotificationProvider>
