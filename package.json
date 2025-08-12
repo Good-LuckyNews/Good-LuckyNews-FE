@@ -38,7 +38,8 @@
     "react-native-screens": "^4.6.0",
     "react-native-svg": "^15.11.1",
     "react-native-tab-view": "^4.0.5",
-    "styled-components": "^6.1.15"
+    "styled-components": "^6.1.15",
+    "react-native-gesture-handler": "~2.20.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
